@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{0004018C-08D8-483B-6E3C-901A96EBB810}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "turtlebot3",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
