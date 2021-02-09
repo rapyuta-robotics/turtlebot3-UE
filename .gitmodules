@@ -1,0 +1,3 @@
+[submodule "turtlebot3/Plugins/rclUE"]
+	path = turtlebot3/Plugins/rclUE
+	url = git@github.com:rapyuta-robotics/rclUE.git
