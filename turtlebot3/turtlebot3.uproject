@@ -7,7 +7,10 @@
 		{
 			"Name": "turtlebot3",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"PhysXVehicles"
+			]
 		}
 	],
 	"Plugins": [
