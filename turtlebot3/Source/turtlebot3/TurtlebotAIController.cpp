@@ -71,7 +71,7 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 		// Subscription with callback to enqueue vehicle spawn info.
 		if (ensure(TurtleNode))
 		{
-			TurtleNode->Subscribe(TEXT("/cmd_vel"), UROS2TwistMsg::StaticClass());
+			TurtleNode->Subscribe(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass());
 		}
 	}
 }
