@@ -6,7 +6,7 @@
 #include "TurtlebotVehicle.h"
 
 #include "ROS2Node.h"
-#include "ROS2TwistMsg.h"
+#include "Msgs/ROS2TwistMsg.h"
 
 
 ATurtlebotAIController::ATurtlebotAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -71,7 +71,9 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 		// Subscription with callback to enqueue vehicle spawn info.
 		if (ensure(TurtleNode))
 		{
-			TurtleNode->Subscribe(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass());
+			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass());
+
+			TurtleNode->Subscribe();
 		}
 	}
 }
