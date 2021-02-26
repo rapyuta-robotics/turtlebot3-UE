@@ -43,6 +43,9 @@ public:
 
 protected:
 
+	UFUNCTION()
+	void MovementCallback(const UROS2GenericMsg *Msg);
+
 	virtual void OnPossess(APawn *InPawn) override;
 
 	virtual void OnUnPossess() override;

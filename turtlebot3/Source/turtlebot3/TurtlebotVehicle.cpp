@@ -4,6 +4,9 @@
 #include "TurtlebotVehicle.h"
 #include "TurtlebotMovementComponent.h"
 
+#include "ROS2Node.h"
+#include "Msgs/ROS2TFMsg.h"
+
 ATurtlebotVehicle::ATurtlebotVehicle(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UTurtlebotMovementComponent>(VehicleMovementComponentName))
 {
@@ -37,6 +40,18 @@ void ATurtlebotVehicle::SetAngularVel(FVector Velocity)
 void ATurtlebotVehicle::BeginPlay()
 {
 	Super::BeginPlay();
+
+/*
+	for (TFieldIterator<FProperty> PropIt(FTestData::StaticStruct()); PropIt; ++PropIt)
+	{
+		FProperty *Property = *PropIt;
+		
+		FString Name = Property->GetName();
+		FString Type = Property->GetCPPType();
+
+		UE_LOG(LogTemp, Warning, TEXT("*** Prop: %s (%s)"), *Name, *Type);
+	}
+*/
 }
 
 

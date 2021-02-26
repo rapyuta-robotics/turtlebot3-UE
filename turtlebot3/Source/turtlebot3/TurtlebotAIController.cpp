@@ -17,8 +17,13 @@ ATurtlebotAIController::ATurtlebotAIController(const FObjectInitializer& ObjectI
 void ATurtlebotAIController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
-
-	TurtleNode = NewObject<AROS2Node>(AROS2Node::StaticClass());
+	
+	FActorSpawnParameters SpawnParams;
+	FName Name("TurtleNode");
+	SpawnParams.Name = Name;
+	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParams);
+	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
+	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	TurtleNode->Init();
 
 	SetupCommandTopicSubscription(Turtlebot);
@@ -69,11 +74,19 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
         */
 
 		// Subscription with callback to enqueue vehicle spawn info.
-		if (ensure(TurtleNode))
+		if (ensure(IsValid(TurtleNode)))
 		{
-			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass());
+			FSubscriptionCallback cb;
+			cb.BindDynamic(this, &ATurtlebotAIController::MovementCallback);
+			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb);
 
 			TurtleNode->Subscribe();
 		}
 	}
+}
+
+
+void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
+{
+	UE_LOG(LogTemp, Log, TEXT("MovementCallback"));
 }
