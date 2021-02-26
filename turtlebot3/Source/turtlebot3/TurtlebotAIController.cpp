@@ -88,5 +88,21 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 
 void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
 {
-	UE_LOG(LogTemp, Log, TEXT("MovementCallback"));
+	const UROS2TwistMsg *Concrete = Cast<UROS2TwistMsg>(Msg);
+
+	if (IsValid(Concrete))
+	{
+		FVector linear(Concrete->GetLinearVelocity());
+		FVector angular(Concrete->GetAngularVelocity());
+		ATurtlebotVehicle *Vehicle = Turtlebot;
+
+		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
+		{
+			if (IsValid(Vehicle))
+			{
+				Vehicle->SetLinearVel(linear);
+				Vehicle->SetAngularVel(angular);
+			}
+		});
+	}
 }
