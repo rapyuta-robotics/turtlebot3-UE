@@ -8,8 +8,9 @@
 #include "Msgs/ROS2TFMsg.h"
 
 ATurtlebotVehicle::ATurtlebotVehicle(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UTurtlebotMovementComponent>(VehicleMovementComponentName))
+	: Super(ObjectInitializer)
 {
+	MoveComponent = CreateDefaultSubobject<UTurtlebotMovementComponent>(TEXT("MoveComponent"));
 }
 
 
@@ -22,13 +23,13 @@ void ATurtlebotVehicle::Tick(float DeltaSeconds)
 void ATurtlebotVehicle::SetLinearVel(FVector Velocity)
 {
 	// We're assuming input is in meters, so convert to centimeters.
-	GetVehicleMovementComponent()->Velocity = Velocity * 100.0f;
+	GetMovementComponent()->Velocity = Velocity * 100.0f;
 }
 
 
 void ATurtlebotVehicle::SetAngularVel(FVector Velocity)
 {
-	UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(GetVehicleMovementComponent());
+	UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(GetMovementComponent());
 
 	if (TurtlebotMovementComponent)
 	{

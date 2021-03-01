@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WheeledVehicleMovementComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 #include "TurtlebotMovementComponent.generated.h"
 
@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class TURTLEBOT3_API UTurtlebotMovementComponent : public UWheeledVehicleMovementComponent
+class TURTLEBOT3_API UTurtlebotMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
 
@@ -25,11 +25,8 @@ private:
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Velocity)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Velocity)
 	FVector AngularVelocity;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Velocity)
-	float InverseRadius;
 
 private:
 

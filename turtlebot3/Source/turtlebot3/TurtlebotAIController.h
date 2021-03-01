@@ -18,20 +18,6 @@ class TURTLEBOT3_API ATurtlebotAIController : public AAIController
 {
 	GENERATED_BODY()
 
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
-	float Radius = 1.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
-	float Timeout = 0.1f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
-	float UpdateRage = 50.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
-	bool bStickToGround = false;
-
 protected:
 
 	UPROPERTY(Transient)

@@ -3,17 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WheeledVehicle.h"
+#include "GameFramework/Pawn.h"
 
 #include "TurtlebotVehicle.generated.h"
+
+class PawnMovementComponent;
 
 /**
  * 
  */
 UCLASS()
-class TURTLEBOT3_API ATurtlebotVehicle : public AWheeledVehicle
+class TURTLEBOT3_API ATurtlebotVehicle : public APawn
 {
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPawnMovementComponent *MoveComponent;
 
 public:
 

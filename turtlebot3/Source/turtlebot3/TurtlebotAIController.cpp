@@ -50,29 +50,6 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 {
 	if (IsValid(InPawn))
 	{
-        /*
-		// Create a std::function callback object
-		std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [VehiclePawn](TSharedPtr<FROSBaseMsg> msg) -> void
-		{
-			auto Concrete = StaticCastSharedPtr<ROSMessages::geometry_msgs::Twist>(msg);
-
-			if (Concrete.IsValid())
-			{
-				FVector linear(Concrete->linear.x, Concrete->linear.y, Concrete->linear.z);
-				FVector angular(Concrete->angular.x, Concrete->angular.y, Concrete->angular.z);
-
-				AsyncTask(ENamedThreads::GameThread, [linear, angular, VehiclePawn]
-				{
-					if (IsValid(VehiclePawn))
-					{
-						VehiclePawn->SetLinearVel(linear);
-						VehiclePawn->SetAngularVel(angular);
-					}
-				});
-			}
-		};
-        */
-
 		// Subscription with callback to enqueue vehicle spawn info.
 		if (ensure(IsValid(TurtleNode)))
 		{

@@ -9,10 +9,9 @@
 void UTurtlebotMovementComponent::UpdateMovement(float DeltaTime)
 {
 	const FQuat OldRotation = UpdatedComponent->GetComponentQuat();
-	float sine, cosine;
-	FMath::SinCos(&sine, &cosine, -AngularVelocity.Z);
-	FVector position = UpdatedComponent->ComponentVelocity * cosine * DeltaTime;
-	FQuat DeltaRotation(FVector(0.0f, 0.0f, 1.0f), (UpdatedComponent->ComponentVelocity.X * sine * InverseRadius) * DeltaTime);
+
+	FVector position = UpdatedComponent->ComponentVelocity * DeltaTime;
+	FQuat DeltaRotation(FVector(0.0f, 0.0f, 1.0f), -AngularVelocity.Z * DeltaTime);
 
 	DesiredRotation = OldRotation * DeltaRotation;
 	DesiredMovement = (OldRotation * position);
@@ -40,5 +39,7 @@ void UTurtlebotMovementComponent::TickComponent(float DeltaTime, enum ELevelTick
 		}
 
 		UpdateComponentVelocity();
+		AngularVelocity = FVector::ZeroVector;
+		Velocity = FVector::ZeroVector;
 	}
 }
