@@ -14,12 +14,15 @@ class ATurtlebotVehicle;
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup=(Custom),  meta=(BlueprintSpawnableComponent))
 class TURTLEBOT3_API ATurtlebotAIController : public AAIController
 {
 	GENERATED_BODY()
 
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ASensorLidar> LidarClass;
 
 	UPROPERTY(Transient)
 	AROS2Node *TurtleNode;
