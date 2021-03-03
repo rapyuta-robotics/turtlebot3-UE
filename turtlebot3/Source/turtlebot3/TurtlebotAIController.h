@@ -8,6 +8,7 @@
 #include "TurtlebotAIController.generated.h"
 
 class AROS2Node;
+class ASensorLidar;
 class ATurtlebotVehicle;
 
 /**
@@ -22,6 +23,9 @@ protected:
 
 	UPROPERTY(Transient)
 	AROS2Node *TurtleNode;
+
+	UPROPERTY(Transient)
+	ASensorLidar *TurtleLidar;
 
 public:
 
