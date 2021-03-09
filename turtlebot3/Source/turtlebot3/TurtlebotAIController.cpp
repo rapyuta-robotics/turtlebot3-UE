@@ -37,6 +37,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode->Init();
 	
 	TurtleLidar->InitToNode(TurtleNode);
+	TurtleLidar->Run();
 
 	SetupCommandTopicSubscription(Turtlebot);
 }
