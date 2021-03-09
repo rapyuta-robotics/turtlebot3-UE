@@ -40,7 +40,6 @@
 *.code-workspace
 *.kdev4
 Makefile
-CMakeLists.txt
 turtlebot3/SimulaTORCode*.txt
 
 turtlebot3/Binaries/*
