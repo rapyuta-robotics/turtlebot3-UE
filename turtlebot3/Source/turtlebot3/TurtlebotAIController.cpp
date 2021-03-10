@@ -34,6 +34,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+	TurtleNode->SubsTimeout = .005; // 5ms = 200FPS (budget allocation for subs as it is blocking - ideally this needs to live on its own thread)
 	TurtleNode->Init();
 	
 	TurtleLidar->InitToNode(TurtleNode);
