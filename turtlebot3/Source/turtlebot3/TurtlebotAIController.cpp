@@ -25,7 +25,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	FName LidarName("TurtleLidar");
 	LidarSpawnParamsNode.Name = LidarName;
 	TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(600,0,1700));
+	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(6,0,17));
 	TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
