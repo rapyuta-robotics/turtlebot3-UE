@@ -22,21 +22,22 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	Super::OnPossess(InPawn);
 
 	FActorSpawnParameters LidarSpawnParamsNode;
-	FName LidarName("TurtleLidar");
-	LidarSpawnParamsNode.Name = LidarName;
+	// FName LidarName("TurtleLidar");
+	// LidarSpawnParamsNode.Name = LidarName;
 	TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
 	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(6,0,17));
 	TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
-	FName NodeName("TurtleNode");
-	SpawnParamsNode.Name = NodeName;
+	// FName NodeName("TurtleNode");
+	// SpawnParamsNode.Name = NodeName;
 	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	TurtleNode->Init();
 	
 	TurtleLidar->InitToNode(TurtleNode);
+	TurtleLidar->LidarPublisher->Init();
 	TurtleLidar->Run();
 
 	SetupCommandTopicSubscription(Turtlebot);
