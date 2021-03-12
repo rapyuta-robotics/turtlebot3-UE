@@ -5,11 +5,16 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 
+#include <Msgs/ROS2OdometryMsg.h>
+#include <Msgs/ROS2TFMsg.h>
+
 #include "TurtlebotAIController.generated.h"
 
 class AROS2Node;
 class ASensorLidar;
 class ATurtlebotVehicle;
+class UROS2TFPublisher;
+class UROS2OdomPublisher;
 
 /**
  * 
@@ -30,9 +35,24 @@ protected:
 	UPROPERTY(Transient)
 	ASensorLidar *TurtleLidar;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UROS2TFPublisher *TFPublisher;
+
+	// UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	// UROS2TFPublisher *TFStaticPublisher;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UROS2OdomPublisher *OdomPublisher;
+
 public:
 
 	ATurtlebotAIController(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FTFData> GetTFData() const;
+
+	UFUNCTION(BlueprintCallable)
+	FOdometryData GetOdomData() const;
 
 protected:
 
