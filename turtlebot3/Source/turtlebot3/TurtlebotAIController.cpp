@@ -39,6 +39,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+	TurtleNode->Name = FName("UE4Node_" + FGuid::NewGuid().ToString());
 	TurtleNode->Namespace = NAME_None;
 	TurtleNode->Init();
 	
