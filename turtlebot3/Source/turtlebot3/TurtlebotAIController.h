@@ -71,4 +71,10 @@ protected:
 
 	UPROPERTY()
 	ATurtlebotVehicle *Turtlebot;
+
+	UPROPERTY()
+	FVector InitialPosition;
+
+	UPROPERTY()
+	FQuat InitialOrientation;
 };

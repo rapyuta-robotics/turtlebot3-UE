@@ -65,6 +65,9 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode->AddPublisher(OdomPublisher);
 	OdomPublisher->Init();
 
+	InitialPosition = Turtlebot->GetActorLocation();
+	InitialOrientation = Turtlebot->GetActorRotation().Quaternion();
+
 	SetupCommandTopicSubscription(Turtlebot);
 }
 
@@ -169,9 +172,9 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	CurrentValue.child_frame_id = FName("base_footprint");
 
 	ATurtlebotVehicle *Vehicle = Turtlebot;
-	CurrentValue.translation = Vehicle->GetActorLocation() / 100.f;
+	CurrentValue.translation = (Vehicle->GetActorLocation()-InitialPosition) / 100.f;
 	CurrentValue.translation.Y = -CurrentValue.translation.Y;
-	CurrentValue.rotation = FQuat(Vehicle->GetActorRotation());
+	CurrentValue.rotation = Vehicle->GetActorRotation().Quaternion() * InitialOrientation.Inverse();
 	CurrentValue.rotation.X = -CurrentValue.rotation.X;
 	CurrentValue.rotation.Z = -CurrentValue.rotation.Z;
 
