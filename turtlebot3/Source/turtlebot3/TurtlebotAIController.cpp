@@ -209,7 +209,7 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.pose_covariance[28] = 1;
 	retValue.pose_covariance[35] = 1;
 
-	retValue.linear = Vehicle->GetMovementComponent()->Velocity;
+	retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
 	retValue.angular = TurtlebotMovementComponent->AngularVelocity;
 	retValue.angular.Z = -retValue.angular.Z;
 	retValue.twist_covariance.Init(0,36);
