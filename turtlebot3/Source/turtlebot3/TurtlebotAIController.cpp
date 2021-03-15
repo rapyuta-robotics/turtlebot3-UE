@@ -169,7 +169,7 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	CurrentValue.child_frame_id = FName("base_footprint");
 
 	ATurtlebotVehicle *Vehicle = Turtlebot;
-	CurrentValue.translation = Vehicle->GetActorLocation();
+	CurrentValue.translation = Vehicle->GetActorLocation() / 100.f;
 	CurrentValue.rotation = FQuat(Vehicle->GetActorRotation());
 
 	retValue.Add(CurrentValue);
