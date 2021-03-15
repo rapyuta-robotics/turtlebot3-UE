@@ -170,7 +170,10 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 
 	ATurtlebotVehicle *Vehicle = Turtlebot;
 	CurrentValue.translation = Vehicle->GetActorLocation() / 100.f;
+	CurrentValue.translation.Y = -CurrentValue.translation.Y;
 	CurrentValue.rotation = FQuat(Vehicle->GetActorRotation());
+	CurrentValue.rotation.X = -CurrentValue.rotation.X;
+	CurrentValue.rotation.Z = -CurrentValue.rotation.Z;
 
 	retValue.Add(CurrentValue);
 
@@ -194,7 +197,10 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(Vehicle->GetMovementComponent());
 
 	retValue.position = Vehicle->GetActorLocation();
+	retValue.position.Y = -retValue.position.Y;
 	retValue.orientation = FQuat(Vehicle->GetActorRotation());
+	retValue.orientation.X = -retValue.orientation.X;
+	retValue.orientation.Z = -retValue.orientation.Z;
 	retValue.pose_covariance.Init(0,36);
 	retValue.pose_covariance[0] = 1;
 	retValue.pose_covariance[7] = 1;
@@ -205,6 +211,7 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 
 	retValue.linear = Vehicle->GetMovementComponent()->Velocity;
 	retValue.angular = TurtlebotMovementComponent->AngularVelocity;
+	retValue.angular.Z = -retValue.angular.Z;
 	retValue.twist_covariance.Init(0,36);
 	retValue.twist_covariance[0] = 1;
 	retValue.twist_covariance[7] = 1;
