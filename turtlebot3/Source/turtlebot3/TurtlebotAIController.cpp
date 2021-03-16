@@ -113,7 +113,7 @@ void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
 	if (IsValid(Concrete))
 	{
 		FVector linear(Concrete->GetLinearVelocity());
-		FVector angular(Concrete->GetAngularVelocity());
+		FVector angular(FMath::RadiansToDegrees(Concrete->GetAngularVelocity()));
 		ATurtlebotVehicle *Vehicle = Turtlebot;
 
 		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
@@ -213,7 +213,7 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.pose_covariance[35] = 1;
 
 	retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
-	retValue.angular = TurtlebotMovementComponent->AngularVelocity;
+	retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
 	retValue.angular.Z = -retValue.angular.Z;
 	retValue.twist_covariance.Init(0,36);
 	retValue.twist_covariance[0] = 1;
