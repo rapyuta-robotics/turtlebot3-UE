@@ -23,7 +23,6 @@ void ATurtlebotVehicle::Tick(float DeltaSeconds)
 void ATurtlebotVehicle::SetLinearVel(FVector Velocity)
 {
 	// We're assuming input is in meters, so convert to centimeters.
-	Velocity.Y = -Velocity.Y;
 	GetMovementComponent()->Velocity = Velocity * 100.0f;
 }
 
@@ -34,7 +33,6 @@ void ATurtlebotVehicle::SetAngularVel(FVector Velocity)
 
 	if (TurtlebotMovementComponent)
 	{
-		Velocity.Z = -Velocity.Z;
 		TurtlebotMovementComponent->AngularVelocity = Velocity;
 	}
 }
