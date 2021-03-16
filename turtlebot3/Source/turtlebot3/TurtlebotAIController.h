@@ -76,5 +76,5 @@ protected:
 	FVector InitialPosition;
 
 	UPROPERTY()
-	FQuat InitialOrientation;
+	FRotator InitialOrientation;
 };

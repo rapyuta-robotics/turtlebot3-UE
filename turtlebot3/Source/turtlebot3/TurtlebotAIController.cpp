@@ -66,7 +66,8 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	OdomPublisher->Init();
 
 	InitialPosition = Turtlebot->GetActorLocation();
-	InitialOrientation = Turtlebot->GetActorRotation().Quaternion();
+	InitialOrientation = Turtlebot->GetActorRotation();
+	InitialOrientation.Yaw += 180;
 
 	SetupCommandTopicSubscription(Turtlebot);
 }
@@ -112,7 +113,9 @@ void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
 
 	if (IsValid(Concrete))
 	{
-		FVector linear(Concrete->GetLinearVelocity());
+		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
+		// 	probably should not stay in msg though
+		FVector linear(Concrete->GetLinearVelocity()*100.f);
 		FVector angular(FMath::RadiansToDegrees(Concrete->GetAngularVelocity()));
 		ATurtlebotVehicle *Vehicle = Turtlebot;
 
@@ -174,7 +177,9 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	ATurtlebotVehicle *Vehicle = Turtlebot;
 	CurrentValue.translation = (Vehicle->GetActorLocation()-InitialPosition) / 100.f;
 	CurrentValue.translation.Y = -CurrentValue.translation.Y;
-	CurrentValue.rotation = Vehicle->GetActorRotation().Quaternion() * InitialOrientation.Inverse();
+	//CurrentValue.rotation = InitialOrientation.Quaternion() * Vehicle->GetActorRotation().Quaternion().Inverse();
+	CurrentValue.rotation = Vehicle->GetActorRotation().Quaternion() * InitialOrientation.Quaternion().Inverse();
+	//CurrentValue.rotation = InitialOrientation.Quaternion();
 	CurrentValue.rotation.X = -CurrentValue.rotation.X;
 	CurrentValue.rotation.Z = -CurrentValue.rotation.Z;
 
@@ -192,16 +197,15 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
 	retValue.nanosec = (uint32_t)(ns - (retValue.sec * 1000000000ul));
 
-	//retValue.frame_id = FName("odom");
 	retValue.frame_id = FName("odom");
 	retValue.child_frame_id = FName("base_footprint");
 	
 	ATurtlebotVehicle *Vehicle = Turtlebot;
 	UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(Vehicle->GetMovementComponent());
 
-	retValue.position = Vehicle->GetActorLocation();
+	retValue.position = (Vehicle->GetActorLocation()-InitialPosition) / 100.f;
 	retValue.position.Y = -retValue.position.Y;
-	retValue.orientation = FQuat(Vehicle->GetActorRotation());
+	retValue.orientation = InitialOrientation.Quaternion();
 	retValue.orientation.X = -retValue.orientation.X;
 	retValue.orientation.Z = -retValue.orientation.Z;
 	retValue.pose_covariance.Init(0,36);

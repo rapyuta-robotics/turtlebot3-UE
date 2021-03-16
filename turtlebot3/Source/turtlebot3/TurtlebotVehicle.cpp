@@ -23,7 +23,7 @@ void ATurtlebotVehicle::Tick(float DeltaSeconds)
 void ATurtlebotVehicle::SetLinearVel(FVector Velocity)
 {
 	// We're assuming input is in meters, so convert to centimeters.
-	GetMovementComponent()->Velocity = Velocity * 100.0f;
+	GetMovementComponent()->Velocity = Velocity;
 }
 
 
