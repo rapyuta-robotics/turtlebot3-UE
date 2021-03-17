@@ -27,20 +27,16 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	Super::OnPossess(InPawn);
 
 	FActorSpawnParameters LidarSpawnParamsNode;
-	// FName LidarName("TurtleLidar");
-	// LidarSpawnParamsNode.Name = LidarName;
 	TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
 	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
 	TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
-	// FName NodeName("TurtleNode");
-	// SpawnParamsNode.Name = NodeName;
 	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-	TurtleNode->Name = FName("UE4Node_" + FGuid::NewGuid().ToString());
-	TurtleNode->Namespace = NAME_None;
+	TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
+	TurtleNode->Namespace = FString();
 	TurtleNode->Init();
 	
 	TurtleLidar->InitToNode(TurtleNode);
@@ -49,7 +45,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 
 	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
 	TFPublisher->RegisterComponent();
-	TFPublisher->TopicName = FName("tf");
+	TFPublisher->TopicName = FString("tf");
 	TFPublisher->PublicationFrequencyHz = 60;
 	TFPublisher->MsgClass = UROS2TFMsg::StaticClass();
 	TFPublisher->Controller = this;
@@ -58,7 +54,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 
 	OdomPublisher = NewObject<UROS2OdomPublisher>(this, UROS2OdomPublisher::StaticClass());
 	OdomPublisher->RegisterComponent();
-	OdomPublisher->TopicName = FName("odom");
+	OdomPublisher->TopicName = FString("odom");
 	OdomPublisher->PublicationFrequencyHz = 30;
 	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
 	OdomPublisher->Controller = this;
@@ -116,7 +112,7 @@ void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
 		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
 		// 	probably should not stay in msg though
 		FVector linear(Concrete->GetLinearVelocity()*100.f);
-		FVector angular(FMath::RadiansToDegrees(Concrete->GetAngularVelocity()));
+		FVector angular(Concrete->GetAngularVelocity());
 		ATurtlebotVehicle *Vehicle = Turtlebot;
 
 		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
@@ -143,8 +139,8 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
 	Footprint2Link.nanosec = (uint32_t)(ns - (Footprint2Link.sec * 1000000000ul));
 
-	Footprint2Link.frame_id = FName("base_footprint");
-	Footprint2Link.child_frame_id = FName("base_link");
+	Footprint2Link.frame_id = FString("base_footprint");
+	Footprint2Link.child_frame_id = FString("base_link");
 
 	Footprint2Link.translation = FVector(0,0,0);
 	Footprint2Link.rotation = FQuat(0,0,0,1);
@@ -157,8 +153,8 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	Link2Scan.sec = (int32_t)TimeNow;
 	Link2Scan.nanosec = (uint32_t)(ns - (Link2Scan.sec * 1000000000ul));
 
-	Link2Scan.frame_id = FName("base_link");
-	Link2Scan.child_frame_id = FName("base_scan");
+	Link2Scan.frame_id = FString("base_link");
+	Link2Scan.child_frame_id = FString("base_scan");
 
 	Link2Scan.translation = FVector(0,0,.17);
 	Link2Scan.rotation = FQuat(0,0,0,1);
@@ -171,8 +167,8 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	CurrentValue.sec = (int32_t)TimeNow;
 	CurrentValue.nanosec = (uint32_t)(ns - (CurrentValue.sec * 1000000000ul));
 
-	CurrentValue.frame_id = FName("odom");
-	CurrentValue.child_frame_id = FName("base_footprint");
+	CurrentValue.frame_id = FString("odom");
+	CurrentValue.child_frame_id = FString("base_footprint");
 
 	ATurtlebotVehicle *Vehicle = Turtlebot;
 	CurrentValue.translation = (Vehicle->GetActorLocation()-InitialPosition) / 100.f;
@@ -197,8 +193,8 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
 	retValue.nanosec = (uint32_t)(ns - (retValue.sec * 1000000000ul));
 
-	retValue.frame_id = FName("odom");
-	retValue.child_frame_id = FName("base_footprint");
+	retValue.frame_id = FString("odom");
+	retValue.child_frame_id = FString("base_footprint");
 	
 	ATurtlebotVehicle *Vehicle = Turtlebot;
 	UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(Vehicle->GetMovementComponent());
