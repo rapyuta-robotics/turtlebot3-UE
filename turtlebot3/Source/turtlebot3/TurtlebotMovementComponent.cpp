@@ -39,7 +39,5 @@ void UTurtlebotMovementComponent::TickComponent(float DeltaTime, enum ELevelTick
 		}
 
 		UpdateComponentVelocity();
-		AngularVelocity = FVector::ZeroVector;
-		Velocity = FVector::ZeroVector;
 	}
 }

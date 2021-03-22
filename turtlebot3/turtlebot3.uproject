@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{0004018C-08D8-483B-6E3C-901A96EBB810}",
+	"EngineAssociation": "{00043A1C-08D8-92D6-E7D2-9790C5780816}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"PhysXVehicles",
-				"AIModule"
+				"AIModule",
+				"Engine"
 			]
 		}
 	],
