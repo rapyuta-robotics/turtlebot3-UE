@@ -17,7 +17,7 @@ void UROS2TFPublisher::UpdateAndPublishMessage_Implementation()
 	check(ownerNode != nullptr);
 	
 	TArray<FTFData> TFData = Controller->GetTFData();
-    UROS2TFMsg* Message = Cast<UROS2TFMsg>(Topic->Msg);
+    UROS2TFMsg* Message = Cast<UROS2TFMsg>(TopicMessage);
     Message->Update(TFData);
     Publish();
 }

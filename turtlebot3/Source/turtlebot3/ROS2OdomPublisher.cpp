@@ -17,7 +17,7 @@ void UROS2OdomPublisher::UpdateAndPublishMessage_Implementation()
 	check(ownerNode != nullptr);
 	
 	FOdometryData OdomData = Controller->GetOdomData();
-    UROS2OdometryMsg* Message = Cast<UROS2OdometryMsg>(Topic->Msg);
+    UROS2OdometryMsg* Message = Cast<UROS2OdometryMsg>(TopicMessage);
     Message->Update(OdomData);
     Publish();
 }
