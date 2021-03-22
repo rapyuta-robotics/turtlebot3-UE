@@ -32,7 +32,7 @@ protected:
 	UPROPERTY(Transient)
 	AROS2Node *TurtleNode;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient,BlueprintReadWrite)
 	ASensorLidar *TurtleLidar;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
