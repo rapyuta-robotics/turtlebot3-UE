@@ -49,6 +49,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TFPublisher->PublicationFrequencyHz = 60;
 	TFPublisher->MsgClass = UROS2TFMsg::StaticClass();
 	TFPublisher->Controller = this;
+	TFPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::TFMessageUpdate);
 	TurtleNode->AddPublisher(TFPublisher);
 	TFPublisher->Init();
 
@@ -58,6 +59,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	OdomPublisher->PublicationFrequencyHz = 30;
 	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
 	OdomPublisher->Controller = this;
+	OdomPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::OdomMessageUpdate);
 	TurtleNode->AddPublisher(OdomPublisher);
 	OdomPublisher->Init();
 
@@ -100,6 +102,20 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 			TurtleNode->Subscribe();
 		}
 	}
+}
+
+
+void ATurtlebotAIController::TFMessageUpdate(UROS2GenericMsg *TopicMessage)
+{
+    UROS2TFMsg *TFMessage = Cast<UROS2TFMsg>(TopicMessage);
+    TFMessage->Update(GetTFData());
+}
+
+
+void ATurtlebotAIController::OdomMessageUpdate(UROS2GenericMsg *TopicMessage)
+{
+    UROS2OdometryMsg *OdomMessage = Cast<UROS2OdometryMsg>(TopicMessage);
+    OdomMessage->Update(GetOdomData());
 }
 
 

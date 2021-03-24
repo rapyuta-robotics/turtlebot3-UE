@@ -15,9 +15,9 @@ void UROS2OdomPublisher::UpdateAndPublishMessage_Implementation()
 {
 	check(State == UROS2State::Initialized);
 	check(ownerNode != nullptr);
+    check(IsValid(TopicMessage));
 	
-	FOdometryData OdomData = Controller->GetOdomData();
-    UROS2OdometryMsg* Message = Cast<UROS2OdometryMsg>(TopicMessage);
-    Message->Update(OdomData);
+    UpdateDelegate.ExecuteIfBound(TopicMessage);
     Publish();
-}
+ }
+

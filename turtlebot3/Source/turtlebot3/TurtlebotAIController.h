@@ -67,6 +67,12 @@ protected:
 
 	virtual void SetupCommandTopicSubscription(ATurtlebotVehicle *InPawn);
 
+	UFUNCTION()
+	void TFMessageUpdate(UROS2GenericMsg *TopicMessage);
+
+	UFUNCTION()
+	void OdomMessageUpdate(UROS2GenericMsg *TopicMessage);
+
 protected:
 
 	UPROPERTY()
