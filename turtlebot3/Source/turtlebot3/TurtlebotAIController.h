@@ -12,9 +12,8 @@
 
 class AROS2Node;
 class ASensorLidar;
+class UROS2Publisher;
 class ATurtlebotVehicle;
-class UROS2TFPublisher;
-class UROS2OdomPublisher;
 
 /**
  * 
@@ -32,17 +31,14 @@ protected:
 	UPROPERTY(Transient)
 	AROS2Node *TurtleNode;
 
-	UPROPERTY(Transient,BlueprintReadWrite)
+	UPROPERTY(Transient, BlueprintReadWrite)
 	ASensorLidar *TurtleLidar;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UROS2TFPublisher *TFPublisher;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UROS2Publisher *TFPublisher;
 
-	// UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	// UROS2TFPublisher *TFStaticPublisher;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UROS2OdomPublisher *OdomPublisher;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UROS2Publisher *OdomPublisher;
 
 public:
 

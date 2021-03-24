@@ -11,8 +11,6 @@
 #include <Msgs/ROS2LaserScanMsg.h>
 #include <Sensors/SensorLidar.h>
 #include <ROS2LidarPublisher.h>
-#include "ROS2TFPublisher.h"
-#include "ROS2OdomPublisher.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -43,22 +41,20 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleLidar->LidarPublisher->Init();
 	TurtleLidar->Run();
 
-	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
+	TFPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	TFPublisher->RegisterComponent();
 	TFPublisher->TopicName = FString("tf");
 	TFPublisher->PublicationFrequencyHz = 60;
 	TFPublisher->MsgClass = UROS2TFMsg::StaticClass();
-	TFPublisher->Controller = this;
 	TFPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::TFMessageUpdate);
 	TurtleNode->AddPublisher(TFPublisher);
 	TFPublisher->Init();
 
-	OdomPublisher = NewObject<UROS2OdomPublisher>(this, UROS2OdomPublisher::StaticClass());
+	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	OdomPublisher->RegisterComponent();
 	OdomPublisher->TopicName = FString("odom");
 	OdomPublisher->PublicationFrequencyHz = 30;
 	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
-	OdomPublisher->Controller = this;
 	OdomPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::OdomMessageUpdate);
 	TurtleNode->AddPublisher(OdomPublisher);
 	OdomPublisher->Init();
