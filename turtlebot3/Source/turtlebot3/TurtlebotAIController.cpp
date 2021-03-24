@@ -7,10 +7,10 @@
 #include "TurtlebotMovementComponent.h"
 
 #include <ROS2Node.h>
+#include <ROS2Publisher.h>
 #include <Msgs/ROS2TwistMsg.h>
 #include <Msgs/ROS2LaserScanMsg.h>
 #include <Sensors/SensorLidar.h>
-#include <ROS2LidarPublisher.h>
 
 #include "Kismet/GameplayStatics.h"
 
@@ -38,7 +38,6 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode->Init();
 	
 	TurtleLidar->InitToNode(TurtleNode);
-	TurtleLidar->LidarPublisher->Init();
 	TurtleLidar->Run();
 
 	TFPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
