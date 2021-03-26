@@ -21,7 +21,6 @@ ATurtlebotAIController::ATurtlebotAIController(const FObjectInitializer& ObjectI
 	LidarClass = ASensorLidar::StaticClass();
 }
 
-
 void ATurtlebotAIController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -73,6 +72,8 @@ void ATurtlebotAIController::OnUnPossess()
 {
 	TurtleLidar = nullptr;
 	TurtleNode = nullptr;
+	TFPublisher = nullptr;
+	OdomPublisher = nullptr;
 
 	Super::OnUnPossess();
 }
@@ -205,12 +206,12 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.orientation.X = -retValue.orientation.X;
 	retValue.orientation.Z = -retValue.orientation.Z;
 	retValue.pose_covariance.Init(0,36);
-	retValue.pose_covariance[0] = 1;
-	retValue.pose_covariance[7] = 1;
-	retValue.pose_covariance[14] = 1;
-	retValue.pose_covariance[21] = 1;
-	retValue.pose_covariance[28] = 1;
-	retValue.pose_covariance[35] = 1;
+	retValue.pose_covariance[0] = 0.00001;
+	retValue.pose_covariance[7] = 0.00001;
+	retValue.pose_covariance[14] = 1000000000000.0;
+	retValue.pose_covariance[21] = 1000000000000.0;
+	retValue.pose_covariance[28] = 1000000000000.0;
+	retValue.pose_covariance[35] = 0.001;
 
 	retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
 	retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
