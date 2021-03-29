@@ -54,8 +54,19 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float MaxForce = 10000;
+	
+	// UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	// float StaticFriction = .7;
+	
+	// UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	// float DynamicFriction = .7;
+	
+	// UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	// float Restitution = .1;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UMaterial* VehicleMaterial;
 
 	UFUNCTION(BlueprintCallable)
-	void SetAngularVelocityTargets(float velL, float velR);
-	
+	void SetAngularVelocityTargets(float velL, float velR);	
 };

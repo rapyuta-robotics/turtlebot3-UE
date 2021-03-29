@@ -11,58 +11,58 @@ ADifferentialDrive_2W::ADifferentialDrive_2W()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
+	
+	// Meshes
+	if (VehicleMaterial == nullptr)
+	{
+		static ConstructorHelpers::FObjectFinder<UMaterial> RobotMaterial(TEXT("Material'/Game/Blueprints/RobotMat.RobotMat'"));
+		VehicleMaterial = RobotMaterial.Object;
+	}
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("'/Engine/BasicShapes/Cube.Cube'"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> CylinderMesh(TEXT("'/Engine/BasicShapes/Cylinder.Cylinder'"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("'/Engine/BasicShapes/Sphere.Sphere'"));
 
     Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
-    Body->SetupAttachment(RootComponent);
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> BodyMesh(TEXT("'/Engine/BasicShapes/Cube.Cube'"));
-
-    // check if path is valid
-    if (BodyMesh.Succeeded())
-    {
-        // mesh = valid path
-        Body->SetStaticMesh(BodyMesh.Object);
-    }
-	Body->SetWorldScale3D(FVector(1.f, 1.2f, 0.7f));
-	Body->SetRelativeLocation(FVector(0, 40, 40));
-	Body->SetSimulatePhysics(true);
-
     WheelL = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelL"));
     WheelR = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelR"));
+    BallCaster = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallCaster"));
+
+    Body->SetupAttachment(RootComponent);
     WheelL->SetupAttachment(RootComponent);
     WheelR->SetupAttachment(RootComponent);
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> WheelMesh(TEXT("'/Engine/BasicShapes/Cylinder.Cylinder'"));
-
-    // check if path is valid
-    if (WheelMesh.Succeeded())
-    {
-        // mesh = valid path
-        WheelL->SetStaticMesh(WheelMesh.Object);
-        WheelR->SetStaticMesh(WheelMesh.Object);
-    }
-	WheelL->SetWorldScale3D(FVector(1.f, 1.f, 0.1f));
-	WheelR->SetWorldScale3D(FVector(1.f, 1.f, 0.1f));
-	WheelL->SetRelativeLocation(FVector( 60, 0, 50));
-	WheelR->SetRelativeLocation(FVector(-60, 0, 50));
-	WheelL->SetRelativeRotation(FRotator(90,0,0));
-	WheelR->SetRelativeRotation(FRotator(90,0,0));
-	WheelL->SetSimulatePhysics(true);
-	WheelR->SetSimulatePhysics(true);
-
-    BallCaster = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallCaster"));
     BallCaster->SetupAttachment(RootComponent);
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> BallCasterMesh(TEXT("'/Engine/BasicShapes/Sphere.Sphere'"));
 
-    // check if path is valid
-    if (BallCasterMesh.Succeeded())
-    {
-        // mesh = valid path
-        BallCaster->SetStaticMesh(BallCasterMesh.Object);
-    }
+	Body->SetStaticMesh(CubeMesh.Object);
+	WheelL->SetStaticMesh(CylinderMesh.Object);
+	WheelR->SetStaticMesh(CylinderMesh.Object);
+    BallCaster->SetStaticMesh(SphereMesh.Object);
+
+	Body->SetMaterial(0, VehicleMaterial);
+	WheelL->SetMaterial(0, VehicleMaterial);
+	WheelR->SetMaterial(0, VehicleMaterial);
+	BallCaster->SetMaterial(0, VehicleMaterial);
+
+	Body->SetWorldScale3D(FVector(1.f, 1.2f, 0.7f));
+	Body->SetRelativeLocation(FVector(0, 40, 40));
+
+	WheelL->SetWorldScale3D(FVector(1.f, 1.f, 0.1f));
+	WheelL->SetRelativeLocation(FVector( 60, 0, 50));
+	WheelL->SetRelativeRotation(FRotator(90,0,0));
+
+	WheelR->SetWorldScale3D(FVector(1.f, 1.f, 0.1f));
+	WheelR->SetRelativeLocation(FVector(-60, 0, 50));
+	WheelR->SetRelativeRotation(FRotator(90,0,0));
+
 	BallCaster->SetWorldScale3D(FVector(.5f, .5f, .5f));
 	BallCaster->SetRelativeLocation(FVector(0, 70, 25));
+
+	Body->SetSimulatePhysics(true);
+	WheelL->SetSimulatePhysics(true);
+	WheelR->SetSimulatePhysics(true);
 	BallCaster->SetSimulatePhysics(true);
 
 
+	// Constraints
 	Body_WheelL = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Body_WheelL"));
     Body_WheelL->SetupAttachment(RootComponent);
 	Body_WheelL->ComponentName2.ComponentName = TEXT("Body");
@@ -116,6 +116,12 @@ void ADifferentialDrive_2W::SetAngularVelocityTargets(float velL, float velR)
 void ADifferentialDrive_2W::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Body->SetMaterial(0, VehicleMaterial);
+	WheelL->SetMaterial(0, VehicleMaterial);
+	WheelR->SetMaterial(0, VehicleMaterial);
+	BallCaster->SetMaterial(0, VehicleMaterial);
+
 	SetAngularVelocityTargets(VelocityL,VelocityR);
 }
 
