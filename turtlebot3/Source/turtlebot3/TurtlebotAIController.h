@@ -49,10 +49,10 @@ public:
 	ATurtlebotAIController(const FObjectInitializer& ObjectInitializer);
 	
 	UFUNCTION(BlueprintCallable)
-	TArray<FTFData> GetTFData() const;
+	virtual TArray<FTFData> GetTFData() const;
 
 	UFUNCTION(BlueprintCallable)
-	FOdometryData GetOdomData() const;
+	virtual FOdometryData GetOdomData() const;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int RobotID = 0;
@@ -64,7 +64,7 @@ public:
 protected:
 
 	UFUNCTION()
-	void MovementCallback(const UROS2GenericMsg *Msg);
+	virtual void MovementCallback(const UROS2GenericMsg *Msg);
 
 	virtual void OnPossess(APawn *InPawn) override;
 

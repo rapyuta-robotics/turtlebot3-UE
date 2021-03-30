@@ -1,5 +1,8 @@
 // Copyright (C) Rapyuta Robotics
 
+// Turtlebot3 Specs:
+// https://emanual.robotis.com/docs/en/platform/turtlebot3/features/#:~:text=The%20dimension%20of%20TurtleBot3%20Burger,the%20size%20of%20the%20predecessor.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -27,22 +30,34 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void Init();
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	// input units are rotations/s
+	UFUNCTION(BlueprintCallable)
+	void SetAngularVelocityTargets(float velL, float velR);	
+
+	// input units are cm/s
+	UFUNCTION(BlueprintCallable)
+	void SetTargetRotPerSFromVel(float velL, float velR);	
+
+	UPROPERTY()
 	UStaticMeshComponent* Base;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY()
 	UStaticMeshComponent* LidarSensor;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY()
 	UStaticMeshComponent* WheelLeft;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY()
 	UStaticMeshComponent* WheelRight;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY()
 	UStaticMeshComponent* CasterBack;
+
+	UPROPERTY(VisibleAnywhere)
+	float WheelSeparationHalf;
 
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
@@ -64,7 +79,7 @@ public:
 	float VelocityR = 0;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float MaxForce = 10000;
+	float MaxForce = 1000;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UMaterial* VehicleMaterial;
@@ -72,11 +87,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool IsInitialized = false;
 
-	UFUNCTION(BlueprintCallable)
-	void SetAngularVelocityTargets(float velL, float velR);	
-
 protected:
 
 	UFUNCTION()
-	void SetupConstraints();
+	void SetupConstraintsAndPhysics();
 };

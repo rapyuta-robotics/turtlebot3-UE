@@ -1,43 +1,54 @@
 // Copyright (C) Rapyuta Robotics
 
 
-#include "TurtlebotAIController.h"
+#include "BurgerAIController.h"
 
-#include "TurtlebotVehicle.h"
-#include "TurtlebotMovementComponent.h"
+#include "Turtlebot3_Burger.h"
 
-#include <ROS2Node.h>
-#include <Msgs/ROS2TwistMsg.h>
-#include <Msgs/ROS2LaserScanMsg.h>
-#include <Sensors/SensorLidar.h>
-#include <ROS2LidarPublisher.h>
+#include "ROS2Node.h"
+#include "Msgs/ROS2TwistMsg.h"
+#include "Msgs/ROS2LaserScanMsg.h"
+#include "Sensors/SensorLidar.h"
+#include "ROS2LidarPublisher.h"
 #include "ROS2TFPublisher.h"
 #include "ROS2OdomPublisher.h"
 
+#include "Math/Vector.h"
 #include "Kismet/GameplayStatics.h"
 
-ATurtlebotAIController::ATurtlebotAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+
+
+ABurgerAIController::ABurgerAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	LidarClass = ASensorLidar::StaticClass();
 }
 
-void ATurtlebotAIController::OnPossess(APawn *InPawn)
+void ABurgerAIController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
 
 	FActorSpawnParameters LidarSpawnParamsNode;
-	TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
-	TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+    TurtleLidar = nullptr;
+	TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
+	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(0,-8,17));
+	Burger = Cast<ATurtlebot3_Burger>(InPawn);
+	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
-	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
+    TurtleNode = nullptr;
+	TurtleNode = GWorld->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
 	TurtleNode->Namespace = FString();
 	TurtleNode->Init();
 	
+    TurtleLidar->nSamplesPerScan = 360;
+    TurtleLidar->ScanFrequency = 5;
+    TurtleLidar->StartAngle = 0;
+    TurtleLidar->FOVHorizontal = 360;
+    TurtleLidar->MinRange = 12;
+    TurtleLidar->MaxRange = 350;
 	TurtleLidar->InitToNode(TurtleNode);
 	TurtleLidar->LidarPublisher->Init();
 	TurtleLidar->Run();
@@ -60,37 +71,23 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode->AddPublisher(OdomPublisher);
 	OdomPublisher->Init();
 
-	if (Turtlebot != nullptr)
-	{
-		InitialPosition = Turtlebot->GetActorLocation();
-		InitialOrientation = Turtlebot->GetActorRotation();
-		InitialOrientation.Yaw += 180;
+	InitialPosition = Burger->GetActorLocation();
+	InitialOrientation = Burger->GetActorRotation();
+	InitialOrientation.Yaw += 180;
 
-		SetupCommandTopicSubscription(Turtlebot);
-	}
+	SetupSubscription(Burger);
 }
 
 
-void ATurtlebotAIController::OnUnPossess()
-{
-	TurtleLidar = nullptr;
-	TurtleNode = nullptr;
-	TFPublisher = nullptr;
-	OdomPublisher = nullptr;
-
-	Super::OnUnPossess();
-}
-
-
-void ATurtlebotAIController::SetPawn(APawn *InPawn)
+void ABurgerAIController::SetPawn(APawn *InPawn)
 {
 	Super::SetPawn(InPawn);
 
-	Turtlebot = Cast<ATurtlebotVehicle>(InPawn);
+	Burger = Cast<ATurtlebot3_Burger>(InPawn);
 }
 
 
-void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *InPawn)
+void ABurgerAIController::SetupSubscription(ATurtlebot3_Burger *InPawn)
 {
 	if (IsValid(InPawn))
 	{
@@ -98,7 +95,7 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 		if (ensure(IsValid(TurtleNode)))
 		{
 			FSubscriptionCallback cb;
-			cb.BindDynamic(this, &ATurtlebotAIController::MovementCallback);
+			cb.BindDynamic(this, &ABurgerAIController::MovementCallback);
 			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb);
 
 			TurtleNode->Subscribe();
@@ -107,7 +104,7 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 }
 
 
-void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
+void ABurgerAIController::MovementCallback(const UROS2GenericMsg *Msg)
 {
 	const UROS2TwistMsg *Concrete = Cast<UROS2TwistMsg>(Msg);
 
@@ -117,22 +114,14 @@ void ATurtlebotAIController::MovementCallback(const UROS2GenericMsg *Msg)
 		// 	probably should not stay in msg though
 		FVector linear(Concrete->GetLinearVelocity()*100.f);
 		FVector angular(Concrete->GetAngularVelocity());
-		ATurtlebotVehicle *Vehicle = Turtlebot;
 
-		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
-		{
-			if (IsValid(Vehicle))
-			{
-				Vehicle->SetLinearVel(linear);
-				Vehicle->SetAngularVel(angular);
-			}
-		});
+        Burger->SetTargetRotPerSFromVel(linear.X - angular.Z * Burger->WheelSeparationHalf, linear.X + angular.Z * Burger->WheelSeparationHalf);
 	}
 }
 
 // this is complicated, from observing the gazebo example:
 // it either publishes odom (1 element) or the 2 wheel states (2 elements)
-TArray<FTFData> ATurtlebotAIController::GetTFData() const
+TArray<FTFData> ABurgerAIController::GetTFData() const
 {
 	TArray<FTFData> retValue;
 
@@ -174,12 +163,9 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	CurrentValue.frame_id = FString("odom");
 	CurrentValue.child_frame_id = FString("base_footprint");
 
-	ATurtlebotVehicle *Vehicle = Turtlebot;
-	CurrentValue.translation = (Vehicle->GetActorLocation()-InitialPosition) / 100.f;
+	CurrentValue.translation = (Burger->GetActorLocation()-InitialPosition) / 100.f;
 	CurrentValue.translation.Y = -CurrentValue.translation.Y;
-	//CurrentValue.rotation = InitialOrientation.Quaternion() * Vehicle->GetActorRotation().Quaternion().Inverse();
-	CurrentValue.rotation = Vehicle->GetActorRotation().Quaternion() * InitialOrientation.Quaternion().Inverse();
-	//CurrentValue.rotation = InitialOrientation.Quaternion();
+	CurrentValue.rotation = Burger->GetActorRotation().Quaternion() * InitialOrientation.Quaternion().Inverse();
 	CurrentValue.rotation.X = -CurrentValue.rotation.X;
 	CurrentValue.rotation.Z = -CurrentValue.rotation.Z;
 
@@ -188,7 +174,7 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	return retValue;
 }
 
-struct FOdometryData ATurtlebotAIController::GetOdomData() const
+struct FOdometryData ABurgerAIController::GetOdomData() const
 {
 	FOdometryData retValue;
 
@@ -200,10 +186,10 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.frame_id = FString("odom");
 	retValue.child_frame_id = FString("base_footprint");
 	
-	ATurtlebotVehicle *Vehicle = Turtlebot;
-	UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(Vehicle->GetMovementComponent());
+	// ATurtlebotVehicle *Vehicle = Turtlebot;
+	// UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(Vehicle->GetMovementComponent());
 
-	retValue.position = (Vehicle->GetActorLocation()-InitialPosition) / 100.f;
+	retValue.position = (Burger->GetActorLocation()-InitialPosition) / 100.f;
 	retValue.position.Y = -retValue.position.Y;
 	retValue.orientation = InitialOrientation.Quaternion();
 	retValue.orientation.X = -retValue.orientation.X;
@@ -216,8 +202,8 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.pose_covariance[28] = 1000000000000.0;
 	retValue.pose_covariance[35] = 0.001;
 
-	retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
-	retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
+	// retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
+	// retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
 	retValue.angular.Z = -retValue.angular.Z;
 	retValue.twist_covariance.Init(0,36);
 	retValue.twist_covariance[0] = 1;
