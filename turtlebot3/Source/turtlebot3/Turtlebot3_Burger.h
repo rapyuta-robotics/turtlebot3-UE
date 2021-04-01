@@ -41,19 +41,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTargetRotPerSFromVel(float velL, float velR);	
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* Base;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* LidarSensor;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* WheelLeft;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* WheelRight;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* CasterBack;
 
 	UPROPERTY(VisibleAnywhere)
@@ -83,6 +83,9 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UMaterial* VehicleMaterial;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UMaterial* BallMaterial;
 
 	UPROPERTY(VisibleAnywhere)
 	bool IsInitialized = false;

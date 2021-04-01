@@ -20,6 +20,8 @@ ATurtlebot3_Burger::ATurtlebot3_Burger(const FObjectInitializer& ObjectInitializ
 	{
 		static ConstructorHelpers::FObjectFinder<UMaterial> RobotMaterial(TEXT("Material'/Game/Blueprints/RobotMat.RobotMat'"));
 		VehicleMaterial = RobotMaterial.Object;
+		static ConstructorHelpers::FObjectFinder<UMaterial> CasterBallMaterial(TEXT("Material'/Game/Blueprints/CasterBallMat.CasterBallMat'"));
+		BallMaterial = CasterBallMaterial.Object;
 	}
     static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMesh(TEXT("'/Game/Burger/burger_base.burger_base'"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> LidarMesh(TEXT("'/Game/Burger/burger_lds.burger_lds'"));
@@ -35,11 +37,10 @@ ATurtlebot3_Burger::ATurtlebot3_Burger(const FObjectInitializer& ObjectInitializ
 
 	RootComponent = Base;
 
-    Base->SetupAttachment(RootComponent);
-    LidarSensor->SetupAttachment(RootComponent);
-    WheelLeft->SetupAttachment(RootComponent);
-    WheelRight->SetupAttachment(RootComponent);
-    CasterBack->SetupAttachment(RootComponent);
+    LidarSensor->SetupAttachment(Base);
+    WheelLeft->SetupAttachment(Base);
+    WheelRight->SetupAttachment(Base);
+    CasterBack->SetupAttachment(Base);
 
 	Base->SetStaticMesh(BaseMesh.Object);
 	LidarSensor->SetStaticMesh(LidarMesh.Object);
@@ -47,31 +48,19 @@ ATurtlebot3_Burger::ATurtlebot3_Burger(const FObjectInitializer& ObjectInitializ
 	WheelRight->SetStaticMesh(WheelRMesh.Object);
     CasterBack->SetStaticMesh(CasterMesh.Object);
 
-	Base->SetMaterial(0, VehicleMaterial);
-	LidarSensor->SetMaterial(0, VehicleMaterial);
-	WheelLeft->SetMaterial(0, VehicleMaterial);
-	WheelRight->SetMaterial(0, VehicleMaterial);
-	CasterBack->SetMaterial(0, VehicleMaterial);
-
-	Base->SetSimulatePhysics(true);
-	LidarSensor->SetSimulatePhysics(true);
-	WheelLeft->SetSimulatePhysics(true);
-	WheelRight->SetSimulatePhysics(true);
-	CasterBack->SetSimulatePhysics(true);
-
 
 	// Constraints
 	Base_LidarSensor = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Base_LidarSensor"));
-    Base_LidarSensor->SetupAttachment(RootComponent);
+    Base_LidarSensor->SetupAttachment(LidarSensor);
 	
 	Base_WheelLeft = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Base_WheelLeft"));
-    Base_WheelLeft->SetupAttachment(RootComponent);
+    Base_WheelLeft->SetupAttachment(WheelLeft);
 	
 	Base_WheelRight = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Base_WheelRight"));
-    Base_WheelRight->SetupAttachment(RootComponent);
+    Base_WheelRight->SetupAttachment(WheelRight);
 	
 	Base_CasterBack = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Base_CasterBack"));
-    Base_CasterBack->SetupAttachment(RootComponent);
+    Base_CasterBack->SetupAttachment(CasterBack);
 
 	IsInitialized = true;
 
@@ -87,8 +76,8 @@ void ATurtlebot3_Burger::Init()
 		// Meshes
 		if (VehicleMaterial == nullptr)
 		{
-			UMaterial* RobotMaterial = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL, TEXT("Material'/Game/Blueprints/RobotMat.RobotMat'")));
-			VehicleMaterial = RobotMaterial;
+			VehicleMaterial = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL, TEXT("Material'/Game/Blueprints/RobotMat.RobotMat'")));
+			BallMaterial    = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL, TEXT("Material'/Game/Blueprints/CasterBallMat.CasterBallMat'")));
 		}
 		UStaticMesh* BaseMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("'/Game/Burger/burger_base.burger_base'")));
 		UStaticMesh* LidarMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("'/Game/Burger/burger_lds.burger_lds'")));
@@ -104,7 +93,6 @@ void ATurtlebot3_Burger::Init()
 
 		RootComponent = Base;
 
-		Base->SetupAttachment(RootComponent);
 		LidarSensor->SetupAttachment(RootComponent);
 		WheelLeft->SetupAttachment(RootComponent);
 		WheelRight->SetupAttachment(RootComponent);
@@ -119,16 +107,16 @@ void ATurtlebot3_Burger::Init()
 
 		// Constraints
 		Base_LidarSensor = NewObject<UPhysicsConstraintComponent>(this, UPhysicsConstraintComponent::StaticClass(), FName("Base_LidarSensor"));
-		Base_LidarSensor->SetupAttachment(RootComponent);
+		Base_LidarSensor->SetupAttachment(LidarSensor);
 		
 		Base_WheelLeft = NewObject<UPhysicsConstraintComponent>(this, UPhysicsConstraintComponent::StaticClass(), FName("Base_WheelLeft"));
-		Base_WheelLeft->SetupAttachment(RootComponent);
+		Base_WheelLeft->SetupAttachment(WheelLeft);
 		
 		Base_WheelRight = NewObject<UPhysicsConstraintComponent>(this, UPhysicsConstraintComponent::StaticClass(), FName("Base_WheelRight"));
-		Base_WheelRight->SetupAttachment(RootComponent);
+		Base_WheelRight->SetupAttachment(WheelRight);
 		
 		Base_CasterBack = NewObject<UPhysicsConstraintComponent>(this, UPhysicsConstraintComponent::StaticClass(), FName("Base_CasterBack"));
-		Base_CasterBack->SetupAttachment(RootComponent);
+		Base_CasterBack->SetupAttachment(CasterBack);
 		
 		IsInitialized = true;
 
@@ -144,7 +132,7 @@ void ATurtlebot3_Burger::SetupConstraintsAndPhysics()
 		LidarSensor->SetMaterial(0, VehicleMaterial);
 		WheelLeft->SetMaterial(0, VehicleMaterial);
 		WheelRight->SetMaterial(0, VehicleMaterial);
-		CasterBack->SetMaterial(0, VehicleMaterial);
+		CasterBack->SetMaterial(0, BallMaterial);
 
 		Base->SetSimulatePhysics(true);
 		LidarSensor->SetSimulatePhysics(true);
@@ -190,10 +178,10 @@ void ATurtlebot3_Burger::SetupConstraintsAndPhysics()
 		Base_WheelRight->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
 		Base_WheelRight->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
 
-		Base_CasterBack->ComponentName1.ComponentName = TEXT("Base");
-		Base_CasterBack->ComponentName2.ComponentName = TEXT("CasterBack");
+		Base_CasterBack->ComponentName2.ComponentName = TEXT("Base");
+		Base_CasterBack->ComponentName1.ComponentName = TEXT("CasterBack");
 		Base_CasterBack->SetDisableCollision(true);
-		Base_CasterBack->SetRelativeLocation(FVector(0,7.9,1));
+		Base_CasterBack->SetRelativeLocation(FVector(0,8,-.5));
 		Base_CasterBack->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
 		Base_CasterBack->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
 		Base_CasterBack->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
@@ -214,9 +202,11 @@ void ATurtlebot3_Burger::SetAngularVelocityTargets(float velL, float velR)
 
 void ATurtlebot3_Burger::SetTargetRotPerSFromVel(float velL, float velR)
 {
+	// swap of velR/velL needed due to constraints rooted on wheels and not on body
 	float WheelPerimeter = 6.6*3.1416;
-	Base_WheelLeft->SetAngularVelocityTarget(FVector(velL/WheelPerimeter, 0, 0));
-	Base_WheelRight->SetAngularVelocityTarget(FVector(velR/WheelPerimeter, 0, 0));
+	//UE_LOG(LogTemp, Log, TEXT("Wheel angular velocities: %f %f"), -velR/WheelPerimeter, -velL/WheelPerimeter);
+	Base_WheelLeft->SetAngularVelocityTarget(FVector(-velR/WheelPerimeter, 0, 0));
+	Base_WheelRight->SetAngularVelocityTarget(FVector(-velL/WheelPerimeter, 0, 0));
 	Base_WheelLeft->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 	Base_WheelRight->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 }

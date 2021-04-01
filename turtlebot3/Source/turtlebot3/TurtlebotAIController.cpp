@@ -25,18 +25,24 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	FActorSpawnParameters LidarSpawnParamsNode;
-	TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
-	TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+	if (TurtleLidar == nullptr)
+	{
+		FActorSpawnParameters LidarSpawnParamsNode;
+		TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
+		TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
+		TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+	}
 	
-	FActorSpawnParameters SpawnParamsNode;
-	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
-	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
-	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-	TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
-	TurtleNode->Namespace = FString();
-	TurtleNode->Init();
+	if (TurtleNode == nullptr)
+	{
+		FActorSpawnParameters SpawnParamsNode;
+		TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
+		TurtleNode->SetActorLocation(InPawn->GetActorLocation());
+		TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+		TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
+		TurtleNode->Namespace = FString();
+		TurtleNode->Init();
+	}
 	
 	TurtleLidar->InitToNode(TurtleNode);
 	TurtleLidar->LidarPublisher->Init();

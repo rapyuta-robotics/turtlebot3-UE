@@ -25,17 +25,13 @@ ABurgerAIController::ABurgerAIController(const FObjectInitializer& ObjectInitial
 
 void ABurgerAIController::OnPossess(APawn *InPawn)
 {
-	Super::OnPossess(InPawn);
-
 	FActorSpawnParameters LidarSpawnParamsNode;
-    TurtleLidar = nullptr;
 	TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(0,-8,17));
+	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(0,0,15));
 	Burger = Cast<ATurtlebot3_Burger>(InPawn);
 	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
-    TurtleNode = nullptr;
 	TurtleNode = GWorld->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
@@ -49,27 +45,8 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
     TurtleLidar->FOVHorizontal = 360;
     TurtleLidar->MinRange = 12;
     TurtleLidar->MaxRange = 350;
-	TurtleLidar->InitToNode(TurtleNode);
-	TurtleLidar->LidarPublisher->Init();
-	TurtleLidar->Run();
-
-	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
-	TFPublisher->RegisterComponent();
-	TFPublisher->TopicName = FString("tf");
-	TFPublisher->PublicationFrequencyHz = 60;
-	TFPublisher->MsgClass = UROS2TFMsg::StaticClass();
-	TFPublisher->Controller = this;
-	TurtleNode->AddPublisher(TFPublisher);
-	TFPublisher->Init();
-
-	OdomPublisher = NewObject<UROS2OdomPublisher>(this, UROS2OdomPublisher::StaticClass());
-	OdomPublisher->RegisterComponent();
-	OdomPublisher->TopicName = FString("odom");
-	OdomPublisher->PublicationFrequencyHz = 30;
-	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
-	OdomPublisher->Controller = this;
-	TurtleNode->AddPublisher(OdomPublisher);
-	OdomPublisher->Init();
+	
+	Super::OnPossess(InPawn);
 
 	InitialPosition = Burger->GetActorLocation();
 	InitialOrientation = Burger->GetActorRotation();
