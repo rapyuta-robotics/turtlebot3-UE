@@ -155,7 +155,8 @@ void ATurtlebot3_Burger::SetupConstraintsAndPhysics()
 		Base_WheelLeft->ComponentName2.ComponentName = TEXT("Base");
 		Base_WheelLeft->ComponentName1.ComponentName = TEXT("WheelLeft");
 		Base_WheelLeft->SetDisableCollision(true);
-		Base_WheelLeft->SetRelativeLocation(FVector(-8,0,2.3));
+		Base_WheelLeft->SetRelativeLocation(FVector(0,-8,2.3));
+		Base_WheelLeft->SetRelativeRotation(FRotator(0,90,0));
 		Base_WheelLeft->SetAngularDriveMode(EAngularDriveMode::TwistAndSwing);
 		Base_WheelLeft->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 		Base_WheelLeft->SetAngularVelocityDriveTwistAndSwing(true,false);
@@ -168,7 +169,8 @@ void ATurtlebot3_Burger::SetupConstraintsAndPhysics()
 		Base_WheelRight->ComponentName2.ComponentName = TEXT("Base");
 		Base_WheelRight->ComponentName1.ComponentName = TEXT("WheelRight");
 		Base_WheelRight->SetDisableCollision(true);
-		Base_WheelRight->SetRelativeLocation(FVector(8,0,2.3));
+		Base_WheelRight->SetRelativeLocation(FVector(0,8,2.3));
+		Base_WheelRight->SetRelativeRotation(FRotator(0,90,0));
 		Base_WheelRight->SetAngularDriveMode(EAngularDriveMode::TwistAndSwing);
 		Base_WheelRight->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 		Base_WheelRight->SetAngularVelocityDriveTwistAndSwing(true,false);
@@ -181,7 +183,7 @@ void ATurtlebot3_Burger::SetupConstraintsAndPhysics()
 		Base_CasterBack->ComponentName2.ComponentName = TEXT("Base");
 		Base_CasterBack->ComponentName1.ComponentName = TEXT("CasterBack");
 		Base_CasterBack->SetDisableCollision(true);
-		Base_CasterBack->SetRelativeLocation(FVector(0,8,-.5));
+		Base_CasterBack->SetRelativeLocation(FVector(-8,0,-.5));
 		Base_CasterBack->SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
 		Base_CasterBack->SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
 		Base_CasterBack->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
@@ -194,8 +196,8 @@ void ATurtlebot3_Burger::SetupConstraintsAndPhysics()
 
 void ATurtlebot3_Burger::SetAngularVelocityTargets(float velL, float velR)
 {
-	Base_WheelLeft->SetAngularVelocityTarget(FVector(velL, 0, 0));
-	Base_WheelRight->SetAngularVelocityTarget(FVector(velR, 0, 0));
+	Base_WheelLeft->SetAngularVelocityTarget(FVector(-velL, 0, 0));
+	Base_WheelRight->SetAngularVelocityTarget(FVector(-velR, 0, 0));
 	Base_WheelLeft->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 	Base_WheelRight->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 }
@@ -205,8 +207,8 @@ void ATurtlebot3_Burger::SetTargetRotPerSFromVel(float velL, float velR)
 	// swap of velR/velL needed due to constraints rooted on wheels and not on body
 	float WheelPerimeter = 6.6*3.1416;
 	//UE_LOG(LogTemp, Log, TEXT("Wheel angular velocities: %f %f"), -velR/WheelPerimeter, -velL/WheelPerimeter);
-	Base_WheelLeft->SetAngularVelocityTarget(FVector(-velR/WheelPerimeter, 0, 0));
-	Base_WheelRight->SetAngularVelocityTarget(FVector(-velL/WheelPerimeter, 0, 0));
+	Base_WheelLeft->SetAngularVelocityTarget(FVector(-velL/WheelPerimeter, 0, 0));
+	Base_WheelRight->SetAngularVelocityTarget(FVector(-velR/WheelPerimeter, 0, 0));
 	Base_WheelLeft->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 	Base_WheelRight->SetAngularDriveParams(MaxForce, MaxForce, MaxForce);
 }

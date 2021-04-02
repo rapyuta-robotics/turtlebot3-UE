@@ -29,7 +29,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 	TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
 	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(0,0,15));
 	Burger = Cast<ATurtlebot3_Burger>(InPawn);
-	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
+	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepRelativeTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
 	TurtleNode = GWorld->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
@@ -50,7 +50,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 
 	InitialPosition = Burger->GetActorLocation();
 	InitialOrientation = Burger->GetActorRotation();
-	InitialOrientation.Yaw += 180;
+	//InitialOrientation.Yaw += 180;
 
 	SetupSubscription(Burger);
 }
@@ -91,6 +91,8 @@ void ABurgerAIController::MovementCallback(const UROS2GenericMsg *Msg)
 		// 	probably should not stay in msg though
 		FVector linear(Concrete->GetLinearVelocity()*100.f);
 		FVector angular(Concrete->GetAngularVelocity());
+
+		UE_LOG(LogTemp, Warning, TEXT("cmd_vel: %s %s to rot: %f %f"), *linear.ToString(), *angular.ToString(), linear.X - angular.Z * Burger->WheelSeparationHalf, linear.X + angular.Z * Burger->WheelSeparationHalf);
 
         Burger->SetTargetRotPerSFromVel(linear.X - angular.Z * Burger->WheelSeparationHalf, linear.X + angular.Z * Burger->WheelSeparationHalf);
 	}
