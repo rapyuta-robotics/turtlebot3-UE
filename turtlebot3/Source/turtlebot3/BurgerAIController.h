@@ -39,4 +39,7 @@ protected:
 
 	UPROPERTY()
 	ATurtlebot3_Burger *Burger;
+
+	UPROPERTY()
+	FVector LidarOffset;
 };
