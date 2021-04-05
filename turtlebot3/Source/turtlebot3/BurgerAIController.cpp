@@ -29,7 +29,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 	TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
 	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(0,0,15));
 	Burger = Cast<ATurtlebot3_Burger>(InPawn);
-	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepRelativeTransform);
+	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
 	TurtleNode = GWorld->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
