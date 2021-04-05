@@ -5,13 +5,10 @@
 
 #include "Turtlebot3_Burger.h"
 
-#include "ROS2Node.h"
-#include "Msgs/ROS2TwistMsg.h"
-#include "Msgs/ROS2LaserScanMsg.h"
-#include "Sensors/SensorLidar.h"
-#include "ROS2LidarPublisher.h"
-#include "ROS2TFPublisher.h"
-#include "ROS2OdomPublisher.h"
+#include <ROS2Node.h>
+#include <Sensors/SensorLidar.h>
+#include <Msgs/ROS2TwistMsg.h>
+#include <Msgs/ROS2LaserScanMsg.h>
 
 #include "Math/Vector.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,7 +17,6 @@
 
 ABurgerAIController::ABurgerAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	LidarClass = ASensorLidar::StaticClass();
 }
 
 void ABurgerAIController::OnPossess(APawn *InPawn)
