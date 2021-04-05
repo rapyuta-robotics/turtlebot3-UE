@@ -19,23 +19,28 @@ ATurtlebotAIController::ATurtlebotAIController(const FObjectInitializer& ObjectI
 	LidarClass = ASensorLidar::StaticClass();
 }
 
-
 void ATurtlebotAIController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	FActorSpawnParameters LidarSpawnParamsNode;
-	TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
-	TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+	if (TurtleLidar == nullptr)
+	{
+		FActorSpawnParameters LidarSpawnParamsNode;
+		TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
+		TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
+		TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+	}
 	
-	FActorSpawnParameters SpawnParamsNode;
-	TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
-	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
-	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-	TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
-	TurtleNode->Namespace = FString();
-	TurtleNode->Init();
+	if (TurtleNode == nullptr)
+	{
+		FActorSpawnParameters SpawnParamsNode;
+		TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
+		TurtleNode->SetActorLocation(InPawn->GetActorLocation());
+		TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+		TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
+		TurtleNode->Namespace = FString();
+		TurtleNode->Init();
+	}
 	
 	TurtleLidar->InitToNode(TurtleNode);
 	TurtleLidar->Run();
@@ -58,11 +63,14 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TurtleNode->AddPublisher(OdomPublisher);
 	OdomPublisher->Init();
 
-	InitialPosition = Turtlebot->GetActorLocation();
-	InitialOrientation = Turtlebot->GetActorRotation();
-	InitialOrientation.Yaw += 180;
+	if (Turtlebot != nullptr)
+	{
+		InitialPosition = Turtlebot->GetActorLocation();
+		InitialOrientation = Turtlebot->GetActorRotation();
+		InitialOrientation.Yaw += 180;
 
-	SetupCommandTopicSubscription(Turtlebot);
+		SetupCommandTopicSubscription(Turtlebot);
+	}
 }
 
 
@@ -70,6 +78,8 @@ void ATurtlebotAIController::OnUnPossess()
 {
 	TurtleLidar = nullptr;
 	TurtleNode = nullptr;
+	TFPublisher = nullptr;
+	OdomPublisher = nullptr;
 
 	Super::OnUnPossess();
 }
@@ -216,12 +226,12 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.orientation.X = -retValue.orientation.X;
 	retValue.orientation.Z = -retValue.orientation.Z;
 	retValue.pose_covariance.Init(0,36);
-	retValue.pose_covariance[0] = 1;
-	retValue.pose_covariance[7] = 1;
-	retValue.pose_covariance[14] = 1;
-	retValue.pose_covariance[21] = 1;
-	retValue.pose_covariance[28] = 1;
-	retValue.pose_covariance[35] = 1;
+	retValue.pose_covariance[0] = 0.00001;
+	retValue.pose_covariance[7] = 0.00001;
+	retValue.pose_covariance[14] = 1000000000000.0;
+	retValue.pose_covariance[21] = 1000000000000.0;
+	retValue.pose_covariance[28] = 1000000000000.0;
+	retValue.pose_covariance[35] = 0.001;
 
 	retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
 	retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
