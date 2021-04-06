@@ -34,8 +34,14 @@ protected:
 	UPROPERTY(Transient, BlueprintReadWrite)
 	ASensorLidar *TurtleLidar;
 
+	UPROPERTY(Transient, BlueprintReadWrite)
+	FVector LidarOffset;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UROS2Publisher *TFPublisher;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UROS2Publisher *TFStaticPublisher;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UROS2Publisher *OdomPublisher;
@@ -46,6 +52,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual TArray<FTFData> GetTFData() const;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual TArray<FTFData> GetTFStaticData() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual FOdometryData GetOdomData() const;
@@ -72,6 +81,9 @@ protected:
 
 	UFUNCTION()
 	void TFMessageUpdate(UROS2GenericMsg *TopicMessage);
+
+	UFUNCTION()
+	void TFStaticMessageUpdate(UROS2GenericMsg *TopicMessage);
 
 	UFUNCTION()
 	void OdomMessageUpdate(UROS2GenericMsg *TopicMessage);

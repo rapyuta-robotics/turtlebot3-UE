@@ -21,9 +21,12 @@ ABurgerAIController::ABurgerAIController(const FObjectInitializer& ObjectInitial
 
 void ABurgerAIController::OnPossess(APawn *InPawn)
 {
+	LidarOffset = FVector(0,0,15);
+
 	FActorSpawnParameters LidarSpawnParamsNode;
 	TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(0,0,15));
+	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + LidarOffset);
+	TurtleLidar->SetActorRotation(FRotator(0,0,0));
 	Burger = Cast<ATurtlebot3_Burger>(InPawn);
 	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
 	
@@ -47,6 +50,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 	InitialPosition = Burger->GetActorLocation();
 	InitialOrientation = Burger->GetActorRotation();
 	//InitialOrientation.Yaw += 180;
+
 
 	SetupSubscription(Burger);
 }
@@ -85,12 +89,12 @@ void ABurgerAIController::MovementCallback(const UROS2GenericMsg *Msg)
 	{
 		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
 		// 	probably should not stay in msg though
-		FVector linear(Concrete->GetLinearVelocity()*100.f);
-		FVector angular(Concrete->GetAngularVelocity());
+		LinearVelTarget = Concrete->GetLinearVelocity()*100.f;
+		AngularVelTarget = Concrete->GetAngularVelocity();
 
-		UE_LOG(LogTemp, Warning, TEXT("cmd_vel: %s %s to rot: %f %f"), *linear.ToString(), *angular.ToString(), linear.X - angular.Z * Burger->WheelSeparationHalf, linear.X + angular.Z * Burger->WheelSeparationHalf);
+		//UE_LOG(LogTemp, Warning, TEXT("cmd_vel: %s %s to rot: %f %f"), *LinearVelTarget.ToString(), *AngularVelTarget.ToString(), LinearVelTarget.X - AngularVelTarget.Z * Burger->WheelSeparationHalf, LinearVelTarget.X + AngularVelTarget.Z * Burger->WheelSeparationHalf);
 
-        Burger->SetTargetRotPerSFromVel(linear.X - angular.Z * Burger->WheelSeparationHalf, linear.X + angular.Z * Burger->WheelSeparationHalf);
+        Burger->SetTargetRotPerSFromVel(LinearVelTarget.X - AngularVelTarget.Z * Burger->WheelSeparationHalf, LinearVelTarget.X + AngularVelTarget.Z * Burger->WheelSeparationHalf);
 	}
 }
 
@@ -100,11 +104,66 @@ TArray<FTFData> ABurgerAIController::GetTFData() const
 {
 	TArray<FTFData> retValue;
 
-	// this should be TF_Static
-	FTFData Footprint2Link;
 	float TimeNow = UGameplayStatics::GetTimeSeconds(GWorld);
-	Footprint2Link.sec = (int32_t)TimeNow;
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
+	
+	FTFData Odom_Base;
+	Odom_Base.sec = (int32_t)TimeNow;
+	Odom_Base.nanosec = (uint32_t)(ns - (Odom_Base.sec * 1000000000ul));
+
+	Odom_Base.frame_id = FString("odom");
+	Odom_Base.child_frame_id = FString("base_footprint");
+
+	Odom_Base.translation = (Burger->GetActorLocation()-InitialPosition) / 100.f;
+	Odom_Base.translation.Y = -Odom_Base.translation.Y;
+	Odom_Base.rotation = Burger->GetActorRotation().Quaternion() * InitialOrientation.Quaternion().Inverse();
+	Odom_Base.rotation.X = -Odom_Base.rotation.X;
+	Odom_Base.rotation.Z = -Odom_Base.rotation.Z;
+
+	retValue.Add(Odom_Base);
+	
+	FTFData Base_WheelLeft;
+	Base_WheelLeft.sec = (int32_t)TimeNow;
+	Base_WheelLeft.nanosec = (uint32_t)(ns - (Base_WheelLeft.sec * 1000000000ul));
+
+	Base_WheelLeft.frame_id = FString("base_link");
+	Base_WheelLeft.child_frame_id = FString("wheel_left_link");
+
+	Base_WheelLeft.translation = (Burger->Base_WheelLeft->GetRelativeLocation()) / 100.f;
+	Base_WheelLeft.translation.Y = -Base_WheelLeft.translation.Y;
+	Base_WheelLeft.rotation = Burger->Base_WheelLeft->GetRelativeRotation().Quaternion();
+	Base_WheelLeft.rotation.X = -Base_WheelLeft.rotation.X;
+	Base_WheelLeft.rotation.Z = -Base_WheelLeft.rotation.Z;
+
+	retValue.Add(Base_WheelLeft);
+	
+	FTFData Base_WheelRight;
+	Base_WheelRight.sec = (int32_t)TimeNow;
+	Base_WheelRight.nanosec = (uint32_t)(ns - (Base_WheelRight.sec * 1000000000ul));
+
+	Base_WheelRight.frame_id = FString("base_link");
+	Base_WheelRight.child_frame_id = FString("wheel_right_link");
+
+	Base_WheelRight.translation = (Burger->Base_WheelRight->GetRelativeLocation()) / 100.f;
+	Base_WheelRight.translation.Y = -Base_WheelRight.translation.Y;
+	Base_WheelRight.rotation = Burger->Base_WheelRight->GetRelativeRotation().Quaternion();
+	Base_WheelRight.rotation.X = -Base_WheelRight.rotation.X;
+	Base_WheelRight.rotation.Z = -Base_WheelRight.rotation.Z;
+
+	retValue.Add(Base_WheelRight);
+
+	return retValue;
+}
+
+TArray<FTFData> ABurgerAIController::GetTFStaticData() const
+{
+	TArray<FTFData> retValue;
+
+	float TimeNow = UGameplayStatics::GetTimeSeconds(GWorld);
+	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
+
+	FTFData Footprint2Link;
+	Footprint2Link.sec = (int32_t)TimeNow;
 	Footprint2Link.nanosec = (uint32_t)(ns - (Footprint2Link.sec * 1000000000ul));
 
 	Footprint2Link.frame_id = FString("base_footprint");
@@ -116,7 +175,19 @@ TArray<FTFData> ABurgerAIController::GetTFData() const
 	retValue.Add(Footprint2Link);
 
 
-	// this should be TF_Static
+	FTFData Link2CasterBackLink;
+	Link2CasterBackLink.sec = (int32_t)TimeNow;
+	Link2CasterBackLink.nanosec = (uint32_t)(ns - (Link2CasterBackLink.sec * 1000000000ul));
+
+	Link2CasterBackLink.frame_id = FString("base_link");
+	Link2CasterBackLink.child_frame_id = FString("caster_back_link");
+
+	Link2CasterBackLink.translation = Burger->Base_CasterBack->GetRelativeLocation() / 100.f;
+	Link2CasterBackLink.rotation = Burger->Base_CasterBack->GetRelativeRotation().Quaternion();
+
+	retValue.Add(Link2CasterBackLink);
+
+
 	FTFData Link2Scan;
 	Link2Scan.sec = (int32_t)TimeNow;
 	Link2Scan.nanosec = (uint32_t)(ns - (Link2Scan.sec * 1000000000ul));
@@ -124,27 +195,10 @@ TArray<FTFData> ABurgerAIController::GetTFData() const
 	Link2Scan.frame_id = FString("base_link");
 	Link2Scan.child_frame_id = FString("base_scan");
 
-	Link2Scan.translation = FVector(0,0,.17);
+	Link2Scan.translation = LidarOffset / 100.f;
 	Link2Scan.rotation = FQuat(0,0,0,1);
 
 	retValue.Add(Link2Scan);
-
-
-
-	FTFData CurrentValue;
-	CurrentValue.sec = (int32_t)TimeNow;
-	CurrentValue.nanosec = (uint32_t)(ns - (CurrentValue.sec * 1000000000ul));
-
-	CurrentValue.frame_id = FString("odom");
-	CurrentValue.child_frame_id = FString("base_footprint");
-
-	CurrentValue.translation = (Burger->GetActorLocation()-InitialPosition) / 100.f;
-	CurrentValue.translation.Y = -CurrentValue.translation.Y;
-	CurrentValue.rotation = Burger->GetActorRotation().Quaternion() * InitialOrientation.Quaternion().Inverse();
-	CurrentValue.rotation.X = -CurrentValue.rotation.X;
-	CurrentValue.rotation.Z = -CurrentValue.rotation.Z;
-
-	retValue.Add(CurrentValue);
 
 	return retValue;
 }
@@ -161,10 +215,7 @@ struct FOdometryData ABurgerAIController::GetOdomData() const
 	retValue.frame_id = FString("odom");
 	retValue.child_frame_id = FString("base_footprint");
 	
-	// ATurtlebotVehicle *Vehicle = Turtlebot;
-	// UTurtlebotMovementComponent *TurtlebotMovementComponent = Cast<UTurtlebotMovementComponent>(Vehicle->GetMovementComponent());
-
-	retValue.position = (Burger->GetActorLocation()-InitialPosition) / 100.f;
+	retValue.position = (Burger->GetActorLocation() - InitialPosition) / 100.f;
 	retValue.position.Y = -retValue.position.Y;
 	retValue.orientation = InitialOrientation.Quaternion();
 	retValue.orientation.X = -retValue.orientation.X;
@@ -177,16 +228,16 @@ struct FOdometryData ABurgerAIController::GetOdomData() const
 	retValue.pose_covariance[28] = 1000000000000.0;
 	retValue.pose_covariance[35] = 0.001;
 
-	// retValue.linear = Vehicle->GetMovementComponent()->Velocity / 100.0f;
-	// retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
+	retValue.linear = LinearVelTarget / 100.f;
+	retValue.angular = AngularVelTarget;
 	retValue.angular.Z = -retValue.angular.Z;
 	retValue.twist_covariance.Init(0,36);
-	retValue.twist_covariance[0] = 1;
-	retValue.twist_covariance[7] = 1;
-	retValue.twist_covariance[14] = 1;
-	retValue.twist_covariance[21] = 1;
-	retValue.twist_covariance[28] = 1;
-	retValue.twist_covariance[35] = 1;
+	retValue.twist_covariance[0] = 0.00001;
+	retValue.twist_covariance[7] = 0.00001;
+	retValue.twist_covariance[14] = 1000000000000.0;
+	retValue.twist_covariance[21] = 1000000000000.0;
+	retValue.twist_covariance[28] = 1000000000000.0;
+	retValue.twist_covariance[35] = 0.001;
 
 	return retValue;
 }

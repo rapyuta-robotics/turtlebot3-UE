@@ -23,6 +23,8 @@ public:
 	
 	virtual TArray<FTFData> GetTFData() const override;
 
+	virtual TArray<FTFData> GetTFStaticData() const override;
+
 	virtual FOdometryData GetOdomData() const override;
 
 protected:
@@ -41,5 +43,8 @@ protected:
 	ATurtlebot3_Burger *Burger;
 
 	UPROPERTY()
-	FVector LidarOffset;
+	FVector LinearVelTarget;
+
+	UPROPERTY()
+	FVector AngularVelTarget;
 };

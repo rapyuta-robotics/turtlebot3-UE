@@ -25,9 +25,10 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 
 	if (TurtleLidar == nullptr)
 	{
+		LidarOffset = FVector(-3.2,0,17.2);
 		FActorSpawnParameters LidarSpawnParamsNode;
 		TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-		TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + FVector(-3.2,0,17.2));
+		TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + LidarOffset);
 		TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
 	}
 	
@@ -48,11 +49,20 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TFPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	TFPublisher->RegisterComponent();
 	TFPublisher->TopicName = FString("tf");
-	TFPublisher->PublicationFrequencyHz = 60;
+	TFPublisher->PublicationFrequencyHz = 50;
 	TFPublisher->MsgClass = UROS2TFMsg::StaticClass();
 	TFPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::TFMessageUpdate);
 	TurtleNode->AddPublisher(TFPublisher);
 	TFPublisher->Init();
+
+	TFStaticPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
+	TFStaticPublisher->RegisterComponent();
+	TFStaticPublisher->TopicName = FString("tf_static");
+	TFStaticPublisher->PublicationFrequencyHz = 10;
+	TFStaticPublisher->MsgClass = UROS2TFMsg::StaticClass();
+	TFStaticPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::TFStaticMessageUpdate);
+	TurtleNode->AddPublisher(TFStaticPublisher);
+	TFStaticPublisher->Init(true);
 
 	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	OdomPublisher->RegisterComponent();
@@ -116,6 +126,12 @@ void ATurtlebotAIController::TFMessageUpdate(UROS2GenericMsg *TopicMessage)
     TFMessage->Update(GetTFData());
 }
 
+void ATurtlebotAIController::TFStaticMessageUpdate(UROS2GenericMsg *TopicMessage)
+{
+    UROS2TFMsg *TFMessage = Cast<UROS2TFMsg>(TopicMessage);
+    TFMessage->Update(GetTFStaticData());
+}
+
 
 void ATurtlebotAIController::OdomMessageUpdate(UROS2GenericMsg *TopicMessage)
 {
@@ -153,36 +169,8 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 {
 	TArray<FTFData> retValue;
 
-	// this should be TF_Static
-	FTFData Footprint2Link;
 	float TimeNow = UGameplayStatics::GetTimeSeconds(GWorld);
-	Footprint2Link.sec = (int32_t)TimeNow;
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
-	Footprint2Link.nanosec = (uint32_t)(ns - (Footprint2Link.sec * 1000000000ul));
-
-	Footprint2Link.frame_id = FString("base_footprint");
-	Footprint2Link.child_frame_id = FString("base_link");
-
-	Footprint2Link.translation = FVector(0,0,0);
-	Footprint2Link.rotation = FQuat(0,0,0,1);
-
-	retValue.Add(Footprint2Link);
-
-
-	// this should be TF_Static
-	FTFData Link2Scan;
-	Link2Scan.sec = (int32_t)TimeNow;
-	Link2Scan.nanosec = (uint32_t)(ns - (Link2Scan.sec * 1000000000ul));
-
-	Link2Scan.frame_id = FString("base_link");
-	Link2Scan.child_frame_id = FString("base_scan");
-
-	Link2Scan.translation = FVector(0,0,.17);
-	Link2Scan.rotation = FQuat(0,0,0,1);
-
-	retValue.Add(Link2Scan);
-
-
 
 	FTFData CurrentValue;
 	CurrentValue.sec = (int32_t)TimeNow;
@@ -201,6 +189,40 @@ TArray<FTFData> ATurtlebotAIController::GetTFData() const
 	CurrentValue.rotation.Z = -CurrentValue.rotation.Z;
 
 	retValue.Add(CurrentValue);
+
+	return retValue;
+}
+
+TArray<FTFData> ATurtlebotAIController::GetTFStaticData() const
+{
+	TArray<FTFData> retValue;
+
+	FTFData Footprint2Link;
+	float TimeNow = UGameplayStatics::GetTimeSeconds(GWorld);
+	Footprint2Link.sec = (int32_t)TimeNow;
+	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
+	Footprint2Link.nanosec = (uint32_t)(ns - (Footprint2Link.sec * 1000000000ul));
+
+	Footprint2Link.frame_id = FString("base_footprint");
+	Footprint2Link.child_frame_id = FString("base_link");
+
+	Footprint2Link.translation = FVector(0,0,0);
+	Footprint2Link.rotation = FQuat(0,0,0,1);
+
+	retValue.Add(Footprint2Link);
+
+
+	FTFData Link2Scan;
+	Link2Scan.sec = (int32_t)TimeNow;
+	Link2Scan.nanosec = (uint32_t)(ns - (Link2Scan.sec * 1000000000ul));
+
+	Link2Scan.frame_id = FString("base_link");
+	Link2Scan.child_frame_id = FString("base_scan");
+
+	Link2Scan.translation = LidarOffset;
+	Link2Scan.rotation = FQuat(0,0,0,1);
+
+	retValue.Add(Link2Scan);
 
 	return retValue;
 }
@@ -237,12 +259,12 @@ struct FOdometryData ATurtlebotAIController::GetOdomData() const
 	retValue.angular = FMath::DegreesToRadians(TurtlebotMovementComponent->AngularVelocity);
 	retValue.angular.Z = -retValue.angular.Z;
 	retValue.twist_covariance.Init(0,36);
-	retValue.twist_covariance[0] = 1;
-	retValue.twist_covariance[7] = 1;
-	retValue.twist_covariance[14] = 1;
-	retValue.twist_covariance[21] = 1;
-	retValue.twist_covariance[28] = 1;
-	retValue.twist_covariance[35] = 1;
+	retValue.twist_covariance[0] = 0.00001;
+	retValue.twist_covariance[7] = 0.00001;
+	retValue.twist_covariance[14] = 1000000000000.0;
+	retValue.twist_covariance[21] = 1000000000000.0;
+	retValue.twist_covariance[28] = 1000000000000.0;
+	retValue.twist_covariance[35] = 0.001;
 
 	return retValue;
 }
