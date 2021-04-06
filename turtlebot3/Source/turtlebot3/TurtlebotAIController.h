@@ -12,9 +12,8 @@
 
 class AROS2Node;
 class ASensorLidar;
+class UROS2Publisher;
 class ATurtlebotVehicle;
-class UROS2TFPublisher;
-class UROS2OdomPublisher;
 
 /**
  * 
@@ -32,32 +31,45 @@ protected:
 	UPROPERTY(Transient)
 	AROS2Node *TurtleNode;
 
-	UPROPERTY(Transient,BlueprintReadWrite)
+	UPROPERTY(Transient, BlueprintReadWrite)
 	ASensorLidar *TurtleLidar;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UROS2TFPublisher *TFPublisher;
+	UPROPERTY(Transient, BlueprintReadWrite)
+	FVector LidarOffset;
 
-	// UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	// UROS2TFPublisher *TFStaticPublisher;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UROS2Publisher *TFPublisher;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UROS2OdomPublisher *OdomPublisher;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UROS2Publisher *TFStaticPublisher;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UROS2Publisher *OdomPublisher;
 
 public:
 
 	ATurtlebotAIController(const FObjectInitializer& ObjectInitializer);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual TArray<FTFData> GetTFData() const;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual TArray<FTFData> GetTFStaticData() const;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FTFData> GetTFData() const;
+	virtual FOdometryData GetOdomData() const;
 
-	UFUNCTION(BlueprintCallable)
-	FOdometryData GetOdomData() const;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int RobotID = 0;
+
+	// total number of agents (== maxID)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int NAgents = 1;
 
 protected:
 
 	UFUNCTION()
-	void MovementCallback(const UROS2GenericMsg *Msg);
+	virtual void MovementCallback(const UROS2GenericMsg *Msg);
 
 	virtual void OnPossess(APawn *InPawn) override;
 
@@ -66,6 +78,15 @@ protected:
 	virtual void SetPawn(APawn *InPawn) override;
 
 	virtual void SetupCommandTopicSubscription(ATurtlebotVehicle *InPawn);
+
+	UFUNCTION()
+	void TFMessageUpdate(UROS2GenericMsg *TopicMessage);
+
+	UFUNCTION()
+	void TFStaticMessageUpdate(UROS2GenericMsg *TopicMessage);
+
+	UFUNCTION()
+	void OdomMessageUpdate(UROS2GenericMsg *TopicMessage);
 
 protected:
 
