@@ -9,6 +9,7 @@
 #include <Sensors/SensorLidar.h>
 #include <Msgs/ROS2TwistMsg.h>
 #include <Msgs/ROS2LaserScanMsg.h>
+#include <Msgs/ROS2ClockMsg.h>
 
 #include "Math/Vector.h"
 #include "Kismet/GameplayStatics.h"
@@ -71,13 +72,23 @@ void ABurgerAIController::SetupSubscription(ATurtlebot3_Burger *InPawn)
 		// Subscription with callback to enqueue vehicle spawn info.
 		if (ensure(IsValid(TurtleNode)))
 		{
-			FSubscriptionCallback cb;
-			cb.BindDynamic(this, &ABurgerAIController::MovementCallback);
-			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb);
+			FSubscriptionCallback cb_clock;
+			cb_clock.BindDynamic(this, &ABurgerAIController::ClockCallback);
+			TurtleNode->AddSubscription(TEXT("clock"), UROS2ClockMsg::StaticClass(), cb_clock);
+
+			FSubscriptionCallback cb_move;
+			cb_move.BindDynamic(this, &ABurgerAIController::MovementCallback);
+			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb_move);
 
 			TurtleNode->Subscribe();
 		}
 	}
+}
+
+void ABurgerAIController::ClockCallback(const UROS2GenericMsg *Msg)
+{
+	const UROS2ClockMsg *Concrete = Cast<UROS2ClockMsg>(Msg);
+	Concrete->PrintSubToLog();
 }
 
 

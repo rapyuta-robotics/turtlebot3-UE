@@ -28,6 +28,8 @@ public:
 	virtual FOdometryData GetOdomData() const override;
 
 protected:
+	UFUNCTION()
+	virtual void ClockCallback(const UROS2GenericMsg *Msg);
 
 	virtual void MovementCallback(const UROS2GenericMsg *Msg) override;
 
