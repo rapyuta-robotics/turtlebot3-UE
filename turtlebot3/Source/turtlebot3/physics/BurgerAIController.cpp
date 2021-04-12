@@ -7,6 +7,7 @@
 
 #include <ROS2Node.h>
 #include <Sensors/SensorLidar.h>
+#include <ROS2Publisher.h>
 #include <Msgs/ROS2TwistMsg.h>
 #include <Msgs/ROS2LaserScanMsg.h>
 #include <Msgs/ROS2ClockMsg.h>
@@ -45,6 +46,11 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
     TurtleLidar->FOVHorizontal = 360;
     TurtleLidar->MinRange = 12;
     TurtleLidar->MaxRange = 350;
+
+	// TurtleLidar->LidarPublisher = CreateDefaultSubobject<UROS2Publisher>(TEXT("LidarPublisher"));
+	// TurtleLidar->LidarPublisher->TopicName = FString("scan");
+	// TurtleLidar->LidarPublisher->PublicationFrequencyHz = TurtleLidar->ScanFrequency;
+	// TurtleLidar->LidarPublisher->MsgClass = UROS2LaserScanMsg::StaticClass();
 	
 	Super::OnPossess(InPawn);
 
