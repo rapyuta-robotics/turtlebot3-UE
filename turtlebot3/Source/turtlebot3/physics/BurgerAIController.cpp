@@ -47,10 +47,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
     TurtleLidar->MinRange = 12;
     TurtleLidar->MaxRange = 350;
 
-	// TurtleLidar->LidarPublisher = CreateDefaultSubobject<UROS2Publisher>(TEXT("LidarPublisher"));
-	// TurtleLidar->LidarPublisher->TopicName = FString("scan");
-	// TurtleLidar->LidarPublisher->PublicationFrequencyHz = TurtleLidar->ScanFrequency;
-	// TurtleLidar->LidarPublisher->MsgClass = UROS2LaserScanMsg::StaticClass();
+	TurtleLidar->LidarPublisher->PublicationFrequencyHz = TurtleLidar->ScanFrequency;
 	
 	Super::OnPossess(InPawn);
 
