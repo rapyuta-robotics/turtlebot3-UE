@@ -85,8 +85,6 @@ void ABurgerAIController::SetupSubscription(ATurtlebot3_Burger *InPawn)
 			FSubscriptionCallback cb_move;
 			cb_move.BindDynamic(this, &ABurgerAIController::MovementCallback);
 			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb_move);
-
-			TurtleNode->Subscribe();
 		}
 	}
 }

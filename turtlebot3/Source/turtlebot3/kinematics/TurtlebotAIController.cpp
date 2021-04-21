@@ -113,8 +113,6 @@ void ATurtlebotAIController::SetupCommandTopicSubscription(ATurtlebotVehicle *In
 			FSubscriptionCallback cb;
 			cb.BindDynamic(this, &ATurtlebotAIController::MovementCallback);
 			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb);
-
-			TurtleNode->Subscribe();
 		}
 	}
 }
