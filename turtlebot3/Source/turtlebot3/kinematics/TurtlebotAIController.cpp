@@ -53,7 +53,8 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TFPublisher->MsgClass = UROS2TFMsg::StaticClass();
 	TFPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::TFMessageUpdate);
 	TurtleNode->AddPublisher(TFPublisher);
-	TFPublisher->Init();
+	// profile based on tf2_ros -> transform_broadcaster -> DynamicBroadcasterQoS (https://docs.ros2.org/foxy/api/tf2_ros/transform__broadcaster_8h_source.html) and (https://docs.ros2.org/foxy/api/tf2_ros/qos_8hpp_source.html)
+	TFPublisher->Init(UROS2QoS::DynamicBroadcaster);
 
 	TFStaticPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	TFStaticPublisher->RegisterComponent();
@@ -62,7 +63,8 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	TFStaticPublisher->MsgClass = UROS2TFMsg::StaticClass();
 	TFStaticPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::TFStaticMessageUpdate);
 	TurtleNode->AddPublisher(TFStaticPublisher);
-	TFStaticPublisher->Init(true);
+	// profile based on tf2_ros -> static_transform_broadcaster -> StaticBroadcasterQoS (https://docs.ros2.org/foxy/api/tf2_ros/static__transform__broadcaster_8h_source.html) and (https://docs.ros2.org/foxy/api/tf2_ros/qos_8hpp_source.html)
+	TFStaticPublisher->Init(UROS2QoS::StaticBroadcaster);
 
 	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	OdomPublisher->RegisterComponent();
@@ -71,7 +73,7 @@ void ATurtlebotAIController::OnPossess(APawn *InPawn)
 	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
 	OdomPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotAIController::OdomMessageUpdate);
 	TurtleNode->AddPublisher(OdomPublisher);
-	OdomPublisher->Init();
+	OdomPublisher->Init(UROS2QoS::KeepLast);
 
 	if (Turtlebot != nullptr)
 	{
