@@ -21,6 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Callback function
+	UFUNCTION()
 	void MsgCallback(const UROS2GenericMsg *Msg);
 
 public:	
