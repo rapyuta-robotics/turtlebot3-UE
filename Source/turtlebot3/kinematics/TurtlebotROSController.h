@@ -7,6 +7,8 @@
 
 #include <Msgs/ROS2OdometryMsg.h>
 #include <Msgs/ROS2TFMsg.h>
+#include <Tools/ROSUtility.h>
+#include <TFPublisher.h>
 
 #include "TurtlebotROSController.generated.h"
 
@@ -38,10 +40,7 @@ protected:
 	FVector LidarOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UROS2Publisher *TFPublisher;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UROS2Publisher *TFStaticPublisher;
+	UTFPublisher *TFPublisher;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UROS2Publisher *OdomPublisher;
@@ -49,12 +48,6 @@ protected:
 public:
 
 	ATurtlebotROSController(const FObjectInitializer& ObjectInitializer);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual TArray<FTFData> GetTFData() const;
-	
-	UFUNCTION(BlueprintCallable)
-	virtual TArray<FTFData> GetTFStaticData() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual FOdometryData GetOdomData() const;
@@ -78,12 +71,6 @@ protected:
 	virtual void SetPawn(APawn *InPawn) override;
 
 	virtual void SetupCommandTopicSubscription(ATurtlebotBurgerVehicle *InPawn);
-
-	UFUNCTION()
-	void TFMessageUpdate(UROS2GenericMsg *TopicMessage);
-
-	UFUNCTION()
-	void TFStaticMessageUpdate(UROS2GenericMsg *TopicMessage);
 
 	UFUNCTION()
 	void OdomMessageUpdate(UROS2GenericMsg *TopicMessage);

@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../kinematics/TurtlebotAIController.h"
+#include "../kinematics/TurtlebotROSController.h"
 
 #include "BurgerAIController.generated.h"
 
 class ATurtlebot3_Burger;
 
 /**
- * This needs to be refactored with a base class from which this and ATurtlebotAIController derive
+ * This needs to be refactored with a base class from which this and ATurtlebotROSController derive
  */
 UCLASS()
-class TURTLEBOT3_API ABurgerAIController : public ATurtlebotAIController
+class TURTLEBOT3_API ABurgerAIController : public ATurtlebotROSController
 {
 	GENERATED_BODY()
 
@@ -21,11 +21,11 @@ public:
 
 	ABurgerAIController(const FObjectInitializer& ObjectInitializer);
 	
-	virtual TArray<FTFData> GetTFData() const override;
+	virtual TArray<FTFData> GetTFData() const ;
 
-	virtual TArray<FTFData> GetTFStaticData() const override;
+	virtual TArray<FTFData> GetTFStaticData() const ;
 
-	virtual FOdometryData GetOdomData() const override;
+	virtual FOdometryData GetOdomData() const ;
 
 protected:
 	UFUNCTION()
