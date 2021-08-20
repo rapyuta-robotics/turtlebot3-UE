@@ -41,26 +41,26 @@
 *.kdev4
 Makefile
 CMakeLists.txt
-turtlebot3/SimulaTORCode*.txt
+SimulaTORCode*.txt
 
-turtlebot3/Binaries/*
-turtlebot3/Plugins/*/Binaries/*
-turtlebot3/Saved/*
-turtlebot3/Build/*
-turtlebot3/Intermediate/*
-turtlebot3/Plugins/*/Intermediate/*
-turtlebot3/DerivedDataCache/*
-turtlebot3/Content/Developers/*
+Binaries/*
+Plugins/*/Binaries/*
+Saved/*
+Build/*
+Intermediate/*
+Plugins/*/Intermediate/*
+DerivedDataCache/*
+Content/Developers/*
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
-!turtlebot3/Build/*/
-turtlebot3/Build/*/**
-!turtlebot3/Build/*/PakBlacklist*.txt
+!Build/*/
+Build/*/**
+!Build/*/PakBlacklist*.txt
 
 # Don't ignore icon files in Build
-!turtlebot3/Build/**/*.ico
+!Build/**/*.ico
 
 # Whitelist Linux plugin libs
-!turtlebot3/Plugins/*/ThirdParty/**/*.a
+!Plugins/*/ThirdParty/**/*.a
 
 *_BuiltData.uasset
