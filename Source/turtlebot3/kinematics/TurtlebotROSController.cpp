@@ -4,7 +4,7 @@
 #include "TurtlebotROSController.h"
 
 #include "TurtlebotBurgerVehicle.h"
-#include "KinematicsMovementComponent.h"
+#include "RobotVehicleMovementComponent.h"
 
 #include <ROS2Node.h>
 #include <ROS2Publisher.h>
@@ -54,13 +54,13 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 	TurtleLidar->InitToNode(TurtleNode);
 	TurtleLidar->Run();
 
-	UKinematicsMovementComponent *KinematicsMovementComponent = Cast<UKinematicsMovementComponent>(InPawn->GetMovementComponent());
-	TFPublisher = NewObject<UTFPublisher>(this, UTFPublisher::StaticClass());
+	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(InPawn->GetMovementComponent());
+	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
 	TFPublisher->RegisterComponent();
-	TFPublisher->FrameId = KinematicsMovementComponent->FrameId;
-	TFPublisher->ChildFrameId = KinematicsMovementComponent->ChildFrameId;
+	TFPublisher->FrameId = RobotVehicleMovementComponent->FrameId = FString("odom");
+	TFPublisher->ChildFrameId = RobotVehicleMovementComponent->ChildFrameId = FString("base_footprint");
 	TFPublisher->PublicationFrequencyHz = 50;
-	TFPublisher->InitTfPublisher(TurtleNode);
+	TFPublisher->InitTFPublisher(TurtleNode);
 
 	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	OdomPublisher->RegisterComponent();
@@ -130,8 +130,8 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
 	{
 		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
 		// 	probably should not stay in msg though
-		FVector linear(UROSUtility::VectorROSToUE(Concrete->GetLinearVelocity()));
-		FVector angular(UROSUtility::RotationROSToUE(Concrete->GetAngularVelocity()));
+		FVector linear(UROS2Utility::VectorROSToUE(Concrete->GetLinearVelocity()));
+		FVector angular(UROS2Utility::RotationROSToUE(Concrete->GetAngularVelocity()));
 		ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
 
 		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
@@ -148,9 +148,9 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
 struct FOdometryData ATurtlebotROSController::GetOdomData() const
 {
 	ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
-	UKinematicsMovementComponent *KinematicsMovementComponent = Cast<UKinematicsMovementComponent>(Vehicle->GetMovementComponent());
-	TFPublisher->Tf = KinematicsMovementComponent->GetOdomTf();
+	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(Vehicle->GetMovementComponent());
+	TFPublisher->TF = RobotVehicleMovementComponent->GetOdomTF();
 	
-	return UROSUtility::OdomUEToROS(KinematicsMovementComponent->OdomData);
+	return UROS2Utility::OdomUEToROS(RobotVehicleMovementComponent->OdomData);
 	
 }

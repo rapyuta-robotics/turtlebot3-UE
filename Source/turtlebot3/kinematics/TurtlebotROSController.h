@@ -7,8 +7,8 @@
 
 #include <Msgs/ROS2OdometryMsg.h>
 #include <Msgs/ROS2TFMsg.h>
-#include <Tools/ROSUtility.h>
-#include <TFPublisher.h>
+#include <Tools/ROS2Utility.h>
+#include <ROS2TFPublisher.h>
 
 #include "TurtlebotROSController.generated.h"
 
@@ -40,7 +40,7 @@ protected:
 	FVector LidarOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTFPublisher *TFPublisher;
+	UROS2TFPublisher *TFPublisher;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UROS2Publisher *OdomPublisher;

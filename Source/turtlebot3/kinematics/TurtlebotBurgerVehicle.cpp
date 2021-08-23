@@ -2,7 +2,7 @@
 
 
 #include "TurtlebotBurgerVehicle.h"
-#include "KinematicsMovementComponent.h"
+#include "RobotVehicleMovementComponent.h"
 
 #include "ROS2Node.h"
 #include "Msgs/ROS2TFMsg.h"
@@ -10,7 +10,7 @@
 ATurtlebotBurgerVehicle::ATurtlebotBurgerVehicle(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	MoveComponent = CreateDefaultSubobject<UKinematicsMovementComponent>(TEXT("MoveComponent"));
+	MoveComponent = CreateDefaultSubobject<URobotVehicleMovementComponent>(TEXT("MoveComponent"));
 }
 
 
@@ -29,11 +29,11 @@ void ATurtlebotBurgerVehicle::SetLinearVel(FVector Velocity)
 
 void ATurtlebotBurgerVehicle::SetAngularVel(FVector Velocity)
 {
-	UKinematicsMovementComponent *KinematicsMovementComponent = Cast<UKinematicsMovementComponent>(GetMovementComponent());
+	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(GetMovementComponent());
 
-	if (KinematicsMovementComponent)
+	if (RobotVehicleMovementComponent)
 	{
-		KinematicsMovementComponent->AngularVelocity = Velocity;
+		RobotVehicleMovementComponent->AngularVelocity = Velocity;
 	}
 }
 
