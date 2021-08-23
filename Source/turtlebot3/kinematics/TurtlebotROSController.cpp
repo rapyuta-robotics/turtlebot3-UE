@@ -4,7 +4,8 @@
 #include "TurtlebotROSController.h"
 
 #include "TurtlebotBurgerVehicle.h"
-#include "RobotVehicleMovementComponent.h"
+#include "Tools/RobotVehicleMovementComponent.h"
+#include "Tools/UEUtilities.h"
 
 #include <ROS2Node.h>
 #include <ROS2Publisher.h>
@@ -130,8 +131,8 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
 	{
 		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
 		// 	probably should not stay in msg though
-		FVector linear(UROS2Utility::VectorROSToUE(Concrete->GetLinearVelocity()));
-		FVector angular(UROS2Utility::RotationROSToUE(Concrete->GetAngularVelocity()));
+		FVector linear(ConversionUtils::VectorROSToUE(Concrete->GetLinearVelocity()));
+		FVector angular(ConversionUtils::RotationROSToUE(Concrete->GetAngularVelocity()));
 		ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
 
 		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
@@ -151,6 +152,10 @@ struct FOdometryData ATurtlebotROSController::GetOdomData() const
 	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(Vehicle->GetMovementComponent());
 	TFPublisher->TF = RobotVehicleMovementComponent->GetOdomTF();
 	
-	return UROS2Utility::OdomUEToROS(RobotVehicleMovementComponent->OdomData);
-	
+	FOdometryData res = RobotVehicleMovementComponent->OdomData;
+	res.position = ConversionUtils::VectorUEToROS(res.position);
+	res.orientation = ConversionUtils::QuatUEToROS(res.orientation);
+	res.linear = ConversionUtils::VectorUEToROS(res.linear);
+	res.angular = ConversionUtils::VectorUEToROS(res.angular);
+	return res;
 }

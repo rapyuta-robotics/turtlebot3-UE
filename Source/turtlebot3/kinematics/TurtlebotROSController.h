@@ -7,7 +7,6 @@
 
 #include <Msgs/ROS2OdometryMsg.h>
 #include <Msgs/ROS2TFMsg.h>
-#include <Tools/ROS2Utility.h>
 #include <ROS2TFPublisher.h>
 
 #include "TurtlebotROSController.generated.h"
