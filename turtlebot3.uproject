@@ -19,6 +19,10 @@
 		{
 			"Name": "rclUE",
 			"Enabled": true
+		},
+				{
+			"Name": "UE_rapyuta_assets",
+			"Enabled": true
 		}
 	]
 }
