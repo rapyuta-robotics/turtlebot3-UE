@@ -36,7 +36,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 	TurtleNode = GWorld->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 	TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 	TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-	TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
+	TurtleNode->Name = TEXT("UE4Node_" + FGuid::NewGuid().ToString());
 	TurtleNode->Namespace = FString();
 	TurtleNode->Init();
 	
@@ -123,8 +123,8 @@ TArray<FTFData> ABurgerAIController::GetTFData() const
 	Odom_Base.sec = (int32_t)TimeNow;
 	Odom_Base.nanosec = (uint32_t)(ns - (Odom_Base.sec * 1000000000ul));
 
-	Odom_Base.frame_id = FString("odom");
-	Odom_Base.child_frame_id = FString("base_footprint");
+	Odom_Base.frame_id = TEXT("odom");
+	Odom_Base.child_frame_id = TEXT("base_footprint");
 
 	Odom_Base.translation = (Burger->GetActorLocation()-InitialPosition) / 100.f;
 	Odom_Base.translation.Y = -Odom_Base.translation.Y;
@@ -138,8 +138,8 @@ TArray<FTFData> ABurgerAIController::GetTFData() const
 	Base_WheelLeft.sec = (int32_t)TimeNow;
 	Base_WheelLeft.nanosec = (uint32_t)(ns - (Base_WheelLeft.sec * 1000000000ul));
 
-	Base_WheelLeft.frame_id = FString("base_link");
-	Base_WheelLeft.child_frame_id = FString("wheel_left_link");
+	Base_WheelLeft.frame_id = TEXT("base_link");
+	Base_WheelLeft.child_frame_id = TEXT("wheel_left_link");
 
 	Base_WheelLeft.translation = (Burger->Base_WheelLeft->GetRelativeLocation()) / 100.f;
 	Base_WheelLeft.translation.Y = -Base_WheelLeft.translation.Y;
@@ -153,8 +153,8 @@ TArray<FTFData> ABurgerAIController::GetTFData() const
 	Base_WheelRight.sec = (int32_t)TimeNow;
 	Base_WheelRight.nanosec = (uint32_t)(ns - (Base_WheelRight.sec * 1000000000ul));
 
-	Base_WheelRight.frame_id = FString("base_link");
-	Base_WheelRight.child_frame_id = FString("wheel_right_link");
+	Base_WheelRight.frame_id = TEXT("base_link");
+	Base_WheelRight.child_frame_id = TEXT("wheel_right_link");
 
 	Base_WheelRight.translation = (Burger->Base_WheelRight->GetRelativeLocation()) / 100.f;
 	Base_WheelRight.translation.Y = -Base_WheelRight.translation.Y;
@@ -178,8 +178,8 @@ TArray<FTFData> ABurgerAIController::GetTFStaticData() const
 	Footprint2Link.sec = (int32_t)TimeNow;
 	Footprint2Link.nanosec = (uint32_t)(ns - (Footprint2Link.sec * 1000000000ul));
 
-	Footprint2Link.frame_id = FString("base_footprint");
-	Footprint2Link.child_frame_id = FString("base_link");
+	Footprint2Link.frame_id = TEXT("base_footprint");
+	Footprint2Link.child_frame_id = TEXT("base_link");
 
 	Footprint2Link.translation = FVector(0,0,0);
 	Footprint2Link.rotation = FQuat(0,0,0,1);
@@ -191,8 +191,8 @@ TArray<FTFData> ABurgerAIController::GetTFStaticData() const
 	Link2CasterBackLink.sec = (int32_t)TimeNow;
 	Link2CasterBackLink.nanosec = (uint32_t)(ns - (Link2CasterBackLink.sec * 1000000000ul));
 
-	Link2CasterBackLink.frame_id = FString("base_link");
-	Link2CasterBackLink.child_frame_id = FString("caster_back_link");
+	Link2CasterBackLink.frame_id = TEXT("base_link");
+	Link2CasterBackLink.child_frame_id = TEXT("caster_back_link");
 
 	Link2CasterBackLink.translation = Burger->Base_CasterBack->GetRelativeLocation() / 100.f;
 	Link2CasterBackLink.rotation = Burger->Base_CasterBack->GetRelativeRotation().Quaternion();
@@ -204,8 +204,8 @@ TArray<FTFData> ABurgerAIController::GetTFStaticData() const
 	Link2Scan.sec = (int32_t)TimeNow;
 	Link2Scan.nanosec = (uint32_t)(ns - (Link2Scan.sec * 1000000000ul));
 
-	Link2Scan.frame_id = FString("base_link");
-	Link2Scan.child_frame_id = FString("base_scan");
+	Link2Scan.frame_id = TEXT("base_link");
+	Link2Scan.child_frame_id = TEXT("base_scan");
 
 	Link2Scan.translation = LidarOffset / 100.f;
 	Link2Scan.rotation = FQuat(0,0,0,1);
@@ -224,8 +224,8 @@ struct FOdometryData ABurgerAIController::GetOdomData() const
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
 	retValue.nanosec = (uint32_t)(ns - (retValue.sec * 1000000000ul));
 
-	retValue.frame_id = FString("odom");
-	retValue.child_frame_id = FString("base_footprint");
+	retValue.frame_id = TEXT("odom");
+	retValue.child_frame_id = TEXT("base_footprint");
 	
 	retValue.position = (Burger->GetActorLocation() - InitialPosition) / 100.f;
 	retValue.position.Y = -retValue.position.Y;

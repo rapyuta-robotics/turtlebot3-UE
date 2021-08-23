@@ -47,7 +47,7 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 		TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
 		TurtleNode->SetActorLocation(InPawn->GetActorLocation());
 		TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-		TurtleNode->Name = FString("UE4Node_" + FGuid::NewGuid().ToString());
+		TurtleNode->Name = TEXT("UE4Node_" + FGuid::NewGuid().ToString());
 		TurtleNode->Namespace = FString();
 		TurtleNode->Init();
 	}
@@ -58,14 +58,14 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(InPawn->GetMovementComponent());
 	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
 	TFPublisher->RegisterComponent();
-	TFPublisher->FrameId = RobotVehicleMovementComponent->FrameId = FString("odom");
-	TFPublisher->ChildFrameId = RobotVehicleMovementComponent->ChildFrameId = FString("base_footprint");
+	TFPublisher->FrameId = RobotVehicleMovementComponent->FrameId = TEXT("odom");
+	TFPublisher->ChildFrameId = RobotVehicleMovementComponent->ChildFrameId = TEXT("base_footprint");
 	TFPublisher->PublicationFrequencyHz = 50;
 	TFPublisher->InitTFPublisher(TurtleNode);
 
 	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	OdomPublisher->RegisterComponent();
-	OdomPublisher->TopicName = FString("odom");
+	OdomPublisher->TopicName = TEXT("odom");
 	OdomPublisher->PublicationFrequencyHz = 30;
 	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
 	OdomPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotROSController::OdomMessageUpdate);

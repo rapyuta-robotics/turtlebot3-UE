@@ -21,7 +21,7 @@ void AROS2PublisherNode::BeginPlay()
 	// Create String publisher
 	StringPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	StringPublisher->RegisterComponent();
-	StringPublisher->TopicName = FString("test_topic");
+	StringPublisher->TopicName = TEXT("test_topic");
 	StringPublisher->PublicationFrequencyHz = 1;
 	StringPublisher->MsgClass = UROS2StringMsg::StaticClass();
 	StringPublisher->UpdateDelegate.BindDynamic(this, &AROS2PublisherNode::MessageUpdate);
