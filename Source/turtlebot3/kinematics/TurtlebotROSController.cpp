@@ -4,7 +4,7 @@
 #include "TurtlebotROSController.h"
 
 #include "TurtlebotBurgerVehicle.h"
-#include "RobotVehicleMovementComponent.h"
+#include "Robots/RobotVehicleMovementComponent.h"
 #include "Tools/UEUtilities.h"
 
 #include <ROS2Node.h>
