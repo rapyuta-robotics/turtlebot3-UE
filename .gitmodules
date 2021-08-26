@@ -1,6 +1,6 @@
-[submodule "turtlebot3/Plugins/rclUE"]
-	path = turtlebot3/Plugins/rclUE
-	url = git@github.com:rapyuta-robotics/rclUE.git
 [submodule "Plugins/rclUE"]
 	path = Plugins/rclUE
 	url = git@github.com:rapyuta-robotics/rclUE.git
+[submodule "Plugins/UE_rapyuta_assets"]
+	path = Plugins/UE_rapyuta_assets
+	url = git@github.com:rapyuta-robotics/UE_rapyuta_assets.git
