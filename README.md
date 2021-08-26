@@ -2,7 +2,7 @@
 UE4 Project which includes examples to use rclUE.
 ## Maps
 - PubSub: BP and C++ ROS2 publisher subscriber example.
-- Turltebot3 Benchimark: BP and C++ ROS2 turtleobot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP
+- Turltebot3 Benchmark: BP and C++ ROS2 turtleobot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP
 ## Setup
 1. clone this repo
 2. ./run_editor.sh
