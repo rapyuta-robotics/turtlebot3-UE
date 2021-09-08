@@ -12,6 +12,7 @@
 #include <Msgs/ROS2TwistMsg.h>
 #include <Msgs/ROS2LaserScanMsg.h>
 #include <Sensors/SensorLidar.h>
+#include <Tools/UEUtilities.h>
 
 #include "Kismet/GameplayStatics.h"
 
@@ -31,7 +32,7 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 		TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
 		TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + LidarOffset);
 		TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-		TurtleLidar->nSamplesPerScan = 360;
+		TurtleLidar->NSamplesPerScan = 360;
 		TurtleLidar->ScanFrequency = 5;
 		TurtleLidar->StartAngle = 0;
 		TurtleLidar->FOVHorizontal = 360;
@@ -119,7 +120,7 @@ void ATurtlebotROSController::SetupCommandTopicSubscription(ATurtlebotBurgerVehi
 void ATurtlebotROSController::OdomMessageUpdate(UROS2GenericMsg *TopicMessage)
 {
     UROS2OdometryMsg *OdomMessage = Cast<UROS2OdometryMsg>(TopicMessage);
-    OdomMessage->Update(GetOdomData());
+    OdomMessage->SetMsg(GetOdomData());
 }
 
 
@@ -129,10 +130,10 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
 
 	if (IsValid(Concrete))
 	{
-		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
-		// 	probably should not stay in msg though
-		FVector linear(ConversionUtils::VectorROSToUE(Concrete->GetLinearVelocity()));
-		FVector angular(ConversionUtils::RotationROSToUE(Concrete->GetAngularVelocity()));
+		FROSTwist Output;
+        Concrete->GetMsg(Output);
+		FVector linear(ConversionUtils::VectorROSToUE(Output.linear));
+		FVector angular(ConversionUtils::RotationROSToUE(Output.angular));
 		ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
 
 		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
@@ -146,16 +147,12 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
 	}
 }
 
-struct FOdometryData ATurtlebotROSController::GetOdomData() const
+struct FROSOdometry ATurtlebotROSController::GetOdomData() const
 {
 	ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
 	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(Vehicle->GetMovementComponent());
 	TFPublisher->TF = RobotVehicleMovementComponent->GetOdomTF();
 	
-	FOdometryData res = RobotVehicleMovementComponent->OdomData;
-	res.position = ConversionUtils::VectorUEToROS(res.position);
-	res.orientation = ConversionUtils::QuatUEToROS(res.orientation);
-	res.linear = ConversionUtils::VectorUEToROS(res.linear);
-	res.angular = ConversionUtils::VectorUEToROS(res.angular);
-	return res;
+	FROSOdometry res = RobotVehicleMovementComponent->OdomData;
+	return ConversionUtils::OdomUEToROS(res);
 }

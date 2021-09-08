@@ -49,7 +49,7 @@ public:
 	ATurtlebotROSController(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FOdometryData GetOdomData() const;
+	virtual FROSOdometry GetOdomData() const;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int RobotID = 0;

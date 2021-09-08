@@ -25,7 +25,7 @@ public:
 
 	virtual TArray<FTFData> GetTFStaticData() const ;
 
-	virtual FOdometryData GetOdomData() const ;
+	virtual FROSOdometry GetOdomData() const ;
 
 protected:
 	UFUNCTION()

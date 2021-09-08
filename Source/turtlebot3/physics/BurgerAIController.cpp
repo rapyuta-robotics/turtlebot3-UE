@@ -40,7 +40,7 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 	TurtleNode->Namespace = FString();
 	TurtleNode->Init();
 	
-    TurtleLidar->nSamplesPerScan = 360;
+    TurtleLidar->NSamplesPerScan = 360;
     TurtleLidar->ScanFrequency = 5;
     TurtleLidar->StartAngle = 0;
     TurtleLidar->FOVHorizontal = 360;
@@ -99,10 +99,10 @@ void ABurgerAIController::MovementCallback(const UROS2GenericMsg *Msg)
 
 	if (IsValid(Concrete))
 	{
-		// TODO refactoring will be needed to put units and system of reference conversions in a consistent location
-		// 	probably should not stay in msg though
-		LinearVelTarget = Concrete->GetLinearVelocity()*100.f;
-		AngularVelTarget = Concrete->GetAngularVelocity();
+		FROSTwist Output;
+        Concrete->GetMsg(Output);
+		LinearVelTarget = ConversionUtils::VectorROSToUE(Output.linear);
+		AngularVelTarget = ConversionUtils::RotationROSToUE(Output.angular);
 
 		//UE_LOG(LogTemp, Warning, TEXT("cmd_vel: %s %s to rot: %f %f"), *LinearVelTarget.ToString(), *AngularVelTarget.ToString(), LinearVelTarget.X - AngularVelTarget.Z * Burger->WheelSeparationHalf, LinearVelTarget.X + AngularVelTarget.Z * Burger->WheelSeparationHalf);
 
@@ -215,23 +215,25 @@ TArray<FTFData> ABurgerAIController::GetTFStaticData() const
 	return retValue;
 }
 
-struct FOdometryData ABurgerAIController::GetOdomData() const
+struct FROSOdometry ABurgerAIController::GetOdomData() const
 {
-	FOdometryData retValue;
+	FROSOdometry retValue;
 
 	float TimeNow = UGameplayStatics::GetTimeSeconds(GWorld);
-	retValue.sec = (int32_t)TimeNow;
+	retValue.header_stamp_sec = (int32_t)TimeNow;
 	unsigned long long ns = (unsigned long long)(TimeNow * 1000000000.0f);
-	retValue.nanosec = (uint32_t)(ns - (retValue.sec * 1000000000ul));
+	retValue.header_stamp_nanosec = (uint32_t)(ns - (retValue.header_stamp_sec * 1000000000ul));
 
-	retValue.frame_id = TEXT("odom");
+	retValue.header_frame_id = TEXT("odom");
 	retValue.child_frame_id = TEXT("base_footprint");
 	
-	retValue.position = (Burger->GetActorLocation() - InitialPosition) / 100.f;
-	retValue.position.Y = -retValue.position.Y;
-	retValue.orientation = InitialOrientation.Quaternion();
-	retValue.orientation.X = -retValue.orientation.X;
-	retValue.orientation.Z = -retValue.orientation.Z;
+	FVector position = (Burger->GetActorLocation() - InitialPosition) / 100.f;
+	retValue.pose_pose_position_x = position.X;
+	retValue.pose_pose_position_y = -position.Y;
+	retValue.pose_pose_position_z = position.Z;
+	retValue.pose_pose_orientation = InitialOrientation.Quaternion();
+	retValue.pose_pose_orientation.X = -retValue.pose_pose_orientation.X;
+	retValue.pose_pose_orientation.Z = -retValue.pose_pose_orientation.Z;
 	retValue.pose_covariance.Init(0,36);
 	retValue.pose_covariance[0] = 0.00001;
 	retValue.pose_covariance[7] = 0.00001;
@@ -240,9 +242,9 @@ struct FOdometryData ABurgerAIController::GetOdomData() const
 	retValue.pose_covariance[28] = 1000000000000.0;
 	retValue.pose_covariance[35] = 0.001;
 
-	retValue.linear = LinearVelTarget / 100.f;
-	retValue.angular = AngularVelTarget;
-	retValue.angular.Z = -retValue.angular.Z;
+	retValue.twist_twist_linear = LinearVelTarget / 100.f;
+	retValue.twist_twist_angular = AngularVelTarget;
+	retValue.twist_twist_angular.Z = -retValue.twist_twist_angular.Z;
 	retValue.twist_covariance.Init(0,36);
 	retValue.twist_covariance[0] = 0.00001;
 	retValue.twist_covariance[7] = 0.00001;
