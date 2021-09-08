@@ -14,7 +14,7 @@
 class AROS2Node;
 class ASensorLidar;
 class UROS2Publisher;
-class ATurtlebotBurgerVehicle;
+class ARobotVehicle;
 
 /**
  * 
@@ -32,8 +32,8 @@ protected:
 	UPROPERTY(Transient)
 	AROS2Node *TurtleNode;
 
-	UPROPERTY(Transient, BlueprintReadWrite)
-	ASensorLidar *TurtleLidar;
+	// UPROPERTY(Transient, BlueprintReadWrite)
+	// ASensorLidar *TurtleLidar;
 
 	UPROPERTY(Transient, BlueprintReadWrite)
 	FVector LidarOffset;
@@ -69,7 +69,7 @@ protected:
 
 	virtual void SetPawn(APawn *InPawn) override;
 
-	virtual void SetupCommandTopicSubscription(ATurtlebotBurgerVehicle *InPawn);
+	virtual void SetupCommandTopicSubscription(ARobotVehicle *InPawn);
 
 	UFUNCTION()
 	void OdomMessageUpdate(UROS2GenericMsg *TopicMessage);
@@ -77,7 +77,7 @@ protected:
 protected:
 
 	UPROPERTY()
-	ATurtlebotBurgerVehicle *Turtlebot;
+	ARobotVehicle *Turtlebot;
 
 	UPROPERTY()
 	FVector InitialPosition;

@@ -3,8 +3,8 @@
 
 #include "TurtlebotROSController.h"
 
-#include "TurtlebotBurgerVehicle.h"
-#include "Robots/RobotVehicleMovementComponent.h"
+#include "Robot/RobotVehicle.h"
+#include "Drive/RobotVehicleMovementComponent.h"
 #include "Tools/UEUtilities.h"
 
 #include <ROS2Node.h>
@@ -25,23 +25,7 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if (TurtleLidar == nullptr)
-	{
-		LidarOffset = FVector(-3.2,0,17.2);
-		FActorSpawnParameters LidarSpawnParamsNode;
-		TurtleLidar = GetWorld()->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-		TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + LidarOffset);
-		TurtleLidar->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-		TurtleLidar->NSamplesPerScan = 360;
-		TurtleLidar->ScanFrequency = 5;
-		TurtleLidar->StartAngle = 0;
-		TurtleLidar->FOVHorizontal = 360;
-		TurtleLidar->MinRange = 12;
-		TurtleLidar->MaxRange = 350;
-		TurtleLidar->ScanFrequency = 30;
-		TurtleLidar->LidarPublisher->PublicationFrequencyHz = TurtleLidar->ScanFrequency;
-	}
-	
+	// Initialize ROS2Node
 	if (TurtleNode == nullptr)
 	{
 		FActorSpawnParameters SpawnParamsNode;
@@ -53,9 +37,20 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 		TurtleNode->Init();
 	}
 	
-	TurtleLidar->InitToNode(TurtleNode);
-	TurtleLidar->Run();
+	//Initialize Lidars attached to Pawn
+	TArray<AActor*> ChildrenActors;
+	InPawn->GetAttachedActors(ChildrenActors);
+	for (int32 Idx = 0; Idx < ChildrenActors.Num(); Idx++)
+	{
+		if (ChildrenActors[Idx]->GetClass() == ASensorLidar::StaticClass())
+		{
+			ASensorLidar *TurtleLidar = Cast<ASensorLidar>(ChildrenActors[Idx]);
+			TurtleLidar->InitToNode(TurtleNode);
+			TurtleLidar->Run();
+		} 
+	}
 
+	// TFPublisher
 	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(InPawn->GetMovementComponent());
 	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
 	TFPublisher->RegisterComponent();
@@ -64,6 +59,7 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 	TFPublisher->PublicationFrequencyHz = 50;
 	TFPublisher->InitTFPublisher(TurtleNode);
 
+	// OdomPublisher
 	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
 	OdomPublisher->RegisterComponent();
 	OdomPublisher->TopicName = TEXT("odom");
@@ -79,6 +75,7 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 		InitialOrientation = Turtlebot->GetActorRotation();
 		InitialOrientation.Yaw += 180;
 
+		//Subscribe cmd_vel
 		SetupCommandTopicSubscription(Turtlebot);
 	}
 }
@@ -86,7 +83,7 @@ void ATurtlebotROSController::OnPossess(APawn *InPawn)
 
 void ATurtlebotROSController::OnUnPossess()
 {
-	TurtleLidar = nullptr;
+	// TurtleLidar = nullptr;
 	TurtleNode = nullptr;
 	TFPublisher = nullptr;
 	OdomPublisher = nullptr;
@@ -99,11 +96,11 @@ void ATurtlebotROSController::SetPawn(APawn *InPawn)
 {
 	Super::SetPawn(InPawn);
 
-	Turtlebot = Cast<ATurtlebotBurgerVehicle>(InPawn);
+	Turtlebot = Cast<ARobotVehicle>(InPawn);
 }
 
 
-void ATurtlebotROSController::SetupCommandTopicSubscription(ATurtlebotBurgerVehicle *InPawn)
+void ATurtlebotROSController::SetupCommandTopicSubscription(ARobotVehicle *InPawn)
 {
 	if (IsValid(InPawn))
 	{
@@ -134,7 +131,7 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
         Concrete->GetMsg(Output);
 		FVector linear(ConversionUtils::VectorROSToUE(Output.linear));
 		FVector angular(ConversionUtils::RotationROSToUE(Output.angular));
-		ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
+		ARobotVehicle *Vehicle = Turtlebot;
 
 		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
 		{
@@ -149,7 +146,7 @@ void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
 
 struct FROSOdometry ATurtlebotROSController::GetOdomData() const
 {
-	ATurtlebotBurgerVehicle *Vehicle = Turtlebot;
+	ARobotVehicle *Vehicle = Turtlebot;
 	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(Vehicle->GetMovementComponent());
 	TFPublisher->TF = RobotVehicleMovementComponent->GetOdomTF();
 	

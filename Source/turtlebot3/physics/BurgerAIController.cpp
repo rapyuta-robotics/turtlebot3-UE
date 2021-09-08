@@ -25,12 +25,13 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 {
 	LidarOffset = FVector(0,0,15);
 
-	FActorSpawnParameters LidarSpawnParamsNode;
-	TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
-	TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + LidarOffset);
-	TurtleLidar->SetActorRotation(FRotator(0,0,0));
-	Burger = Cast<ATurtlebot3_Burger>(InPawn);
-	TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
+	//temp comentout
+	// FActorSpawnParameters LidarSpawnParamsNode;
+	// TurtleLidar = GWorld->SpawnActor<ASensorLidar>(LidarClass, LidarSpawnParamsNode);
+	// TurtleLidar->SetActorLocation(InPawn->GetActorLocation() + LidarOffset);
+	// TurtleLidar->SetActorRotation(FRotator(0,0,0));
+	// Burger = Cast<ATurtlebot3_Burger>(InPawn);
+	// TurtleLidar->AttachToComponent(Burger->LidarSensor, FAttachmentTransformRules::KeepWorldTransform);
 	
 	FActorSpawnParameters SpawnParamsNode;
 	TurtleNode = GWorld->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
@@ -40,14 +41,14 @@ void ABurgerAIController::OnPossess(APawn *InPawn)
 	TurtleNode->Namespace = FString();
 	TurtleNode->Init();
 	
-    TurtleLidar->NSamplesPerScan = 360;
-    TurtleLidar->ScanFrequency = 5;
-    TurtleLidar->StartAngle = 0;
-    TurtleLidar->FOVHorizontal = 360;
-    TurtleLidar->MinRange = 12;
-    TurtleLidar->MaxRange = 350;
+    // TurtleLidar->NSamplesPerScan = 360;
+    // TurtleLidar->ScanFrequency = 5;
+    // TurtleLidar->StartAngle = 0;
+    // TurtleLidar->FOVHorizontal = 360;
+    // TurtleLidar->MinRange = 12;
+    // TurtleLidar->MaxRange = 350;
 
-	TurtleLidar->LidarPublisher->PublicationFrequencyHz = TurtleLidar->ScanFrequency;
+	// TurtleLidar->LidarPublisher->PublicationFrequencyHz = TurtleLidar->ScanFrequency;
 	
 	Super::OnPossess(InPawn);
 

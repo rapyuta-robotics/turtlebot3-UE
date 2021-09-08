@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../kinematics/TurtlebotROSController.h"
+#include "../TurtlebotROSController.h"
 
 #include "BurgerAIController.generated.h"
 
