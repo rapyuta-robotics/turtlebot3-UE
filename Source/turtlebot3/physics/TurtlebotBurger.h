@@ -1,24 +1,26 @@
 // Copyright 2020-2021 Rapyuta Robotics Co., Ltd.
 
-// Turtlebot3 Specs:
-// https://emanual.robotis.com/docs/en/platform/turtlebot3/features/#:~:text=The%20dimension%20of%20TurtleBot3%20Burger,the%20size%20of%20the%20predecessor.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "Robot/RobotVehicle.h"
+
+#include "Drive/DifferentialDriveComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
-#include "Turtlebot3_Burger.generated.h"
 
-class PawnMovementComponent;
+#include "TurtlebotBurger.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class TURTLEBOT3_API ATurtlebot3_Burger : public APawn
+class TURTLEBOT3_API ATurtlebotBurger : public ARobotVehicle
 {
 	GENERATED_BODY()
 	
 public:	
-	ATurtlebot3_Burger(const FObjectInitializer& ObjectInitializer);
+	ATurtlebotBurger(const FObjectInitializer& ObjectInitializer);
+	ATurtlebotBurger(const FObjectInitializer& ObjectInitializer, const bool& InitMovementComponent);
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,15 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Init();
-
-	// input units are rotations/s
-	UFUNCTION(BlueprintCallable)
-	void SetAngularVelocityTargets(float velL, float velR);	
-
-	// input units are cm/s
-	UFUNCTION(BlueprintCallable)
-	void SetTargetRotPerSFromVel(float velL, float velR);	
+	virtual void Init();
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* Base;
@@ -56,9 +50,6 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UStaticMeshComponent* CasterBack;
 
-	UPROPERTY(VisibleAnywhere)
-	float WheelSeparationHalf;
-
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UPhysicsConstraintComponent* Base_LidarSensor;
@@ -71,12 +62,6 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UPhysicsConstraintComponent* Base_CasterBack;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float VelocityL = 0;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float VelocityR = 0;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float MaxForce = 1000;
@@ -94,4 +79,6 @@ protected:
 
 	UFUNCTION()
 	void SetupConstraintsAndPhysics();
+	
+	
 };
