@@ -39,9 +39,13 @@
 *.workspace
 *.code-workspace
 *.kdev4
+*.pro.user
+.ignore
 Makefile
 CMakeLists.txt
 SimulaTORCode*.txt
+*CodeCompletionFolders.txt
+*CodeLitePreProcessor.txt
 
 Binaries/*
 Plugins/*/Binaries/*
