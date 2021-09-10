@@ -5,23 +5,15 @@
 
 // Sets default values
 ATurtlebotBurger::ATurtlebotBurger(const FObjectInitializer& ObjectInitializer)
-	: ATurtlebotBurger(ObjectInitializer, true)
-{
-}
-
-ATurtlebotBurger::ATurtlebotBurger(const FObjectInitializer& ObjectInitializer, const bool& InitMovementComponent)
-	: Super(ObjectInitializer, false)
+	: Super(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
     Init();
-    if(InitMovementComponent){
-        MoveComponent = CreateDefaultSubobject<UDifferentialDriveComponent>(TEXT("MoveComponent"));
-        UDifferentialDriveComponent* DifferentialDriveComponent = Cast<UDifferentialDriveComponent>(MoveComponent);
-        DifferentialDriveComponent->Init(Base_WheelLeft, Base_WheelRight);
-        DifferentialDriveComponent->SetPerimeter();
-    }
+	MoveComponent = CreateDefaultSubobject<UDifferentialDriveComponent>(TEXT("MoveComponent"));
+	UDifferentialDriveComponent* DifferentialDriveComponent = Cast<UDifferentialDriveComponent>(MoveComponent);
+	DifferentialDriveComponent->SetWheels(Base_WheelLeft, Base_WheelRight);
 }
 
 void ATurtlebotBurger::Init()
@@ -31,17 +23,17 @@ void ATurtlebotBurger::Init()
 		// Meshes
         if (VehicleMaterial == nullptr)
         {
-            static ConstructorHelpers::FObjectFinder<UMaterial> RobotMaterial(TEXT("Material'/Game/Blueprints/RobotMat.RobotMat'"));
+            static ConstructorHelpers::FObjectFinder<UMaterial> RobotMaterial(TEXT("Material'/Game/Blueprints/M_RobotMat.M_RobotMat'"));
             VehicleMaterial = RobotMaterial.Object;
-            static ConstructorHelpers::FObjectFinder<UMaterial> CasterBallMaterial(TEXT("Material'/Game/Blueprints/CasterBallMat.CasterBallMat'"));
+            static ConstructorHelpers::FObjectFinder<UMaterial> CasterBallMaterial(TEXT("Material'/Game/Blueprints/M_CasterBallMat.M_CasterBallMat'"));
             BallMaterial = CasterBallMaterial.Object;
         }
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMesh(TEXT("'/Game/Burger/burger_base.burger_base'"));
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> LidarMesh(TEXT("'/Game/Burger/burger_lds.burger_lds'"));
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> WheelLMesh(TEXT("'/Game/Burger/burger_left_wheel.burger_left_wheel'"));
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> WheelRMesh(TEXT("'/Game/Burger/burger_right_wheel.burger_right_wheel'"));
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> CasterMesh(TEXT("'/Game/Burger/burger_caster_back.burger_caster_back'"));
-
+        static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMesh(TEXT("'/Game/Models/Burger/BurgerBase.BurgerBase'"));
+        static ConstructorHelpers::FObjectFinder<UStaticMesh> LidarMesh(TEXT("'/Game/Models/Common/Lds.Lds'"));
+        static ConstructorHelpers::FObjectFinder<UStaticMesh> WheelLMesh(TEXT("'/Game/Models/Common/LeftWheel.LeftWheel'"));
+        static ConstructorHelpers::FObjectFinder<UStaticMesh> WheelRMesh(TEXT("'/Game/Models/Common/RightWheel.RightWheel'"));
+        static ConstructorHelpers::FObjectFinder<UStaticMesh> CasterMesh(TEXT("'/Game/Models/Common/BallCaster.BallCaster'"));
+        
         Base = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base"));
         LidarSensor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidarSensor"));
         WheelLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WheelLeft"));
