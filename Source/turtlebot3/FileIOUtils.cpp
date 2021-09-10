@@ -24,18 +24,3 @@ bool UFileIOUtils::LoadFileToString(const FString& InFileName, FString& OutFileC
         return false;
     }
 }
-
-// TArray<FString> UFileIOUtils::LoadFileToStringArray(const FString& InFileName)
-// {
-//     FString Directory = FPaths::ProjectContentDir();
-//     FString Result;
-//     IPlatformFile& File = FPlatformFileManager::Get().GetPlatformFile();
-
-//     if (File.CreateDirectory(*Directory))
-//     {
-//         FString TargetFile = Directory + "/" + Filename;
-//         FFileHelper::LoadFileToStringArray(Result, *TargetFile);
-//     }
-
-//     return Result;
-// }

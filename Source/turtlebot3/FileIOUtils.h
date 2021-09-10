@@ -19,10 +19,4 @@ class TURTLEBOT3_API UFileIOUtils : public UBlueprintFunctionLibrary
 
     UFUNCTION(BlueprintCallable, Category = "File I/O")
     static bool LoadFileToString(const FString& InFileName, FString& OutFileContent);
-
-    // UFUNCTION(BlueprintCallable, Category="File I/O")
-    // static TArray<FString> LoadFileToStringArray(const FString& InFileName);
-
-    // UFUNCTION(BlueprintCallable, Category = "File I/O")
-    // static bool FileSaveString(const FString& InStringToSave, const FString& InFileName);
 };
