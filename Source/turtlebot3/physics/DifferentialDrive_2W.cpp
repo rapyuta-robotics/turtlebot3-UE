@@ -15,7 +15,7 @@ ADifferentialDrive_2W::ADifferentialDrive_2W()
 	// Meshes
 	if (VehicleMaterial == nullptr)
 	{
-		static ConstructorHelpers::FObjectFinder<UMaterial> RobotMaterial(TEXT("Material'/Game/Blueprints/RobotMat.RobotMat'"));
+		static ConstructorHelpers::FObjectFinder<UMaterial> RobotMaterial(TEXT("Material'/Game/Blueprints/M_RobotMat.M_RobotMat'"));
 		VehicleMaterial = RobotMaterial.Object;
 	}
     static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("'/Engine/BasicShapes/Cube.Cube'"));

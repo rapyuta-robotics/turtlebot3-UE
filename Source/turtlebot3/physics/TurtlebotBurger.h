@@ -20,7 +20,6 @@ class TURTLEBOT3_API ATurtlebotBurger : public ARobotVehicle
 	
 public:	
 	ATurtlebotBurger(const FObjectInitializer& ObjectInitializer);
-	ATurtlebotBurger(const FObjectInitializer& ObjectInitializer, const bool& InitMovementComponent);
 
 protected:
 	// Called when the game starts or when spawned
