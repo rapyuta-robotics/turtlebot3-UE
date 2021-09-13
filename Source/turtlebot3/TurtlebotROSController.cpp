@@ -2,153 +2,151 @@
 
 #include "TurtlebotROSController.h"
 
-#include "Robot/RobotVehicle.h"
 #include "Drive/RobotVehicleMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Robot/RobotVehicle.h"
 #include "Tools/UEUtilities.h"
 
+#include <Msgs/ROS2LaserScanMsg.h>
+#include <Msgs/ROS2TwistMsg.h>
 #include <ROS2Node.h>
 #include <ROS2Publisher.h>
-#include <Msgs/ROS2TwistMsg.h>
-#include <Msgs/ROS2LaserScanMsg.h>
 #include <Sensors/SensorLidar.h>
 #include <Tools/UEUtilities.h>
 
-#include "Kismet/GameplayStatics.h"
-
 ATurtlebotROSController::ATurtlebotROSController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	LidarClass = ASensorLidar::StaticClass();
+    LidarClass = ASensorLidar::StaticClass();
 }
 
-void ATurtlebotROSController::OnPossess(APawn *InPawn)
+void ATurtlebotROSController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn);
+    Super::OnPossess(InPawn);
 
-	// Initialize ROS2Node
-	if (TurtleNode == nullptr)
-	{
-		FActorSpawnParameters SpawnParamsNode;
-		TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
-		TurtleNode->SetActorLocation(InPawn->GetActorLocation());
-		TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
-		TurtleNode->Name = TEXT("UE4Node_" + FGuid::NewGuid().ToString());
-		TurtleNode->Namespace = FString();
-		TurtleNode->Init();
-	}
-	
-	//Initialize Lidars attached to Pawn
-	TArray<AActor*> ChildrenActors;
-	InPawn->GetAttachedActors(ChildrenActors);
-	for (int32 Idx = 0; Idx < ChildrenActors.Num(); Idx++)
-	{
-		if (ChildrenActors[Idx]->GetClass() == ASensorLidar::StaticClass())
-		{
-			ASensorLidar *TurtleLidar = Cast<ASensorLidar>(ChildrenActors[Idx]);
-			TurtleLidar->InitToNode(TurtleNode);
-			TurtleLidar->Run();
-		} 
-	}
+    // Initialize ROS2Node
+    if (TurtleNode == nullptr)
+    {
+        FActorSpawnParameters SpawnParamsNode;
+        TurtleNode = GetWorld()->SpawnActor<AROS2Node>(AROS2Node::StaticClass(), SpawnParamsNode);
+        TurtleNode->SetActorLocation(InPawn->GetActorLocation());
+        TurtleNode->AttachToActor(InPawn, FAttachmentTransformRules::KeepWorldTransform);
+        TurtleNode->Name = TEXT("UE4Node_" + FGuid::NewGuid().ToString());
+        TurtleNode->Namespace = FString();
+        TurtleNode->Init();
+    }
 
-	// TFPublisher
-	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(InPawn->GetMovementComponent());
-	TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
-	TFPublisher->RegisterComponent();
-	TFPublisher->FrameId = RobotVehicleMovementComponent->FrameId = TEXT("odom");
-	TFPublisher->ChildFrameId = RobotVehicleMovementComponent->ChildFrameId = TEXT("base_footprint");
-	TFPublisher->PublicationFrequencyHz = 50;
-	TFPublisher->InitTFPublisher(TurtleNode);
+    // Initialize Lidars attached to Pawn
+    TArray<AActor*> ChildrenActors;
+    InPawn->GetAttachedActors(ChildrenActors);
+    for (int32 Idx = 0; Idx < ChildrenActors.Num(); Idx++)
+    {
+        if (ChildrenActors[Idx]->GetClass() == ASensorLidar::StaticClass())
+        {
+            ASensorLidar* TurtleLidar = Cast<ASensorLidar>(ChildrenActors[Idx]);
+            TurtleLidar->InitToNode(TurtleNode);
+            TurtleLidar->Run();
+        }
+    }
 
-	// OdomPublisher
-	OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
-	OdomPublisher->RegisterComponent();
-	OdomPublisher->TopicName = TEXT("odom");
-	OdomPublisher->PublicationFrequencyHz = 30;
-	OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
-	OdomPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotROSController::OdomMessageUpdate);
-	TurtleNode->AddPublisher(OdomPublisher);
-	OdomPublisher->Init(UROS2QoS::KeepLast);
+    // TFPublisher
+    URobotVehicleMovementComponent* RobotVehicleMovementComponent =
+        Cast<URobotVehicleMovementComponent>(InPawn->GetMovementComponent());
+    TFPublisher = NewObject<UROS2TFPublisher>(this, UROS2TFPublisher::StaticClass());
+    TFPublisher->RegisterComponent();
+    TFPublisher->FrameId = RobotVehicleMovementComponent->FrameId = TEXT("odom");
+    TFPublisher->ChildFrameId = RobotVehicleMovementComponent->ChildFrameId = TEXT("base_footprint");
+    TFPublisher->PublicationFrequencyHz = 50;
+    TFPublisher->InitTFPublisher(TurtleNode);
 
-	if (Turtlebot != nullptr)
-	{
-		InitialPosition = Turtlebot->GetActorLocation();
-		InitialOrientation = Turtlebot->GetActorRotation();
-		InitialOrientation.Yaw += 180;
+    // OdomPublisher
+    OdomPublisher = NewObject<UROS2Publisher>(this, UROS2Publisher::StaticClass());
+    OdomPublisher->RegisterComponent();
+    OdomPublisher->TopicName = TEXT("odom");
+    OdomPublisher->PublicationFrequencyHz = 30;
+    OdomPublisher->MsgClass = UROS2OdometryMsg::StaticClass();
+    OdomPublisher->UpdateDelegate.BindDynamic(this, &ATurtlebotROSController::OdomMessageUpdate);
+    TurtleNode->AddPublisher(OdomPublisher);
+    OdomPublisher->Init(UROS2QoS::KeepLast);
 
-		//Subscribe cmd_vel
-		SetupCommandTopicSubscription(Turtlebot);
-	}
+    if (Turtlebot != nullptr)
+    {
+        InitialPosition = Turtlebot->GetActorLocation();
+        InitialOrientation = Turtlebot->GetActorRotation();
+        InitialOrientation.Yaw += 180;
+
+        // Subscribe cmd_vel
+        SetupCommandTopicSubscription(Turtlebot);
+    }
 }
-
 
 void ATurtlebotROSController::OnUnPossess()
 {
-	// TurtleLidar = nullptr;
-	TurtleNode = nullptr;
-	TFPublisher = nullptr;
-	OdomPublisher = nullptr;
+    // TurtleLidar = nullptr;
+    TurtleNode = nullptr;
+    TFPublisher = nullptr;
+    OdomPublisher = nullptr;
 
-	Super::OnUnPossess();
+    Super::OnUnPossess();
 }
 
-
-void ATurtlebotROSController::SetPawn(APawn *InPawn)
+void ATurtlebotROSController::SetPawn(APawn* InPawn)
 {
-	Super::SetPawn(InPawn);
+    Super::SetPawn(InPawn);
 
-	Turtlebot = Cast<ARobotVehicle>(InPawn);
+    Turtlebot = Cast<ARobotVehicle>(InPawn);
 }
 
-
-void ATurtlebotROSController::SetupCommandTopicSubscription(ARobotVehicle *InPawn)
+void ATurtlebotROSController::SetupCommandTopicSubscription(ARobotVehicle* InPawn)
 {
-	if (IsValid(InPawn))
-	{
-		// Subscription with callback to enqueue vehicle spawn info.
-		if (ensure(IsValid(TurtleNode)))
-		{
-			FSubscriptionCallback cb;
-			cb.BindDynamic(this, &ATurtlebotROSController::MovementCallback);
-			TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb);
-		}
-	}
+    if (IsValid(InPawn))
+    {
+        // Subscription with callback to enqueue vehicle spawn info.
+        if (ensure(IsValid(TurtleNode)))
+        {
+            FSubscriptionCallback cb;
+            cb.BindDynamic(this, &ATurtlebotROSController::MovementCallback);
+            TurtleNode->AddSubscription(TEXT("cmd_vel"), UROS2TwistMsg::StaticClass(), cb);
+        }
+    }
 }
 
-void ATurtlebotROSController::OdomMessageUpdate(UROS2GenericMsg *TopicMessage)
+void ATurtlebotROSController::OdomMessageUpdate(UROS2GenericMsg* TopicMessage)
 {
-    UROS2OdometryMsg *OdomMessage = Cast<UROS2OdometryMsg>(TopicMessage);
+    UROS2OdometryMsg* OdomMessage = Cast<UROS2OdometryMsg>(TopicMessage);
     OdomMessage->SetMsg(GetOdomData());
 }
 
-
-void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg *Msg)
+void ATurtlebotROSController::MovementCallback(const UROS2GenericMsg* Msg)
 {
-	const UROS2TwistMsg *Concrete = Cast<UROS2TwistMsg>(Msg);
+    const UROS2TwistMsg* Concrete = Cast<UROS2TwistMsg>(Msg);
 
-	if (IsValid(Concrete))
-	{
-		FROSTwist Output;
+    if (IsValid(Concrete))
+    {
+        FROSTwist Output;
         Concrete->GetMsg(Output);
-		FVector linear(ConversionUtils::VectorROSToUE(Output.linear));
-		FVector angular(ConversionUtils::RotationROSToUE(Output.angular));
-		ARobotVehicle *Vehicle = Turtlebot;
+        FVector linear(ConversionUtils::VectorROSToUE(Output.linear));
+        FVector angular(ConversionUtils::RotationROSToUE(Output.angular));
+        ARobotVehicle* Vehicle = Turtlebot;
 
-		AsyncTask(ENamedThreads::GameThread, [linear, angular, Vehicle]
-		{
-			if (IsValid(Vehicle))
-			{
-				Vehicle->SetLinearVel(linear);
-				Vehicle->SetAngularVel(angular);
-			}
-		});
-	}
+        AsyncTask(ENamedThreads::GameThread,
+                  [linear, angular, Vehicle]
+                  {
+                      if (IsValid(Vehicle))
+                      {
+                          Vehicle->SetLinearVel(linear);
+                          Vehicle->SetAngularVel(angular);
+                      }
+                  });
+    }
 }
 
 struct FROSOdometry ATurtlebotROSController::GetOdomData() const
 {
-	ARobotVehicle *Vehicle = Turtlebot;
-	URobotVehicleMovementComponent *RobotVehicleMovementComponent = Cast<URobotVehicleMovementComponent>(Vehicle->GetMovementComponent());
-	TFPublisher->TF = RobotVehicleMovementComponent->GetOdomTF();
-	
-	FROSOdometry res = RobotVehicleMovementComponent->OdomData;
-	return ConversionUtils::OdomUEToROS(res);
+    ARobotVehicle* Vehicle = Turtlebot;
+    URobotVehicleMovementComponent* RobotVehicleMovementComponent =
+        Cast<URobotVehicleMovementComponent>(Vehicle->GetMovementComponent());
+    TFPublisher->TF = RobotVehicleMovementComponent->GetOdomTF();
+
+    FROSOdometry res = RobotVehicleMovementComponent->OdomData;
+    return ConversionUtils::OdomUEToROS(res);
 }
