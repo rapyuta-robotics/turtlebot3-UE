@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2020-2021 Rapyuta Robotics Co., Ltd.
 
 #include "Turtlebot3.h"
 

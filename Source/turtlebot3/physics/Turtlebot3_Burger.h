@@ -1,4 +1,4 @@
-// Copyright (C) Rapyuta Robotics
+// Copyright 2020-2021 Rapyuta Robotics Co., Ltd.
 
 // Turtlebot3 Specs:
 // https://emanual.robotis.com/docs/en/platform/turtlebot3/features/#:~:text=The%20dimension%20of%20TurtleBot3%20Burger,the%20size%20of%20the%20predecessor.
