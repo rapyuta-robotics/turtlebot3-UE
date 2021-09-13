@@ -3,6 +3,8 @@
 
 #include "TurtlebotBurger.h"
 
+DEFINE_LOG_CATEGORY(LogTurtlebotBurger);
+
 // Sets default values
 ATurtlebotBurger::ATurtlebotBurger(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -137,7 +139,7 @@ void ATurtlebotBurger::SetupConstraintsAndPhysics()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Turtlebot not initialized - can't setup constraints!"));
+		UE_LOG(LogTurtlebotBurger, Error, TEXT("Turtlebot not initialized - can't setup constraints!"));
 	}
 }
 

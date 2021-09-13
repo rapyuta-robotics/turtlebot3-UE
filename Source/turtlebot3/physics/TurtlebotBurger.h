@@ -13,6 +13,8 @@
 /**
  * 
  */
+DECLARE_LOG_CATEGORY_EXTERN(LogTurtlebotBurger, Log, All);
+
 UCLASS()
 class TURTLEBOT3_API ATurtlebotBurger : public ARobotVehicle
 {
