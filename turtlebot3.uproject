@@ -20,8 +20,8 @@
 			"Name": "rclUE",
 			"Enabled": true
 		},
-				{
-			"Name": "UE_rapyuta_assets",
+		{
+			"Name": "RapyutaSimulationPlugins",
 			"Enabled": true
 		}
 	]
