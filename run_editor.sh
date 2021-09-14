@@ -13,7 +13,10 @@ export LD_LIBRARY_PATH=\
 "${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/tf2_msgs/lib":\
 "${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/builtin_interfaces/lib":\
 "${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/ue4_interfaces/lib":\
-"${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/ue_msgs/lib"
+"${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/ue_msgs/lib":\
+"${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/rcutils/lib":\
+"${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/rclc/lib":\
+"${PWD}/Plugins/rclUE/Source/ThirdParty/ros2lib/rcl/lib"
 
 #export ROS_MASTER_URI=http://localhost:11311
 
