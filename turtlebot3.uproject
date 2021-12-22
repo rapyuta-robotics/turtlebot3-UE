@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{00043A1C-08D8-92D6-E7D2-9790C5780816}",
+	"EngineAssociation": "{3BA1764B-1B2E-446D-A86F-DD7678DF0FFA}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -22,6 +22,10 @@
 		},
 		{
 			"Name": "RapyutaSimulationPlugins",
+			"Enabled": true
+		},
+		{
+			"Name": "RapyutaSimInternal",
 			"Enabled": true
 		}
 	]

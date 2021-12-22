@@ -1,6 +1,15 @@
 [submodule "Plugins/rclUE"]
 	path = Plugins/rclUE
-	url = https://github.com/rapyuta-robotics/rclUE.git
+	url = git@github.com:rapyuta-robotics/rclUE.git
 [submodule "Plugins/RapyutaSimulationPlugins"]
 	path = Plugins/RapyutaSimulationPlugins
-	url = https://github.com/rapyuta-robotics/RapyutaSimulationPlugins.git
+	url = git@github.com:rapyuta-robotics/RapyutaSimulationPlugins.git
+[submodule "Plugins/RapyutaSimInternal"]
+	path = Plugins/RapyutaSimInternal
+	url = git@github.com:rapyuta-robotics/RapyutaSimulationInternal.git
+[submodule "Plgugins/RuntimeMeshComponent"]
+	path = Plgugins/RuntimeMeshComponent
+	url = git@github.com:TriAxis-Games/RuntimeMeshComponent.git
+[submodule "Plugins/RuntimeMeshComponent"]
+	path = Plugins/RuntimeMeshComponent
+	url = git@github.com:TriAxis-Games/RuntimeMeshComponent.git
