@@ -2,33 +2,28 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
-#include <Msgs/ROS2StringMsg.h>
-#include <ROS2Node.h>
-#include <ROS2Publisher.h>
+// rclUE
+#include "ROS2Node.h"
 
 #include "ROS2PublisherNode.generated.h"
 
+class URRROS2StringPublisher;
 UCLASS()
 class TURTLEBOT3_API AROS2PublisherNode : public AROS2Node
 {
     GENERATED_BODY()
-
-public:
-    // Sets default values for this actor's properties
-    AROS2PublisherNode();
 
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UROS2Publisher* StringPublisher;
+    URRROS2StringPublisher* StringPublisher = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString Message;
+    FString TopicName = TEXT("test_topic");
 
-    UFUNCTION()
-    void MessageUpdate(UROS2GenericMsg* TopicMessage);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Message = TEXT("Hello from C++");
 };
