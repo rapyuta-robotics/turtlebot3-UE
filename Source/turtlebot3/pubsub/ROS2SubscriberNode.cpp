@@ -17,7 +17,7 @@ void AROS2SubscriberNode::BeginPlay()
 
     // bind callback function with topic subscription
     FSubscriptionCallback cb;
-    cb.BindUObject(this, &AROS2SubscriberNode::MsgCallback);
+    cb.BindDynamic(this, &AROS2SubscriberNode::MsgCallback);
     AddSubscription(TopicName, UROS2StringMsg::StaticClass(), cb);
 }
 
