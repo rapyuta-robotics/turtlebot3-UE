@@ -2,14 +2,14 @@
 
 #include "ROS2SubscriberNode.h"
 
-// Sets default values
+// Turtlebot3_UE
+#include "turtlebot3/Turtlebot3.h"
+
 AROS2SubscriberNode::AROS2SubscriberNode()
 {
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
 void AROS2SubscriberNode::BeginPlay()
 {
     Super::BeginPlay();
@@ -18,12 +18,14 @@ void AROS2SubscriberNode::BeginPlay()
     // bind callback function with topic subscription
     FSubscriptionCallback cb;
     cb.BindDynamic(this, &AROS2SubscriberNode::MsgCallback);
-    AddSubscription(TEXT("test_topic"), UROS2StringMsg::StaticClass(), cb);
+    AddSubscription(TopicName, UROS2StringMsg::StaticClass(), cb);
 }
 
-// Callback function
-void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* Msg)
+void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
 {
-    const UROS2StringMsg* StringMsg = Cast<UROS2StringMsg>(Msg);
-    UE_LOG(LogTemp, Log, TEXT("%s"), *FString(StringMsg->MsgToString()));
+    const UROS2StringMsg* stringMsg = Cast<UROS2StringMsg>(InMsg);
+    if (stringMsg)
+    {
+        UE_LOG(LogTurtlebot3, Log, TEXT("[%s] %s"), *GetName(), *FString(stringMsg->MsgToString()));
+    }
 }
