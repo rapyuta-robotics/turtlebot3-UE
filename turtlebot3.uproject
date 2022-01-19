@@ -23,6 +23,10 @@
 		{
 			"Name": "RapyutaSimulationPlugins",
 			"Enabled": true
+		},
+		{
+			"Name": "RapyutaSimRobotImporter",
+			"Enabled": true
 		}
 	]
 }
