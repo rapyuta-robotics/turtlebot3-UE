@@ -16,7 +16,6 @@ import launch_testing.markers
 import launch_testing.util
 import pytest
 
-from geometry_msgs.msg import PoseStamped
 import rclpy
 from rclpy.node import Node
 from rclpy.duration import Duration
@@ -168,7 +167,6 @@ class WaypointFollower(Node):
 
     def error_msg(self, msg: str):
         self.get_logger().error(msg)
-
 
 def follow_waypoints():
     # wait a few seconds to make sure entire stacks are up
