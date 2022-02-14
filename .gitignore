@@ -68,3 +68,6 @@ Build/*/**
 !Plugins/*/ThirdParty/**/*.a
 
 *_BuiltData.uasset
+
+# External test python cache, pyc
+ExternalTest/turtlebot3_tests/src/__pycache__
