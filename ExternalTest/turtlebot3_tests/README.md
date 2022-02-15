@@ -1,17 +1,14 @@
 # turtlebot3 tests
-This package contains test cases using the ``launch`` and ``launch_testing`` packages.
+This package contains test cases using the ROS2 `launch` and `launch_testing` packages, thus they are required to be installed.
 
 ## Examples
 
 ### `test_waypoint_follower.py`
+This test checks whether turtlebot3 could navigate through pre-defined waypoints
 
 Usage:
 
 ```sh
-mkdir maps
-ln ../../Content/Turtlebot3_benchmark.pgm maps/Turtlebot3_benchmark.pgm
-ln ../../Content/Turtlebot3_benchmark.yaml maps/Turtlebot3_benchmark.yaml
-launch_test src/test_waypoint_follower.py tb3_model:=burger
+RunTB3WaypointFollowerTest.sh <tb3_model>
 ```
-
-This test randomly generates a goal pose that the turtlebot3 is expected to navigate through pre-defined waypoints
+with `<tb3_model>` as `burger` or `waffle`
