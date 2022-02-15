@@ -219,7 +219,7 @@ def generate_test_description():
             os.path.join(
                 get_package_share_directory('nav2_bringup'),
                 'launch/tb3_simulation_launch.py')),
-        launch_arguments={'headless': 'True', 'map':'maps/Turtlebot3_benchmark.yaml'}.items()
+        launch_arguments={'use_simulator': 'False', 'headless': 'True', 'map':'maps/Turtlebot3_benchmark.yaml'}.items()
     )
 
     return launch.LaunchDescription([
