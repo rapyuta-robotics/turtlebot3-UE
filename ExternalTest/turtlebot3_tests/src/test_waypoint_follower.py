@@ -21,8 +21,7 @@ from rclpy.node import Node
 from rclpy.duration import Duration
 from rclpy.action import ActionClient
 from rclpy.node import Node
-from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSReliabilityPolicy
-from rclpy.qos import QoSProfile
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSHistoryPolicy, QoSReliabilityPolicy
 
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
@@ -113,12 +112,12 @@ class WaypointFollower(Node):
             self.error_msg('Service call failed %r' % (e,))
 
         if status != GoalStatus.STATUS_SUCCEEDED:
-            self.info_msg('Goal failed with status code: {0}'.format(status))
+            self.error_msg('Goal failed with status code: {0}'.format(status))
             return False
-        if len(result.missed_waypoints) > 0:
-            self.info_msg('Goal failed to process all waypoints,'
-                          ' missed {0} wps.'.format(len(result.missed_waypoints)))
 
+        if len(result.missed_waypoints) > 0:
+            self.warn_msg('Goal failed to process all waypoints,'
+                          ' missed {0} wps.'.format(len(result.missed_waypoints)))
         self.info_msg('Goal succeeded!')
         return True
 
@@ -182,14 +181,14 @@ def follow_waypoints():
     retries = 2
     while not test.initial_pose_received and retry_count <= retries:
         retry_count += 1
-        test.info_msg('Setting initial pose')
+        test.info_msg(f'Setting initial pose {starting_pose}')
         test.setInitialPose(starting_pose)
         test.info_msg('Waiting for amcl_pose to be received')
         rclpy.spin_once(test, timeout_sec=1.0)  # wait for poseCallback
 
     result = test.run(True)
     if not result:
-        test.info_msg('Following waypoints FAILED')
+        test.error_msg('Following waypoints FAILED')
     else:
         test.info_msg('Following waypoints PASSED')
     return result
