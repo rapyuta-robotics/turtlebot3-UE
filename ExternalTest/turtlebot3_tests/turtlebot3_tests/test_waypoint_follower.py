@@ -51,9 +51,19 @@ class WaypointFollower(Node):
                                                        'amcl_pose', self.poseCallback, pose_qos)
 
     def setInitialPose(self, pose):
+        from tf_transformations import quaternion_from_euler
+        assert(len(pose) >= 6)
         self.init_pose = PoseWithCovarianceStamped()
         self.init_pose.pose.pose.position.x = pose[0]
         self.init_pose.pose.pose.position.y = pose[1]
+        self.init_pose.pose.pose.position.z = pose[2]
+
+        q = quaternion_from_euler(pose[3], pose[4], pose[5])
+        self.init_pose.pose.pose.orientation.x = q[0]
+        self.init_pose.pose.pose.orientation.y = q[1]
+        self.init_pose.pose.pose.orientation.z = q[2]
+        self.init_pose.pose.pose.orientation.w = q[3]
+
         self.init_pose.header.frame_id = 'map'
         self.publishInitialPose()
         time.sleep(5)
@@ -62,11 +72,10 @@ class WaypointFollower(Node):
         self.info_msg('Received amcl_pose')
         self.initial_pose_received = True
 
-    def setWaypoints(self, waypoints):
-        if not self.waypoints:
-            self.waypoints = []
+    def setWaypoints(self, in_waypoints):
+        self.waypoints = []
 
-        for wp in waypoints:
+        for wp in in_waypoints:
             msg = PoseStamped()
             msg.header.frame_id = 'map'
             msg.pose.position.x = wp[0]
@@ -75,7 +84,7 @@ class WaypointFollower(Node):
             self.waypoints.append(msg)
 
     def run(self, block):
-        if not self.waypoints:
+        if (not self.waypoints) or (len(self.waypoints) == 0):
             rclpy.error_msg('Did not set valid waypoints before running test!')
             return False
 
@@ -124,7 +133,7 @@ class WaypointFollower(Node):
     def publishInitialPose(self):
         self.initial_pose_pub.publish(self.init_pose)
 
-    def shutdown(self):
+    def shutdown_nav_lifecycle(self):
         self.info_msg('Shutting down')
         transition_service = 'lifecycle_manager_navigation/manage_nodes'
         mgr_client = self.create_client(ManageLifecycleNodes, transition_service)
@@ -167,30 +176,29 @@ class WaypointFollower(Node):
     def error_msg(self, msg: str):
         self.get_logger().error(msg)
 
-def follow_waypoints():
+def follow_waypoints(in_waypoints, in_initial_pose):
     # wait a few seconds to make sure entire stacks are up
     time.sleep(10)
 
-    wps = [[-0.52, -0.78], [-0.7, 0.5], [2.0, -1.5], [1.7, 1.7]]
-    starting_pose = [-1.0, 0.0]
-
     test = WaypointFollower()
-    test.setWaypoints(wps)
+    test.setWaypoints(in_waypoints)
 
     retry_count = 0
     retries = 2
     while not test.initial_pose_received and retry_count <= retries:
         retry_count += 1
-        test.info_msg(f'Setting initial pose {starting_pose}')
-        test.setInitialPose(starting_pose)
+        test.info_msg(f'Setting initial pose {in_initial_pose}')
+        test.setInitialPose(in_initial_pose)
         test.info_msg('Waiting for amcl_pose to be received')
         rclpy.spin_once(test, timeout_sec=1.0)  # wait for poseCallback
 
-    result = test.run(True)
+    result = test.run(block=True)
     if not result:
         test.error_msg('Following waypoints FAILED')
     else:
         test.info_msg('Following waypoints PASSED')
+    test.shutdown_nav_lifecycle()
+    # Let the node by garbage collected due to destroying it here may compromise the nav stack shutdown
     return result
 
 """
@@ -202,6 +210,12 @@ Test basic navigation following waypoints
 def generate_test_description():
     # [tb3_model] arg
     tb3_model = launch.substitutions.LaunchConfiguration('tb3_model', default='burger')
+
+    # [waypoints] arg
+    waypoints = launch.substitutions.LaunchConfiguration('waypoints', default='-0.52, -0.78, 0.7, 0.5, 2.0, -1.5, 1.7, 1.7')
+
+    # [initial_pose] arg
+    initial_pose = launch.substitutions.LaunchConfiguration('initial_pose', default='-1.0, 0.0, 0.0, 0.0, 0.0, 0.0')
 
     # Bringup the turtlebot3
     tb3_robot_launch = IncludeLaunchDescription(
@@ -226,6 +240,14 @@ def generate_test_description():
             'tb3_model',
             default_value=tb3_model,
             description='turtlebot3 model (burger or waffle)'),
+        launch.actions.DeclareLaunchArgument(
+            'waypoints',
+            default_value=waypoints,
+            description="Waypoints. Eg: '-0.52, -0.78, 0.7, 0.5, 2.0, -1.5, 1.7, 1.7'"),
+        launch.actions.DeclareLaunchArgument(
+            'initial_pose',
+            default_value=initial_pose,
+            description="Initial tb3 pose, 'pos_x, pos_y, pos_z, roll, pitch, yaw'"),
         launch.actions.SetEnvironmentVariable('TURTLEBOT3_MODEL', tb3_model),
         tb3_robot_launch,
         tb3_nav2_launch,
@@ -234,7 +256,15 @@ def generate_test_description():
     ])
 
 class TestWaypointFollower(unittest.TestCase):
-    def test_waypoint_follower(self, proc_output):
+    def test_waypoint_follower(self, proc_output, test_args):
         rclpy.init()
-        assert follow_waypoints(), 'Waypoint failed being followed!'
+        waypoints = []
+        waypoints_arg = [float(x.strip()) for x in test_args['waypoints'].split(',')]
+        waypoints_num = len(waypoints_arg)
+        assert(waypoints_num % 2 == 0)
+        for i in range(int(waypoints_num/2)):
+            waypoints.append([waypoints_arg[2*i], waypoints_arg[2*i+1]])
+
+        initial_pose = [float(x.strip()) for x in test_args['initial_pose'].split(',')]
+        assert follow_waypoints(waypoints, initial_pose), 'Waypoint failed being followed!'
         rclpy.shutdown()
