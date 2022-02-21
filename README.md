@@ -17,10 +17,6 @@ UE4 Project which includes examples to use rclUE.
 2. `ros2 launch nav2_bringup tb3_simulation_launch.py use_simulator:=False map:=<path to turtlebot3-UE>/Content/Turtlebot3_benchmark.yaml
 `
 
-### Automated tests
+### Tests
 1. Play turtlebot3-UE
-2. Run the tests
-```sh
-cd ExternalTest/turtlebot3_tests
-./RunTB3WaypointFollowerTest.sh
-```
+2. Run the [tests](https://github.com/rapyuta-robotics/turtlebot3-UE/blob/master/ExternalTest/turtlebot3_tests/README.md)
