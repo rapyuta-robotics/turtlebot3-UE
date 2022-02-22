@@ -70,5 +70,6 @@ Build/*/**
 *_BuiltData.uasset
 
 # External test python cache, pyc
+ExternalTest/TB3_TESTS
 ExternalTest/turtlebot3_tests/turtlebot3_tests/__pycache__
 ExternalTest/turtlebot3_tests/maps

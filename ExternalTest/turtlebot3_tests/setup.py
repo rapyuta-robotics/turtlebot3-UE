@@ -1,4 +1,5 @@
 from setuptools import setup
+from glob import glob
 
 package_name = 'turtlebot3_tests'
 
@@ -9,7 +10,9 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        (f'share/{package_name}', ['package.xml']),
+        (f'share/{package_name}/maps', glob('maps/*.pgm')),
+        (f'share/{package_name}/maps', glob('maps/*.yaml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
