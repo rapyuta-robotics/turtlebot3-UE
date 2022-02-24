@@ -83,8 +83,8 @@ source install/setup.bash
 # Robot model: burger/waffle
 ROBOT_MODEL=${3:-"burger"}
 ROBOT_NAME=${4:-"burger0"}
-ROBOT_INITIAL_POS=${4:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
-ROBOT_INITIAL_ROT=${5:-"0.0,0.0,0.0"}
+ROBOT_INITIAL_POS=${5:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
+ROBOT_INITIAL_ROT=${6:-"0.0,0.0,0.0"}
 export TURTLEBOT3_MODEL=${ROBOT_MODEL}
 printenv | grep TURTLEBOT3_MODEL
 
