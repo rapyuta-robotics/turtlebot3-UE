@@ -19,7 +19,7 @@ UE4 Project which includes examples to use rclUE.
 
 ### Tests
 ```sh
-./ExternalTest/RunTB3Tests.sh <ue_exe> <ue_map> <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>
+./ExternalTest/run_local_sim_tb3_tests.sh <ue_exe> <ue_map> <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>
 ```
 with:
 * `<ue_exe>`: path to the UE editor executor, eg: `~/UNREAL/UnrealEngine/Engine/Binaries/Linux/UE4Editor`

@@ -4,12 +4,10 @@ Help()
     # Display Help
     echo "The script must be run from the io_amr_ue project dir."
     echo
-    echo "Syntax: ./ExternalTest/$(basename $0) [-h] <ue_exe> <ue_map> <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>"
+    echo "Syntax: ./ExternalTest/$(basename $0) [-h] <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>"
     echo "options:"
     echo "-h Print this Help."
     echo "arguments:"
-    echo "ue_exe: Path to the ue executor. Eg: ~/UNREAL/UnrealEngine/Engine/Binaries/Linux/UE4Editor"
-    echo "ue_map: ue map name. Eg: Turtlebot3AutoTest"
     echo "tb3_model: tb3 model to be tested (burger or waffle), which must also have been defined as a key name of [SpawnableEntities] in the provided ue map"
     echo "tb3_name: tb3 robot unique name"
     echo "tb3_init_pos: tb3's initial position (x,y,z), eg: 0.0,0.0,0.1"
@@ -32,14 +30,6 @@ done
 
 # This script is expected to be run from the project dir
 TB3_UE_DIR="$(pwd)"
-
-## START RRSIM --
-#
-UE_EXE=$1
-UE_MAP=${2:-"Turtlebot3AutoTest"}
-$UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject /Game/Maps/${UE_MAP} -game &
-RRSIM_PID="$(echo $!)"
-echo "RRSIM PID: $RRSIM_PID"
 
 ## START TESTS --
 #
@@ -74,17 +64,18 @@ fi
 
 if [ ! -e ${TB3_TESTS_ROS_WS} ]; then
     mkdir -p ${TB3_TESTS_ROS_WS}/src
-    ln -s ${TB3_TESTS_PKG_DIR} "${TB3_TESTS_ROS_WS}/src/${TB3_TESTS_PKG_NAME}"
+    cd ${TB3_TESTS_ROS_WS}/src
+    ln -s ${TB3_TESTS_PKG_DIR} ${TB3_TESTS_PKG_NAME}
 fi
 cd ${TB3_TESTS_ROS_WS}
 colcon build --symlink-install
 source install/setup.bash
 
 # Robot model: burger/waffle
-ROBOT_MODEL=${3:-"burger"}
-ROBOT_NAME=${4:-"burger0"}
-ROBOT_INITIAL_POS=${5:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
-ROBOT_INITIAL_ROT=${6:-"0.0,0.0,0.0"}
+ROBOT_MODEL=${1:-"burger"}
+ROBOT_NAME=${2:-"burger0"}
+ROBOT_INITIAL_POS=${3:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
+ROBOT_INITIAL_ROT=${4:-"0.0,0.0,0.0"}
 export TURTLEBOT3_MODEL=${ROBOT_MODEL}
 printenv | grep TURTLEBOT3_MODEL
 
@@ -107,7 +98,7 @@ launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_laser_scan_published.py scan_topics:
 launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_odom_published.py is_tf_published:='True' is_tf_static:='False'
 
 # Test robot auto-navigation
-cd ${TB3_TESTS_PKG_DIR}
+cd ${TB3_TESTS_PKG_DIR} # to read the map
 launch_test ${TB3_TESTS_SCRIPTS_DIR}/test_waypoint_follower.py waypoints:='-0.52, -0.78, 0.7, 0.5, 2.0, -1.5, 1.7, 1.7'\
                                                                initial_pose:="${ROBOT_INITIAL_POS}, ${ROBOT_INITIAL_ROT}"
 
@@ -115,6 +106,3 @@ launch_test ${TB3_TESTS_SCRIPTS_DIR}/test_waypoint_follower.py waypoints:='-0.52
 launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_remove.py robot_name:=${ROBOT_NAME}
 
 unset TURTLEBOT3_MODEL
-
-# Auto shutdown Sim
-kill ${RRSIM_PID}
