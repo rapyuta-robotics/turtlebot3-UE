@@ -19,7 +19,7 @@ cd $BASE_DIR
 echo "Installing ue_msgs..."
 if [ ! -e UE_msgs ]; then
 	echo "Cloning UE_msgs..."
-	git clone git@github.com:rapyuta-robotics/UE_msgs.git
+	git clone https://github.com/rapyuta-robotics/UE_msgs.git
 else
 	echo "Updating UE_msgs..."
 	cd UE_msgs
@@ -36,3 +36,4 @@ cd ${RRSIM_ROS2_WS}
 colcon build --symlink-install
 source install/setup.bash
 ros2 pkg prefix ue_msgs
+cd $BASE_DIR
