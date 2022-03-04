@@ -5,7 +5,8 @@ UE4 Project which includes examples to use rclUE.
 - Turtlebot3 Benchmark: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP
 ## Setup
 1. clone this repo
-2. ./run_editor.sh
+2. ./run_editor.sh $(pwd) <ue_exe>
+Eg: ./run_editor.sh $(pwd) ~/UE/UnrealEngine/Engine/Binaries/Linux/UE4Editor
 
 ## Turtlebot3 navigation
 ### Installation
@@ -22,7 +23,7 @@ UE4 Project which includes examples to use rclUE.
 ./ExternalTest/run_local_sim_tb3_tests.sh <ue_exe> <ue_map> <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>
 ```
 with:
-* `<ue_exe>`: path to the UE editor executor, eg: `~/UNREAL/UnrealEngine/Engine/Binaries/Linux/UE4Editor`
+* `<ue_exe>`: path to the UE editor executor, eg: `~/UE/UnrealEngine/Engine/Binaries/Linux/UE4Editor`
 * `<ue_map>`: ue map name, eg: `Turtlebot3AutoTest`
 * `<tb3_model>`: `burger` or `waffle`
 * `<tb3_name>` as the robot given names, eg: `burger0`

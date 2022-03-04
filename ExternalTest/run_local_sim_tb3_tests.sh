@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 Help()
 {
     # Display Help
@@ -30,8 +33,18 @@ while getopts ":h" option; do
     esac
 done
 
+#CURRENT_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+#echo ${CURRENT_SCRIPT_DIR}
+
 # This script is expected to be run from the project dir
 TB3_UE_DIR="$(pwd)"
+TB3_UE_DIR_NAME=${TB3_UE_DIR##*/}
+if [[ "turtlebot3-UE" != "${TB3_UE_DIR_NAME}" ]]; then
+    printf "TB3_UE_DIR_NAME: ${TB3_UE_DIR_NAME}\n"
+    printf "${BASH_SOURCE[0]} must be run from turtlebot3-UE dir\n"
+    Help
+    exit 1
+fi
 
 ## SETUP ROS TEST ENV --
 cd ${TB3_UE_DIR}
@@ -39,6 +52,9 @@ source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
 ## START RRSIM --
 #
+RCLUE_DIR="${TB3_UE_DIR}/Plugins/rclUE"
+source ${RCLUE_DIR}/Scripts/setup_ros2libs.sh ${RCLUE_DIR}
+
 UE_EXE=$1
 UE_MAP=${2:-"Turtlebot3AutoTest"}
 $UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject /Game/Maps/${UE_MAP} -game &
