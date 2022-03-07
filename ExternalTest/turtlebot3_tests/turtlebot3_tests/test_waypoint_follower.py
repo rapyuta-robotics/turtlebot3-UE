@@ -28,6 +28,8 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav2_msgs.action import FollowWaypoints
 from nav2_msgs.srv import ManageLifecycleNodes
 
+from rr_sim_tests.test_sim_state import wait_for_sim_state
+
 """
 Ref: https://github.com/ros-planning/navigation2/blob/main/nav2_system_tests/src/waypoint_follower/tester.py
 """
@@ -208,9 +210,6 @@ Test basic navigation following waypoints
 @pytest.mark.launch_test
 @launch_testing.markers.keep_alive
 def generate_test_description():
-    # [tb3_model] arg
-    tb3_model = launch.substitutions.LaunchConfiguration('tb3_model', default='burger')
-
     # [waypoints] arg
     waypoints = launch.substitutions.LaunchConfiguration('waypoints', default='-0.52, -0.78, 0.7, 0.5, 2.0, -1.5, 1.7, 1.7')
 
@@ -237,10 +236,6 @@ def generate_test_description():
 
     return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument(
-            'tb3_model',
-            default_value=tb3_model,
-            description='turtlebot3 model (burger or waffle)'),
-        launch.actions.DeclareLaunchArgument(
             'waypoints',
             default_value=waypoints,
             description="Waypoints. Eg: '-0.52, -0.78, 0.7, 0.5, 2.0, -1.5, 1.7, 1.7'"),
@@ -248,7 +243,6 @@ def generate_test_description():
             'initial_pose',
             default_value=initial_pose,
             description="Initial tb3 pose, 'pos_x, pos_y, pos_z, roll, pitch, yaw'"),
-        launch.actions.SetEnvironmentVariable('TURTLEBOT3_MODEL', tb3_model),
         tb3_robot_launch,
         tb3_nav2_launch,
         launch_testing.util.KeepAliveProc(),
@@ -258,6 +252,10 @@ def generate_test_description():
 class TestWaypointFollower(unittest.TestCase):
     def test_waypoint_follower(self, proc_output, test_args):
         rclpy.init()
+        # Make sure sim state is ready
+        assert(wait_for_sim_state(10.0), 'Sim state is not ready')
+
+        # Start testing auto-navigation through waypoints
         waypoints = []
         waypoints_arg = [float(x.strip()) for x in test_args['waypoints'].split(',')]
         waypoints_num = len(waypoints_arg)
