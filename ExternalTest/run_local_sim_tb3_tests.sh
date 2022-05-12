@@ -5,7 +5,7 @@ set -e
 Help()
 {
     # Display Help
-    echo "The script must be run from the io_amr_ue project dir."
+    echo "The script must be run from the turtlebot3-UE project dir."
     echo
     echo "Syntax: ./ExternalTest/$(basename $0) [-h] <ue_exe> <ue_map> <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>"
     echo "options:"
@@ -55,9 +55,13 @@ source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 RCLUE_DIR="${TB3_UE_DIR}/Plugins/rclUE"
 source ${RCLUE_DIR}/Scripts/setup_ros2libs.sh ${RCLUE_DIR}
 
+# Generate [Config/DefaultEngine.ini]
+DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
+sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
+
 UE_EXE=$1
-UE_MAP=${2:-"Turtlebot3AutoTest"}
-$UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject /Game/Maps/${UE_MAP} -game &
+UE_MAP=${2:-"/Game/Maps/Turtlebot3AutoTest"}
+$UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject ${UE_MAP} -game &
 RRSIM_PID="$(echo $!)"
 echo "RRSIM PID: $RRSIM_PID"
 
