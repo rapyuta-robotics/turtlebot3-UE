@@ -23,7 +23,7 @@ if [ ! -e UE_msgs ]; then
 else
 	echo "Updating UE_msgs..."
 	cd UE_msgs
-	git pull origin master
+	git pull --rebase origin devel
 fi
 
 if [ ! -e ${RRSIM_ROS2_WS} ]; then
