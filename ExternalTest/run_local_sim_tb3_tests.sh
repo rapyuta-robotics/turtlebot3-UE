@@ -51,9 +51,6 @@ cd ${TB3_UE_DIR}
 source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
 ## START RRSIM --
-#
-RCLUE_DIR="${TB3_UE_DIR}/Plugins/rclUE"
-source ${RCLUE_DIR}/Scripts/setup_ros2libs.sh ${RCLUE_DIR}
 
 # Generate [Config/DefaultEngine.ini]
 DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
