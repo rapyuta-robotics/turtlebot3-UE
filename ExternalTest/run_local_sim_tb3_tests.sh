@@ -51,12 +51,14 @@ cd ${TB3_UE_DIR}
 source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
 ## START RRSIM --
-#
-RCLUE_DIR="${TB3_UE_DIR}/Plugins/rclUE"
-source ${RCLUE_DIR}/Scripts/setup_ros2libs.sh ${RCLUE_DIR}
 
 UE_EXE=$1
 UE_MAP=${2:-"Turtlebot3AutoTest"}
+
+# Change default level, generating DefaultEngine.ini
+sed -e 's/${LEVEL_NAME}/'${UE_MAP}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.ini > ${TB3_UE_DIR}/Config/DefaultEngine.ini
+
+# Run turtlebot3-UE
 $UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject /Game/Maps/${UE_MAP} -game &
 RRSIM_PID="$(echo $!)"
 echo "RRSIM PID: $RRSIM_PID"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check ROS env vars
-printenv | grep -i ROS
+(printenv | grep -i ROS) || echo '[Error] Found nothing with ROS in env variables'
 export ROS_DOMAIN_ID=10
 
 # Check [launch_testing] pkg

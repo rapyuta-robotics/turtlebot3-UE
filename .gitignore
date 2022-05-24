@@ -1,6 +1,7 @@
 .vs/
 .vscode/
 .kdev4/
+.idea/
 
 *.slo
 *.lo

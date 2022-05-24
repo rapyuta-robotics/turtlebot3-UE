@@ -6,13 +6,10 @@
 
 CURRENT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 TB3_UE_DIR=${1:-"${CURRENT_DIR}"}
-RCLUE_DIR="${TB3_UE_DIR}/Plugins/rclUE"
 
-source ${RCLUE_DIR}/Scripts/setup_ros2libs.sh ${RCLUE_DIR}
-
-#change default level
-default_level=${LEVEL_NAME:-"Turtlebot3_benchmark"}
-sed -e 's/${LEVEL_NAME}/'${default_level}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
+#change default level, generating DefautlEngine.ini
+DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
+sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
 
 UE_EDITOR=${2:-"$(dirname ${TB3_UE_DIR})/UnrealEngine/Engine/Binaries/Linux/UE4Editor"}
 (exec "$UE_EDITOR" "${TB3_UE_DIR}/turtlebot3.uproject")
