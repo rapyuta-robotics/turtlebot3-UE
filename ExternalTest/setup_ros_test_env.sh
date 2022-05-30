@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check ROS env vars
-printenv | grep -i ROS
+(printenv | grep -i ROS) || echo '[Error] Found nothing with ROS in env variables'
 export ROS_DOMAIN_ID=10
 
 # Check [launch_testing] pkg
@@ -23,7 +23,7 @@ if [ ! -e UE_msgs ]; then
 else
 	echo "Updating UE_msgs..."
 	cd UE_msgs
-	git pull origin master
+	git pull --rebase origin devel
 fi
 
 if [ ! -e ${RRSIM_ROS2_WS} ]; then

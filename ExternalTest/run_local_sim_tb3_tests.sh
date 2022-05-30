@@ -43,22 +43,18 @@ if [[ "turtlebot3-UE" != "${TB3_UE_DIR_NAME}" ]]; then
     printf "TB3_UE_DIR_NAME: ${TB3_UE_DIR_NAME}\n"
     printf "${BASH_SOURCE[0]} must be run from turtlebot3-UE dir\n"
     Help
-    exit 1
+    #exit 1
 fi
 
 ## SETUP ROS TEST ENV --
 cd ${TB3_UE_DIR}
 source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
-## START RRSIM --
-#
-RCLUE_DIR="${TB3_UE_DIR}/Plugins/rclUE"
-source ${RCLUE_DIR}/Scripts/setup_ros2libs.sh ${RCLUE_DIR}
-
-# Generate [Config/DefaultEngine.ini]
+## GENERATE [Config/DefaultEngine.ini]
 DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
-sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
+sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.ini > ${TB3_UE_DIR}/Config/DefaultEngine.ini
 
+## START turtlebot3-UE --
 UE_EXE=$1
 UE_MAP=${2:-"/Game/Maps/Turtlebot3AutoTest"}
 $UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject ${UE_MAP} -game &
