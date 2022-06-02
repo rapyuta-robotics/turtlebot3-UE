@@ -10,8 +10,9 @@ UE4 Project which includes examples to use rclUE.
 ## Setup and run
 
 1.  Setup UE4 in Linux by following [Linux Quick Start](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/)
-2.  Clone this repo
-3.  Build and run
+2.  Clone this repo : `git clone --recurse-submodules git@github.com:rapyuta-robotics/turtlebot3-UE.git`
+3.  Retrieve the large files : `git-lfs pull && git submodule foreach git-lfs pull`
+4.  Build and run
     ```
     cd turtlebot3-UE
     ./update_project_files.sh
