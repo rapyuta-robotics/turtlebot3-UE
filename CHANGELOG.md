@@ -1,5 +1,8 @@
 # Changelog for turtlebot3-UE repository
 
+## 0.0.3 ##
+* RapyutaSimulationPlugins: assets moved to lfs, ARRBaseRobot, ARRRobotBaseVehicle, URRRobotROS2Interface, URRTurtlebotROS2Interface
+
 ## 0.0.2 ##
 * Update setup_ros_test_env.sh Pull ue_msgs from devel
 * rclUE: ensure instead of check to avoid crash with duplicate subscriber (#48)
