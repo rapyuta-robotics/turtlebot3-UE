@@ -36,7 +36,15 @@ void AROS2ActionServerNode::BeginPlay()
     FibonacciActionServer->SetDelegates(
         UpdateFeedbackDelegate, UpdateResultDelegate, HandleGoalDelegate, HandleCancelDelegate, HandleAcceptedDelegate);
 
-    // // Add action server to ROS2Node
+    // FeedbackMsg.goal_id.Reserve(16);
+    // GoalRequest.goal_id.Reserve(16);
+    for (int i = 0; i < 16; i++)
+    {
+        FeedbackMsg.goal_id.Add(0);
+        GoalRequest.goal_id.Add(0);
+    }
+
+    // Add action server to ROS2Node
     AddActionServer(FibonacciActionServer);
 }
 
@@ -86,26 +94,34 @@ bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
 
     // set and send goal response
-    auto* GoalResponse = (example_interfaces__action__Fibonacci_SendGoal_Response*)FibonacciAction->GetGoalResponse();
-    GoalResponse->accepted = true;
-    GoalResponse->stamp = UROS2Utils::FloatToROSStamp(UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld())));
+    FROSFibonacci_SendGoal_Response goalResponse;
+    goalResponse.accepted = true;
+    builtin_interfaces__msg__Time stamp =
+        UROS2Utils::FloatToROSStamp(UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld())));
+    goalResponse.stamp_sec = stamp.sec;
+    goalResponse.stamp_nanosec = stamp.nanosec;
+    FibonacciAction->SetGoalResponse(goalResponse);
+
     FibonacciActionServer->SendGoalResponse();
 
     // Log request and response
     UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][goal callback]"), *GetName(), *ActionName);
 
-    if (GoalResponse->accepted)
+    if (goalResponse.accepted)
     {
         FibonacciAction->GetGoalRequest(GoalRequest);
         FeedbackMsg.sequence.Empty();
         FeedbackMsg.sequence.Add(0);
         FeedbackMsg.sequence.Add(1);
         Count = 1;
-        FeedbackMsg.goal_id = GoalRequest.goal_id;
+        for (int i = 0; i < 16; i++)
+        {
+            FeedbackMsg.goal_id[0] = GoalRequest.goal_id[0];
+        }
     }
 
     // return value is used by ROS2ActionServer to decide whether it calls accepted callback or not.
-    return GoalResponse->accepted;
+    return goalResponse.accepted;
 }
 
 void AROS2ActionServerNode::HandleCancelCallback()
