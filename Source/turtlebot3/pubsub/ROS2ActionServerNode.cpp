@@ -57,14 +57,15 @@ void AROS2ActionServerNode::UpdateFeedbackCallback(UROS2GenericAction* InAction)
     // send result when finish by UpdateAndSendResult
     if (Count++ < GoalRequest.order)
     {
-        FeedbackMsg.sequence.Add(FeedbackMsg.sequence[Count] - FeedbackMsg.sequence[Count - 1]);
+        FeedbackMsg.sequence.Add(FeedbackMsg.sequence[Count] + FeedbackMsg.sequence[Count - 1]);
+        FibonacciAction->SetFeedback(FeedbackMsg);
         // Log request and response
         UE_LOG(LogTurtlebot3,
                Log,
                TEXT("[%s][%s][C++][update feedback callback] added %d"),
                *GetName(),
                *ActionName,
-               FeedbackMsg.sequence[Count + 1]);
+               FeedbackMsg.sequence.Last(0));
     }
     else
     {
@@ -76,17 +77,24 @@ void AROS2ActionServerNode::UpdateResultCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
 
+    // for log
+    FString resultString;
+
     // set result
     FROSFibonacci_GetResult_Response ResultResponse;
     ResultResponse.status = GOAL_STATE_SUCCEEDED;
-    ResultResponse.sequence = FeedbackMsg.sequence;
-    FibonacciAction->GetResultResponse(ResultResponse);
+    for (auto s : FeedbackMsg.sequence)
+    {
+        ResultResponse.sequence.Add(s);
+        resultString += FString::FromInt(s) + ", ";
+    }
+    FibonacciAction->SetResultResponse(ResultResponse);
 
     // stop timer
     GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][update result callback]"), *GetName(), *ActionName);
+    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][update result callback] result is: %s"), *GetName(), *ActionName, *resultString);
 }
 
 bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)

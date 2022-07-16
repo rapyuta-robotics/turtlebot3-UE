@@ -67,11 +67,12 @@ void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
     }
     FibonacciAction->GetFeedback(feedback);
 
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][received feedback callback]"), *GetName(), *ActionName);
-    for (int s : feedback.sequence)
-    {
-        UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][feedback value] %i"), *GetName(), *ActionName, s);
-    }
+    UE_LOG(LogTurtlebot3,
+           Log,
+           TEXT("[%s][%s][C++][received feedback callback] last element of feedback sequence: %d"),
+           *GetName(),
+           *ActionName,
+           feedback.sequence.Last(0));
 }
 
 void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
@@ -81,11 +82,13 @@ void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
     FibonacciAction->GetResultResponse(resultResponse);
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][received result callback] "), *GetName(), *ActionName);
+    FString resultString;
     for (int s : resultResponse.sequence)
     {
-        UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][result value] %i"), *GetName(), *ActionName, s);
+        resultString += FString::FromInt(s) + ", ";
     }
+    UE_LOG(
+        LogTurtlebot3, Log, TEXT("[%s][%s][C++][received result callback] result is: %s"), *GetName(), *ActionName, *resultString);
 
     Order++;
     GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionClientNode::SendGoal, 1.f, true);
@@ -112,6 +115,7 @@ void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
                TEXT("[%s][%s][C++][receive goal response callback] goal request is accepted."),
                *GetName(),
                *ActionName);
+        FibonacciActionClient->GetResultRequest();
     }
 }
 
