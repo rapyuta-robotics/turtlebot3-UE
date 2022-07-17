@@ -147,5 +147,5 @@ void AROS2ActionServerNode::HandleAcceptedCallback()
         ActionTimerHandle, this->FibonacciActionServer, &UROS2ActionServer::UpdateAndSendFeedback, 1.f, true);
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][accepted callback] Start fibonacci calculation]"), *GetName(), *ActionName);
+    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][accepted callback] Start fibonacci calculation"), *GetName(), *ActionName);
 }
