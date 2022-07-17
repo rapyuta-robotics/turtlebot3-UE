@@ -44,14 +44,10 @@ void AROS2ActionClientNode::BeginPlay()
 void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacci_SendGoal_Request goaRequest;
-    // unique_identifier_msgs__msg__UUID goal_id;
-    for (int i = 0; i < 16; i++)
-    {
-        goaRequest.goal_id.Add(0);
-    }
-    goaRequest.order = Order;
-    FibonacciAction->SetGoalRequest(goaRequest);
+    FROSFibonacci_SendGoal_Request goalRequest;
+    UROS2Utils::GenerateRandomUUID16(goalRequest.goal_id);
+    goalRequest.order = Order;
+    FibonacciAction->SetGoalRequest(goalRequest);
 
     // Log request and response
     UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][update set goal] order: %i"), *GetName(), *ActionName, Order);
@@ -61,10 +57,7 @@ void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
     FROSFibonacci_FeedbackMessage feedback;
-    for (int i = 0; i < 16; i++)
-    {
-        feedback.goal_id.Add(0);
-    }
+    feedback.goal_id.Init(0, 16);
     FibonacciAction->GetFeedback(feedback);
 
     UE_LOG(LogTurtlebot3,

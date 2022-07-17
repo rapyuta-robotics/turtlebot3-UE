@@ -36,13 +36,8 @@ void AROS2ActionServerNode::BeginPlay()
     FibonacciActionServer->SetDelegates(
         UpdateFeedbackDelegate, UpdateResultDelegate, HandleGoalDelegate, HandleCancelDelegate, HandleAcceptedDelegate);
 
-    // FeedbackMsg.goal_id.Reserve(16);
-    // GoalRequest.goal_id.Reserve(16);
-    for (int i = 0; i < 16; i++)
-    {
-        FeedbackMsg.goal_id.Add(0);
-        GoalRequest.goal_id.Add(0);
-    }
+    FeedbackMsg.goal_id.Init(0, 16);
+    GoalRequest.goal_id.Init(0, 16);
 
     // Add action server to ROS2Node
     AddActionServer(FibonacciActionServer);
@@ -124,7 +119,7 @@ bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
         Count = 1;
         for (int i = 0; i < 16; i++)
         {
-            FeedbackMsg.goal_id[0] = GoalRequest.goal_id[0];
+            FeedbackMsg.goal_id[i] = GoalRequest.goal_id[i];
         }
     }
 
