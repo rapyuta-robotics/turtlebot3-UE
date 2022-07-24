@@ -36,9 +36,6 @@ void AROS2ActionServerNode::BeginPlay()
     FibonacciActionServer->SetDelegates(
         UpdateFeedbackDelegate, UpdateResultDelegate, HandleGoalDelegate, HandleCancelDelegate, HandleAcceptedDelegate);
 
-    FeedbackMsg.goal_id.Init(0, 16);
-    GoalRequest.goal_id.Init(0, 16);
-
     // Add action server to ROS2Node
     AddActionServer(FibonacciActionServer);
 }
@@ -99,12 +96,8 @@ bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
     // set and send goal response
     FROSFibonacci_SendGoal_Response goalResponse;
     goalResponse.accepted = true;
-    builtin_interfaces__msg__Time stamp =
-        UROS2Utils::FloatToROSStamp(UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld())));
-    goalResponse.stamp_sec = stamp.sec;
-    goalResponse.stamp_nanosec = stamp.nanosec;
+    goalResponse.stamp = UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld()));
     FibonacciAction->SetGoalResponse(goalResponse);
-
     FibonacciActionServer->SendGoalResponse();
 
     // Log request and response
@@ -113,14 +106,11 @@ bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
     if (goalResponse.accepted)
     {
         FibonacciAction->GetGoalRequest(GoalRequest);
+        FibonacciAction->SetGoalIdToFeedback(FeedbackMsg);
         FeedbackMsg.sequence.Empty();
         FeedbackMsg.sequence.Add(0);
         FeedbackMsg.sequence.Add(1);
         Count = 1;
-        for (int i = 0; i < 16; i++)
-        {
-            FeedbackMsg.goal_id[i] = GoalRequest.goal_id[i];
-        }
     }
 
     // return value is used by ROS2ActionServer to decide whether it calls accepted callback or not.

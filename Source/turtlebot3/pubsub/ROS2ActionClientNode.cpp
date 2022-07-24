@@ -45,7 +45,6 @@ void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
     FROSFibonacci_SendGoal_Request goalRequest;
-    UROS2Utils::GenerateRandomUUID16(goalRequest.goal_id);
     goalRequest.order = Order;
     FibonacciAction->SetGoalRequest(goalRequest);
 
@@ -57,7 +56,6 @@ void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
     FROSFibonacci_FeedbackMessage feedback;
-    feedback.goal_id.Init(0, 16);
     FibonacciAction->GetFeedback(feedback);
 
     UE_LOG(LogTurtlebot3,
