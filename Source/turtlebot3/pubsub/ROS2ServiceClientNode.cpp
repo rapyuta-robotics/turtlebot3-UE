@@ -38,22 +38,22 @@ void AROS2ServiceClientNode::BeginPlay()
 void AROS2ServiceClientNode::SendRequest(UROS2GenericSrv* InService)
 {
     // Create and update request
-    FROSAddTwoInts_Request req;
-    req.a = A++;
-    req.b = B++;
+    FROSAddTwoIntsRequest req;
+    req.A = A++;
+    req.B = B++;
     CastChecked<UROS2AddTwoIntsSrv>(InService)->SetRequest(req);
 
     // Log request
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send request] a:%d, b:%d"), *GetName(), *ServiceName, req.a, req.b);
+    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send request] a:%d, b:%d"), *GetName(), *ServiceName, req.A, req.B);
 }
 
 void AROS2ServiceClientNode::ReceiveResponse(UROS2GenericSrv* InService)
 {
     UROS2AddTwoIntsSrv* AddTwoIntsService = Cast<UROS2AddTwoIntsSrv>(InService);
 
-    FROSAddTwoInts_Response res;
+    FROSAddTwoIntsResponse res;
     AddTwoIntsService->GetResponse(res);
 
     // Log response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][receive response] sum:%d"), *GetName(), *ServiceName, res.sum);
+    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][receive response] sum:%d"), *GetName(), *ServiceName, res.Sum);
 }
