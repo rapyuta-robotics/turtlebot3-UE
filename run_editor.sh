@@ -7,6 +7,12 @@
 CURRENT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 TB3_UE_DIR=${1:-"${CURRENT_DIR}"}
 
+# Run discovery service for FastDDS                                             
+(exec "${TB3_UE_DIR}/run_discovery_service.sh")
+
+# Configure environment for FastDDS discovery                                   
+source ${TB3_UE_DIR}/fastdds_setup.sh
+
 #change default level, generating DefautlEngine.ini
 DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
 sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
