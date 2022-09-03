@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Create a workspace to build required dependency ros2 pkgs
+BASE_DIR="$(pwd)"
+RRSIM_ROS2_WS="${BASE_DIR}/RRSIM_ROS2"
+
+source /opt/ros/foxy/setup.sh
+fastdds discovery -i 0 &
+ros2 daemon start
+
 # Check ROS env vars
 (printenv | grep -i ROS) || echo '[Error] Found nothing with ROS in env variables'
 export ROS_DOMAIN_ID=10
@@ -9,10 +17,6 @@ echo "launch_testing pkg:"
 ros2 pkg prefix launch_testing
 echo "launch_testing_ros pkg:"
 ros2 pkg prefix launch_testing_ros
-
-# Create a workspace to build required dependency ros2 pkgs
-BASE_DIR="$(pwd)"
-RRSIM_ROS2_WS="${BASE_DIR}/RRSIM_ROS2"
 
 # Install [ue_msgs] pkg
 cd $BASE_DIR
