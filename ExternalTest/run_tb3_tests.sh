@@ -2,7 +2,7 @@
 Help()
 {
     # Display Help
-    echo "The script must be run from the io_amr_ue project dir."
+    echo "The script must be run from the turtlebot3-UE project dir."
     echo
     echo "Syntax: ./ExternalTest/$(basename $0) [-h] <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>"
     echo "options:"
@@ -38,10 +38,10 @@ RRSIM_TESTS_ROS_WS="${TB3_UE_DIR}/Plugins/RapyutaSimulationPlugins/ExternalTest/
 RRSIM_TESTS_PKG_NAME='rr_sim_tests'
 RRSIM_TESTS_PKG_DIR="${TB3_UE_DIR}/Plugins/RapyutaSimulationPlugins/ExternalTest/${RRSIM_TESTS_PKG_NAME}"
 RRSIM_TESTS_SCRIPTS_DIR="${RRSIM_TESTS_PKG_DIR}/${RRSIM_TESTS_PKG_NAME}"
-
 if [ ! -e ${RRSIM_TESTS_ROS_WS} ]; then
     mkdir -p ${RRSIM_TESTS_ROS_WS}/src
     ln -s ${RRSIM_TESTS_PKG_DIR} "${RRSIM_TESTS_ROS_WS}/src/${RRSIM_TESTS_PKG_NAME}"
+    git clone https://github.com/rapyuta-robotics/UE_msgs.git "${RRSIM_TESTS_ROS_WS}/src/ue_msgs"
 fi
 cd ${RRSIM_TESTS_ROS_WS}
 colcon build --symlink-install
