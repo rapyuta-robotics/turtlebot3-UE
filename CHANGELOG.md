@@ -1,5 +1,8 @@
 # Changelog for turtlebot3-UE repository
 
+## 0.0.4 ##
+* Update following UE-ROS adapter autogen #39
+ 
 ## 0.0.3 ##
 * RapyutaSimulationPlugins: assets moved to lfs, ARRBaseRobot, ARRRobotBaseVehicle, URRRobotROS2Interface, URRTurtlebotROS2Interface
 
