@@ -23,9 +23,11 @@ void AROS2SubscriberNode::BeginPlay()
 
 void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
 {
-    const UROS2StringMsg* stringMsg = Cast<UROS2StringMsg>(InMsg);
+    const UROS2StringMsg* stringMsg = Cast<UROS2StringMsg>(InMsg);    
     if (stringMsg)
     {
-        UE_LOG(LogTurtlebot3, Log, TEXT("[%s] %s"), *GetName(), *FString(stringMsg->MsgToString()));
+        FROSString msg;
+        stringMsg->GetMsg(msg);
+        UE_LOG(LogTurtlebot3, Log, TEXT("[%s] %s"), *GetName(), *msg.Data);
     }
 }
