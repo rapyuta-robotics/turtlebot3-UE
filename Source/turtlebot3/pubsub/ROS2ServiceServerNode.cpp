@@ -24,17 +24,17 @@ void AROS2ServiceServerNode::SrvCallback(UROS2GenericSrv* InService)
 {
     UROS2AddTwoIntsSrv* AddTwoIntsService = Cast<UROS2AddTwoIntsSrv>(InService);
 
-    FROSAddTwoInts_Request req;
+    FROSAddTwoIntsRequest req;
     AddTwoIntsService->GetRequest(req);
 
     // Add two ints.
-    FROSAddTwoInts_Response res;
-    res.sum = req.a + req.b;
+    FROSAddTwoIntsResponse res;
+    res.Sum = req.A + req.B;
 
     // Set response.
     AddTwoIntsService->SetResponse(res);
 
     // Log request and response
     UE_LOG(
-        LogTurtlebot3, Log, TEXT("[%s][%s][C++][receive request] %d + %d = %d"), *GetName(), *ServiceName, req.a, req.b, res.sum);
+        LogTurtlebot3, Log, TEXT("[%s][%s][C++][receive request] %d + %d = %d"), *GetName(), *ServiceName, req.A, req.B, res.Sum);
 }

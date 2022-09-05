@@ -61,6 +61,6 @@ protected:
     void SendGoal();
 
 private:
-    FROSFibonacci_FeedbackMessage FeedbackMsg;
-    FROSFibonacci_SendGoal_Request GoalRequest;
+    FROSFibonacciFeedbackMessage FeedbackMsg;
+    FROSFibonacciSendGoalRequest GoalRequest;
 };

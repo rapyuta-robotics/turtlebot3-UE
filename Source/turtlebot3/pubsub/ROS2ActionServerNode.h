@@ -55,7 +55,7 @@ protected:
     void HandleAcceptedCallback();
 
 private:
-    FROSFibonacci_FeedbackMessage FeedbackMsg;
-    FROSFibonacci_SendGoal_Request GoalRequest;
+    FROSFibonacciFeedbackMessage FeedbackMsg;
+    FROSFibonacciSendGoalRequest GoalRequest;
     int Count = 0;
 };
