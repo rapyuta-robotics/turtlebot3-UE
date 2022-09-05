@@ -62,4 +62,7 @@ protected:
      */
     UFUNCTION()
     void ReceiveResponse(UROS2GenericSrv* InService);
+
+    UPROPERTY()
+    FTimerHandle TimerHandle;
 };
