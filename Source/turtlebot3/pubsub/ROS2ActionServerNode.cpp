@@ -47,9 +47,9 @@ void AROS2ActionServerNode::UpdateFeedbackCallback(UROS2GenericAction* InAction)
     // Calculate fibonacci and send feedoback
 
     // send result when finish by UpdateAndSendResult
-    if (Count++ < GoalRequest.order)
+    if (Count++ < GoalRequest.Order)
     {
-        FeedbackMsg.sequence.Add(FeedbackMsg.sequence[Count] + FeedbackMsg.sequence[Count - 1]);
+        FeedbackMsg.Sequence.Add(FeedbackMsg.Sequence[Count] + FeedbackMsg.Sequence[Count - 1]);
         FibonacciAction->SetFeedback(FeedbackMsg);
         // Log request and response
         UE_LOG(LogTurtlebot3,
@@ -57,7 +57,7 @@ void AROS2ActionServerNode::UpdateFeedbackCallback(UROS2GenericAction* InAction)
                TEXT("[%s][%s][C++][update feedback callback] added %d"),
                *GetName(),
                *ActionName,
-               FeedbackMsg.sequence.Last(0));
+               FeedbackMsg.Sequence.Last(0));
     }
     else
     {
@@ -73,11 +73,11 @@ void AROS2ActionServerNode::UpdateResultCallback(UROS2GenericAction* InAction)
     FString resultString;
 
     // set result
-    FROSFibonacci_GetResult_Response ResultResponse;
-    ResultResponse.status = GOAL_STATE_SUCCEEDED;
-    for (auto s : FeedbackMsg.sequence)
+    FROSFibonacciGetResultResponse ResultResponse;
+    ResultResponse.Status = GOAL_STATE_SUCCEEDED;
+    for (auto s : FeedbackMsg.Sequence)
     {
-        ResultResponse.sequence.Add(s);
+        ResultResponse.Sequence.Add(s);
         resultString += FString::FromInt(s) + ", ";
     }
     FibonacciAction->SetResultResponse(ResultResponse);
@@ -94,27 +94,27 @@ bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
 
     // set and send goal response
-    FROSFibonacci_SendGoal_Response goalResponse;
-    goalResponse.accepted = true;
-    goalResponse.stamp = UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld()));
+    FROSFibonacciSendGoalResponse goalResponse;
+    goalResponse.bAccepted = true;
+    goalResponse.Stamp = UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld()));
     FibonacciAction->SetGoalResponse(goalResponse);
     FibonacciActionServer->SendGoalResponse();
 
     // Log request and response
     UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][goal callback]"), *GetName(), *ActionName);
 
-    if (goalResponse.accepted)
+    if (goalResponse.bAccepted)
     {
         FibonacciAction->GetGoalRequest(GoalRequest);
         FibonacciAction->SetGoalIdToFeedback(FeedbackMsg);
-        FeedbackMsg.sequence.Empty();
-        FeedbackMsg.sequence.Add(0);
-        FeedbackMsg.sequence.Add(1);
+        FeedbackMsg.Sequence.Empty();
+        FeedbackMsg.Sequence.Add(0);
+        FeedbackMsg.Sequence.Add(1);
         Count = 1;
     }
 
     // return value is used by ROS2ActionServer to decide whether it calls accepted callback or not.
-    return goalResponse.accepted;
+    return goalResponse.bAccepted;
 }
 
 void AROS2ActionServerNode::HandleCancelCallback()

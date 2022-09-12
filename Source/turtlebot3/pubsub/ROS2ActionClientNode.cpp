@@ -44,8 +44,8 @@ void AROS2ActionClientNode::BeginPlay()
 void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacci_SendGoal_Request goalRequest;
-    goalRequest.order = Order;
+    FROSFibonacciSendGoalRequest goalRequest;
+    goalRequest.Order = Order;
     FibonacciAction->SetGoalRequest(goalRequest);
 
     // Log request and response
@@ -55,7 +55,7 @@ void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
 void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacci_FeedbackMessage feedback;
+    FROSFibonacciFeedbackMessage feedback;
     FibonacciAction->GetFeedback(feedback);
 
     UE_LOG(LogTurtlebot3,
@@ -63,18 +63,18 @@ void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
            TEXT("[%s][%s][C++][received feedback callback] last element of feedback sequence: %d"),
            *GetName(),
            *ActionName,
-           feedback.sequence.Last(0));
+           feedback.Sequence.Last(0));
 }
 
 void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacci_GetResult_Response resultResponse;
+    FROSFibonacciGetResultResponse resultResponse;
     FibonacciAction->GetResultResponse(resultResponse);
 
     // Log request and response
     FString resultString;
-    for (int s : resultResponse.sequence)
+    for (int s : resultResponse.Sequence)
     {
         resultString += FString::FromInt(s) + ", ";
     }
@@ -88,10 +88,10 @@ void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
 void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacci_SendGoal_Response goalResponse;
+    FROSFibonacciSendGoalResponse goalResponse;
     FibonacciAction->GetGoalResponse(goalResponse);
 
-    if (!goalResponse.accepted)
+    if (!goalResponse.bAccepted)
     {
         UE_LOG(LogTurtlebot3,
                Log,
