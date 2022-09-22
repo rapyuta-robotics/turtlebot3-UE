@@ -14,7 +14,7 @@ TB3_UE_DIR=${1:-"${CURRENT_DIR}"}
 source ${TB3_UE_DIR}/fastdds_setup.sh
 
 #change default level, generating DefautlEngine.ini
-DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
+DEFAULT_LEVEL=${LEVEL_NAME:-"Entry"}
 sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
 
 UE_EDITOR=${2:-"$(dirname ${TB3_UE_DIR})/UnrealEngine/Engine/Binaries/Linux/UE4Editor"}
