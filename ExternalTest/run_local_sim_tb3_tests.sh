@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 Help()
 {
     # Display Help
@@ -33,6 +31,9 @@ while getopts ":h" option; do
     esac
 done
 
+# Set exit-on-error mode
+set -e
+
 #CURRENT_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 #echo ${CURRENT_SCRIPT_DIR}
 
@@ -46,14 +47,14 @@ if [[ "turtlebot3-UE" != "${TB3_UE_DIR_NAME}" ]]; then
     exit 1
 fi
 
-## SETUP ROS TEST ENV --
-cd ${TB3_UE_DIR}
-source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
-
 ## START RRSIM --
-
 UE_EXE=$1
 UE_MAP=${2:-"Turtlebot3AutoTest"}
+
+# Set the domain ID prior to launching UE so that rclUE picks it up
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
+export FASTRTPS_DEFAULT_PROFILES_FILE=${TB3_UE_DIR}/fastdds_config.xml
 
 # Change default level, generating DefaultEngine.ini
 sed -e 's/${LEVEL_NAME}/'${UE_MAP}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.ini > ${TB3_UE_DIR}/Config/DefaultEngine.ini
@@ -62,6 +63,13 @@ sed -e 's/${LEVEL_NAME}/'${UE_MAP}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.in
 $UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject /Game/Maps/${UE_MAP} -game &
 RRSIM_PID="$(echo $!)"
 echo "RRSIM PID: $RRSIM_PID"
+
+# Wait for UE to initialize its plugins, since the below script runs concurrently
+sleep 5
+
+## SETUP ROS TEST ENV --
+cd ${TB3_UE_DIR}
+source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
 ## START TB3 TESTS --
 #
