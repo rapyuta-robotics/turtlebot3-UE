@@ -68,7 +68,7 @@ echo "RRSIM PID: $RRSIM_PID"
 sleep 5
 
 ## SETUP ROS TEST ENV --
-cd ${TB3_UE_DIR}
+# Note: This should be after UE has been brought up or it will break rclUE
 source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
 ## START TB3 TESTS --
@@ -77,7 +77,6 @@ ROBOT_MODEL=${3:-"burger"}
 ROBOT_NAME=${4:-"burger0"}
 ROBOT_INITIAL_POS=${5:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
 ROBOT_INITIAL_ROT=${6:-"0.0,0.0,0.0"}
-cd ${TB3_UE_DIR}
 source ${TB3_UE_DIR}/ExternalTest/run_tb3_tests.sh ${ROBOT_MODEL} ${ROBOT_NAME} ${ROBOT_INITIAL_POS} ${ROBOT_INITIAL_ROT}
 
 # Auto shutdown Sim
