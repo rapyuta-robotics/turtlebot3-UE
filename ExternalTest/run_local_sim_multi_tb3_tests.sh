@@ -60,7 +60,7 @@ echo "RRSIM PID: $RRSIM_PID"
 
 # Give time for UE to come up and initialize its plugins or weird stuff happens because
 # the below script is executed concurrently
-sleep 5
+sleep 120
 
 ## SETUP ROS TEST ENV --
 # Note: This should be after UE4 has been brought up or it will break rclUE

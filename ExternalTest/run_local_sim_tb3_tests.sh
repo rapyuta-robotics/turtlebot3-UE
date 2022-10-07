@@ -11,7 +11,7 @@ Help()
     echo "options:"
     echo "-h Print this Help."
     echo "arguments:"
-    echo "ue_exe: Path to the ue executor. Eg: ~/UNREAL/UnrealEngine/Engine/Binaries/Linux/UE4Editor"
+    echo "ue_exe: Path to the ue executor. Eg: ~/UNREAL/UnrealEngine/Engine/Binaries/Linux/UnrealEditor"
     echo "ue_map: ue map name. Eg: Turtlebot3AutoTest"
     echo "tb3_model: tb3 model to be tested (burger or waffle), which must also have been defined as a key name of [SpawnableEntities] in the provided ue map"
     echo "tb3_name: tb3 robot unique name"
@@ -52,7 +52,7 @@ sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' ${TB3_UE_DIR}/Config/DefaultEngine
 
 ## START turtlebot3-UE --
 UE_EXE=$1
-UE_MAP=${2:-"/Game/Maps/Turtlebot3AutoTest"}
+UE_MAP=${2:-"/RapyutaSimRobotImporter/Maps/RapyutaSingleSkeletalRobotDemo"}
 
 # Set the domain ID prior to launching UE so that rclUE picks it up
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -63,9 +63,9 @@ export FASTRTPS_DEFAULT_PROFILES_FILE=${TB3_UE_DIR}/fastdds_config.xml
 RRSIM_PID="$(echo $!)"
 echo "RRSIM PID: $RRSIM_PID"
 
-# Give time for UE to come up and initialize its plugins or weird stuff happens because
-# the below script is executed concurrently
-sleep 5
+# Give time for UE to finish init ROS & its plugins before running the script below, which must be afterwards
+# ue5 takes much longer time than ue4 to init
+sleep 120
 
 ## SETUP ROS TEST ENV --
 # Note: This should be after UE4 has been brought up or it will break rclUE
@@ -73,7 +73,7 @@ source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 
 ## START TB3 TESTS --
 #
-ROBOT_MODEL=${3:-"burger"}
+ROBOT_MODEL=${3:-"turtlebot3_burger"}
 ROBOT_NAME=${4:-"burger0"}
 ROBOT_INITIAL_POS=${5:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
 ROBOT_INITIAL_ROT=${6:-"0.0,0.0,0.0"}

@@ -98,6 +98,8 @@ launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_spawn.py robot_model:=${ROBOT_
                                                            robot_name:=${ROBOT_NAME} \
                                                            robot_pos:=${ROBOT_INITIAL_POS} \
                                                            robot_rot:=${ROBOT_INITIAL_ROT}
+# Skeletal robot building takes time
+sleep 8 
 
 # (4)
 echo "(4) Test Laser being scanned"
