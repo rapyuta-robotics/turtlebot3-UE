@@ -74,7 +74,7 @@ void AROS2ActionServerNode::UpdateResultCallback(UROS2GenericAction* InAction)
 
     // set result
     FROSFibonacciGRRes ResultResponse;
-    ResultResponse.Status = GOAL_STATE_SUCCEEDED;
+    ResultResponse.GRResStatus = GOAL_STATE_SUCCEEDED;
     for (auto s : FeedbackMsg.Sequence)
     {
         ResultResponse.Sequence.Add(s);
