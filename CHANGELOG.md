@@ -1,5 +1,8 @@
 # Changelog for turtlebot3-UE repository
 
+## 0.0.5 ##
+* Enable cpp17 + ExternalTest fastdds
+
 ## 0.0.4 ##
 * Update following UE-ROS adapter autogen #39
  
