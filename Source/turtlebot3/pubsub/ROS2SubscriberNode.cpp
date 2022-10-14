@@ -18,15 +18,15 @@ void AROS2SubscriberNode::BeginPlay()
     // bind callback function with topic subscription
     FSubscriptionCallback cb;
     cb.BindDynamic(this, &AROS2SubscriberNode::MsgCallback);
-    AddSubscription(TopicName, UROS2StringMsg::StaticClass(), cb);
+    AddSubscription(TopicName, UROS2StrMsg::StaticClass(), cb);
 }
 
 void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
 {
-    const UROS2StringMsg* stringMsg = Cast<UROS2StringMsg>(InMsg);    
+    const UROS2StrMsg* stringMsg = Cast<UROS2StrMsg>(InMsg);    
     if (stringMsg)
     {
-        FROSString msg;
+        FROSStr msg;
         stringMsg->GetMsg(msg);
         UE_LOG(LogTurtlebot3, Log, TEXT("[%s] %s"), *GetName(), *msg.Data);
     }

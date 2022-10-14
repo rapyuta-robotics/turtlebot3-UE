@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 // rclUE
-#include <Msgs/ROS2StringMsg.h>
+#include <Msgs/ROS2Str.h>
 #include <ROS2Node.h>
 
 #include "ROS2SubscriberNode.generated.h"

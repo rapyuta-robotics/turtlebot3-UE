@@ -10,7 +10,7 @@
 #include "GameFramework/Actor.h"
 
 // rclUE
-#include <Actions/ROS2FibonacciAction.h>
+#include <Actions/ROS2Fibonacci.h>
 #include <ROS2ActionClient.h>
 #include <ROS2Node.h>
 
@@ -61,6 +61,6 @@ protected:
     void SendGoal();
 
 private:
-    FROSFibonacciFeedbackMessage FeedbackMsg;
-    FROSFibonacciSendGoalRequest GoalRequest;
+    FROSFibonacciFB FeedbackMsg;
+    FROSFibonacciSGReq GoalRequest;
 };
