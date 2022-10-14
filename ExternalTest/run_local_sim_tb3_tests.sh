@@ -11,7 +11,7 @@ Help()
     echo "arguments:"
     echo "ue_exe: Path to the ue executor. Eg: ~/UNREAL/UnrealEngine/Engine/Binaries/Linux/UnrealEditor"
     echo "ue_map: ue map name. Eg: Turtlebot3AutoTest"
-    echo "tb3_model: tb3 model to be tested (burger or waffle), which must also have been defined as a key name of [SpawnableEntities] in the provided ue map"
+    echo "tb3_model: tb3 model to be tested (turtlebot3_burger or turtlebot3_waffle), of which its description folder (urdf/sdf + CAD) must be present under ExterntalData/RobotModels"
     echo "tb3_name: tb3 robot unique name"
     echo "tb3_init_pos: tb3's initial position (x,y,z), eg: 0.0,0.0,0.1"
     echo "tb3_init_rot: tb3's initial rotation (r,p,y), eg: 0.0,0.0,0.0"
@@ -59,14 +59,13 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
 export FASTRTPS_DEFAULT_PROFILES_FILE=${TB3_UE_DIR}/fastdds_config.xml
 
-
 (exec "$UE_EXE" "${TB3_UE_DIR}/turtlebot3.uproject" "${UE_MAP}" "-game") &
 RRSIM_PID="$(echo $!)"
 echo "RRSIM PID: $RRSIM_PID"
 
 # Give time for UE to finish init ROS & its plugins before running the script below, which must be afterwards
 # ue5 takes much longer time than ue4 to init
-sleep 12
+sleep 120
 
 ## SETUP ROS TEST ENV --
 # Note: This should be after UE4 has been brought up or it will break rclUE
