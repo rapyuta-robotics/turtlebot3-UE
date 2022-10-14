@@ -44,7 +44,7 @@ void AROS2ActionClientNode::BeginPlay()
 void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacciSendGoalRequest goalRequest;
+    FROSFibonacciSGReq goalRequest;
     goalRequest.Order = Order;
     FibonacciAction->SetGoalRequest(goalRequest);
 
@@ -55,7 +55,7 @@ void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
 void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacciFeedbackMessage feedback;
+    FROSFibonacciFB feedback;
     FibonacciAction->GetFeedback(feedback);
 
     UE_LOG(LogTurtlebot3,
@@ -69,7 +69,7 @@ void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
 void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacciGetResultResponse resultResponse;
+    FROSFibonacciGRRes resultResponse;
     FibonacciAction->GetResultResponse(resultResponse);
 
     // Log request and response
@@ -88,7 +88,7 @@ void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
 void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
 {
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-    FROSFibonacciSendGoalResponse goalResponse;
+    FROSFibonacciSGRes goalResponse;
     FibonacciAction->GetGoalResponse(goalResponse);
 
     if (!goalResponse.bAccepted)

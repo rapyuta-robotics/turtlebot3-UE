@@ -24,11 +24,11 @@ void AROS2ServiceServerNode::SrvCallback(UROS2GenericSrv* InService)
 {
     UROS2AddTwoIntsSrv* AddTwoIntsService = Cast<UROS2AddTwoIntsSrv>(InService);
 
-    FROSAddTwoIntsRequest req;
+    FROSAddTwoIntsReq req;
     AddTwoIntsService->GetRequest(req);
 
     // Add two ints.
-    FROSAddTwoIntsResponse res;
+    FROSAddTwoIntsRes res;
     res.Sum = req.A + req.B;
 
     // Set response.

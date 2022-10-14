@@ -1,9 +1,21 @@
 #!/bin/bash
 
+# Since this script is invoked in-line from another script, just exit upon error
+# Set exit-on-error mode
+set -e
+
+# Set exit trap
+trap 'trap_catch $? ${LINENO}' EXIT
+trap_catch() {
+	if [ "$1" != "0" ]; then
+		echo "${BASH_SOURCE[0]} failed - Error $1 at line $2"
+		exit $1
+	fi
+}
+
 # Create a workspace to build required dependency ros2 pkgs
 BASE_DIR="$(pwd)"
 RRSIM_ROS2_WS="${BASE_DIR}/RRSIM_ROS2"
-
 source /opt/ros/foxy/setup.sh
 fastdds discovery -i 0 &
 ros2 daemon start

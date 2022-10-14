@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 Help()
 {
     # Display Help
@@ -33,6 +31,9 @@ while getopts ":h" option; do
     esac
 done
 
+# Set exit-on-error mode
+set -e
+
 #CURRENT_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 #echo ${CURRENT_SCRIPT_DIR}
 
@@ -49,7 +50,6 @@ fi
 ## GENERATE [Config/DefaultEngine.ini]
 DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
 sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.ini > ${TB3_UE_DIR}/Config/DefaultEngine.ini
-
 ## START turtlebot3-UE --
 UE_EXE=$1
 UE_MAP=${2:-"/RapyutaSimRobotImporter/Maps/RapyutaSingleSkeletalRobotDemo"}
@@ -59,13 +59,14 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
 export FASTRTPS_DEFAULT_PROFILES_FILE=${TB3_UE_DIR}/fastdds_config.xml
 
+
 (exec "$UE_EXE" "${TB3_UE_DIR}/turtlebot3.uproject" "${UE_MAP}" "-game") &
 RRSIM_PID="$(echo $!)"
 echo "RRSIM PID: $RRSIM_PID"
 
 # Give time for UE to finish init ROS & its plugins before running the script below, which must be afterwards
 # ue5 takes much longer time than ue4 to init
-sleep 120
+sleep 12
 
 ## SETUP ROS TEST ENV --
 # Note: This should be after UE4 has been brought up or it will break rclUE
@@ -77,7 +78,6 @@ ROBOT_MODEL=${3:-"turtlebot3_burger"}
 ROBOT_NAME=${4:-"burger0"}
 ROBOT_INITIAL_POS=${5:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
 ROBOT_INITIAL_ROT=${6:-"0.0,0.0,0.0"}
-cd ${TB3_UE_DIR}
 source ${TB3_UE_DIR}/ExternalTest/run_tb3_tests.sh ${ROBOT_MODEL} ${ROBOT_NAME} ${ROBOT_INITIAL_POS} ${ROBOT_INITIAL_ROT}
 
 # Auto shutdown Sim

@@ -17,6 +17,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "PixelStreaming",
+			"Enabled": true
+		},
+		{
 			"Name": "rclUE",
 			"Enabled": true
 		},

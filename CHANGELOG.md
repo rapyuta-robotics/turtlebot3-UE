@@ -1,11 +1,13 @@
 # Changelog for turtlebot3-UE repository
 
-## 0.0.5 ##
+## 0.0.6 ##
 * RapyutaRobotImporter:
 - Skeletal robot add primitive mesh support, fix bone poses + physics constraints for simple_arm, tb3
 - VHACD version 4
 - DefaultEngineBase.ini Set global override game mode as RRRobotGameMode, game instance as RRGameInstance
 - Add DefaultRapyutaSimSettings.ini Config `TEST_SKELETAL_ROBOT_MODEL_NAMES` as {`simple_arm`, `turtlebot3_burger`, `turtlebot3_waffle`} & `TEST_SKELETAL_ROBOT_NUM`
+## 0.0.5 ##
+* Enable cpp17 + ExternalTest fastdds
 ## 0.0.4 ##
 * Update following UE-ROS adapter autogen #39
 ## 0.0.3 ##

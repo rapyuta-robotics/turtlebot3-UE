@@ -38,7 +38,7 @@ void AROS2ServiceClientNode::BeginPlay()
 void AROS2ServiceClientNode::SendRequest(UROS2GenericSrv* InService)
 {
     // Create and update request
-    FROSAddTwoIntsRequest req;
+    FROSAddTwoIntsReq req;
     req.A = A++;
     req.B = B++;
     CastChecked<UROS2AddTwoIntsSrv>(InService)->SetRequest(req);
@@ -51,7 +51,7 @@ void AROS2ServiceClientNode::ReceiveResponse(UROS2GenericSrv* InService)
 {
     UROS2AddTwoIntsSrv* AddTwoIntsService = Cast<UROS2AddTwoIntsSrv>(InService);
 
-    FROSAddTwoIntsResponse res;
+    FROSAddTwoIntsRes res;
     AddTwoIntsService->GetResponse(res);
 
     // Log response

@@ -73,8 +73,8 @@ void AROS2ActionServerNode::UpdateResultCallback(UROS2GenericAction* InAction)
     FString resultString;
 
     // set result
-    FROSFibonacciGetResultResponse ResultResponse;
-    ResultResponse.Status = GOAL_STATE_SUCCEEDED;
+    FROSFibonacciGRRes ResultResponse;
+    ResultResponse.GRResStatus = GOAL_STATE_SUCCEEDED;
     for (auto s : FeedbackMsg.Sequence)
     {
         ResultResponse.Sequence.Add(s);
@@ -94,7 +94,7 @@ bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
 
     // set and send goal response
-    FROSFibonacciSendGoalResponse goalResponse;
+    FROSFibonacciSGRes goalResponse;
     goalResponse.bAccepted = true;
     goalResponse.Stamp = UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld()));
     FibonacciAction->SetGoalResponse(goalResponse);
