@@ -52,7 +52,8 @@ DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
 sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.ini > ${TB3_UE_DIR}/Config/DefaultEngine.ini
 ## START turtlebot3-UE --
 UE_EXE=$1
-UE_MAP=${2:-"/RapyutaSimRobotImporter/Maps/RapyutaSingleSkeletalRobotDemo"}
+UE_MAP=${2:-"/Game/RapyutaRoom/Scenes/RapyutaRoom"}
+#UE_MAP=${2:-"/RapyutaSimRobotImporter/Maps/RapyutaSingleSkeletalRobotDemo"}
 
 # Set the domain ID prior to launching UE so that rclUE picks it up
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -75,7 +76,7 @@ source ${TB3_UE_DIR}/ExternalTest/setup_ros_test_env.sh
 #
 ROBOT_MODEL=${3:-"turtlebot3_burger"}
 ROBOT_NAME=${4:-"burger0"}
-ROBOT_INITIAL_POS=${5:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
+ROBOT_INITIAL_POS=${5:-"-2.0,-1.0,2.5"} # z should be >= 0.1 is to avoid collision with the floor
 ROBOT_INITIAL_ROT=${6:-"0.0,0.0,0.0"}
 source ${TB3_UE_DIR}/ExternalTest/run_tb3_tests.sh ${ROBOT_MODEL} ${ROBOT_NAME} ${ROBOT_INITIAL_POS} ${ROBOT_INITIAL_ROT}
 
