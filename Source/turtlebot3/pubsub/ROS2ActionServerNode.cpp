@@ -2,16 +2,27 @@
 
 #include "ROS2ActionServerNode.h"
 
+// UE
 #include "Kismet/GameplayStatics.h"
+
+// rclUE
 #include "rclcUtilities.h"
 
-AROS2ActionServerNode::AROS2ActionServerNode()
-{
-    PrimaryActorTick.bCanEverTick = true;
-}
+// RapyutaSimulationPlugins
+#include "Core/RRCoreUtils.h"
+
+// Turtlebot3_UE
+#include "turtlebot3/Turtlebot3.h"
 
 void AROS2ActionServerNode::BeginPlay()
 {
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        UE_LOG(LogTurtlebot3, Error, TEXT("[%s]ROS2 is not enabled in ARRROS2GameMode"), *GetName());
+        PrimaryActorTick.bCanEverTick = false;
+        return;
+    }
+
     Super::BeginPlay();
     Init();
 
@@ -38,6 +49,24 @@ void AROS2ActionServerNode::BeginPlay()
 
     // Add action server to ROS2Node
     AddActionServer(FibonacciActionServer);
+}
+
+void AROS2ActionServerNode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        return;
+    }
+    Super::EndPlay(EndPlayReason);
+}
+
+void AROS2ActionServerNode::Tick(float DeltaTime)
+{
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        return;
+    }
+    Super::Tick(DeltaTime);
 }
 
 void AROS2ActionServerNode::UpdateFeedbackCallback(UROS2GenericAction* InAction)

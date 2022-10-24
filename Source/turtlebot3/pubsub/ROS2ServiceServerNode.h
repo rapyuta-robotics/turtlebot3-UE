@@ -28,13 +28,13 @@ class TURTLEBOT3_API AROS2ServiceServerNode : public AROS2Node
     GENERATED_BODY()
 
 public:
-    AROS2ServiceServerNode();
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString ServiceName = TEXT("add_two_ints");
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void Tick(float DeltaTime);
 
     /**
      * @brief Service callback function

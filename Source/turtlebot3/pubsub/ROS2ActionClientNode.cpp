@@ -2,16 +2,27 @@
 
 #include "ROS2ActionClientNode.h"
 
+// UE
 #include "Kismet/GameplayStatics.h"
+
+// rclUE
 #include "rclcUtilities.h"
 
-AROS2ActionClientNode::AROS2ActionClientNode()
-{
-    PrimaryActorTick.bCanEverTick = true;
-}
+// RapyutaSimulationPlugins
+#include "Core/RRCoreUtils.h"
+
+// Turtlebot3_UE
+#include "turtlebot3/Turtlebot3.h"
 
 void AROS2ActionClientNode::BeginPlay()
 {
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        UE_LOG(LogTurtlebot3, Error, TEXT("[%s]ROS2 is not enabled in ARRROS2GameMode"), *GetName());
+        PrimaryActorTick.bCanEverTick = false;
+        return;
+    }
+
     Super::BeginPlay();
     Init();
 
@@ -39,6 +50,24 @@ void AROS2ActionClientNode::BeginPlay()
     AddActionClient(FibonacciActionClient);
 
     GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionClientNode::SendGoal, 1.f, true);
+}
+
+void AROS2ActionClientNode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        return;
+    }
+    Super::EndPlay(EndPlayReason);
+}
+
+void AROS2ActionClientNode::Tick(float DeltaTime)
+{
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        return;
+    }
+    Super::Tick(DeltaTime);
 }
 
 void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)

@@ -1,5 +1,9 @@
 # Changelog for turtlebot3-UE repository
 
+## 0.0.6 ##
+* RapyutaSimulationPlugins: add bROS2Enabled for ARRROS2GameMode + ARRBaseRobot
+* Config add DefaultRapyutaSimConfigs.ini
+
 ## 0.0.5 ##
 * Enable cpp17 + ExternalTest fastdds
 

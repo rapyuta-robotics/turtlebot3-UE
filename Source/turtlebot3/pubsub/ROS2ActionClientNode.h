@@ -29,8 +29,6 @@ class TURTLEBOT3_API AROS2ActionClientNode : public AROS2Node
     GENERATED_BODY()
 
 public:
-    AROS2ActionClientNode();
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2ActionClient* FibonacciActionClient = nullptr;
 
@@ -38,10 +36,12 @@ public:
     FString ActionName = TEXT("fibonacci_action");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int Order = 3;
+    int32 Order = 3;
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void Tick(float DeltaTime);
 
     UPROPERTY()
     FTimerHandle ActionTimerHandle;
@@ -61,6 +61,8 @@ protected:
     void SendGoal();
 
 private:
+    UPROPERTY()
     FROSFibonacciFB FeedbackMsg;
+    UPROPERTY()
     FROSFibonacciSGReq GoalRequest;
 };

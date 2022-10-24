@@ -17,13 +17,13 @@ class TURTLEBOT3_API AROS2SubscriberNode : public AROS2Node
     GENERATED_BODY()
 
 public:
-    AROS2SubscriberNode();
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TopicName = TEXT("test_topic");
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void Tick(float DeltaTime);
 
     UFUNCTION()
     void MsgCallback(const UROS2GenericMsg* InMsg);

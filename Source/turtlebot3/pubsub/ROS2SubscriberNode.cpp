@@ -2,16 +2,21 @@
 
 #include "ROS2SubscriberNode.h"
 
+// RapyutaSimulationPlugins
+#include "Core/RRCoreUtils.h"
+
 // Turtlebot3_UE
 #include "turtlebot3/Turtlebot3.h"
 
-AROS2SubscriberNode::AROS2SubscriberNode()
-{
-    PrimaryActorTick.bCanEverTick = true;
-}
-
 void AROS2SubscriberNode::BeginPlay()
 {
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        UE_LOG(LogTurtlebot3, Error, TEXT("[%s]ROS2 is not enabled in ARRROS2GameMode"), *GetName());
+        PrimaryActorTick.bCanEverTick = false;
+        return;
+    }
+
     Super::BeginPlay();
     Init();
 
@@ -21,9 +26,27 @@ void AROS2SubscriberNode::BeginPlay()
     AddSubscription(TopicName, UROS2StrMsg::StaticClass(), cb);
 }
 
+void AROS2SubscriberNode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        return;
+    }
+    Super::EndPlay(EndPlayReason);
+}
+
+void AROS2SubscriberNode::Tick(float DeltaTime)
+{
+    if (false == URRCoreUtils::IsROS2SystemEnabled(this))
+    {
+        return;
+    }
+    Super::Tick(DeltaTime);
+}
+
 void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
 {
-    const UROS2StrMsg* stringMsg = Cast<UROS2StrMsg>(InMsg);    
+    const UROS2StrMsg* stringMsg = Cast<UROS2StrMsg>(InMsg);
     if (stringMsg)
     {
         FROSStr msg;

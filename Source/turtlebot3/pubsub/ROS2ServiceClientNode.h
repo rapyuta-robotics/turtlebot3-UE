@@ -29,6 +29,8 @@ class TURTLEBOT3_API AROS2ServiceClientNode : public AROS2Node
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void Tick(float DeltaTime);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2ServiceClient* AddTwoIntsSrvClient = nullptr;
