@@ -17,6 +17,7 @@ void AROS2ServiceClientNode::BeginPlay()
     AddTwoIntsSrvClient->RegisterComponent();
     AddTwoIntsSrvClient->ServiceName = ServiceName;
     AddTwoIntsSrvClient->SrvClass = UROS2AddTwoIntsSrv::StaticClass();
+    AddTwoIntsSrvClient->QoS = UROS2QoS::DynamicBroadcaster;
 
     // Bind functions to delegates
     // UROS2ServiceClient::UpdateAndSendRequest will call bounded method.
@@ -27,8 +28,6 @@ void AROS2ServiceClientNode::BeginPlay()
 
     // Add service to ROSNode(this_)
     AddServiceClient(AddTwoIntsSrvClient);
-
-    AddTwoIntsSrvClient->Init(UROS2QoS::DynamicBroadcaster);
 
     // set timer to periodically calling service.
     GetWorld()->GetTimerManager().SetTimer(

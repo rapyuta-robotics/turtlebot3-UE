@@ -14,5 +14,5 @@ void AROS2PublisherNode::BeginPlay()
     StringPublisher = NewObject<URRROS2StringPublisher>(this);
     StringPublisher->Message = Message;
     StringPublisher->TopicName = TopicName;
-    StringPublisher->InitializeWithROS2(this);
+    StringPublisher->InitializeWithROS2(this->ActorComponent);
 }
