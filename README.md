@@ -20,6 +20,17 @@ UE4 Project which includes examples to use rclUE.
     ./run_editor.sh $(pwd) <ue_exe>
     # Eg: ./run_editor.sh $(pwd) ~/UE/UnrealEngine/Engine/Binaries/Linux/UE4Editor
     ```
+## Install pre-commit
+Please install pre-commit before commiting your changes.
+Follow this instruction https://pre-commit.com/
+
+then run
+
+```bash
+./setup_pre_commit.sh
+```
+
+this will setup pre-commit to all submodules as well.
 
 ## Turtlebot3 navigation
 
