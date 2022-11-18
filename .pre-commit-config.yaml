@@ -1,0 +1,56 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-json
+      - id: check-symlinks
+      - id: check-xml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: ["--markdown-linebreak-ext=md"]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort
+        args: ["--profile", "black"]
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        description: Format python code
+
+      - id: black
+        name: black with python3.8
+        args: ["--line-length=88", "--target-version=py38"]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        description: Linting for python code
+        args: ["--max-line-length=88"]
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: 'v13.0.1'
+    hooks:
+      - id: clang-format
+        name: clang-format
+        args: ["--style=file", "-i"]
+        description: Format C/C++ code
+        types_or: [c, c++]
+  - repo: local
+    hooks:
+      - id: cppcheck
+        name: cppcheck
+        description: Linting for C/C++ code
+        language: system
+        types_or: [c, c++]
+        entry: cppcheck --error-exitcode=1
+        stages: [manual]
+        args: ["--enable=style,information",
+               "--suppress=useStlAlgorithm",
+               "--quiet",
+               "--inline-suppr",
+               "--template='[{file}:{line}]: ({severity}) ({id}) {message}'"]
