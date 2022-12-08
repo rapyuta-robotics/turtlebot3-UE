@@ -13,7 +13,7 @@ TB3_UE_DIR=${1:-"${CURRENT_DIR}"}
 (exec "${TB3_UE_DIR}/run_discovery_service.sh")
 
 # Configure environment for FastDDS discovery
-source ${TB3_UE_DIR}/fastdds_setup.sh
+#source ${TB3_UE_DIR}/fastdds_setup.sh
 
 UE_EDITOR="${UE5_DIR}/UnrealEngine/Engine/Binaries/Linux/UnrealEditor"
 (exec "$UE_EDITOR" "${TB3_UE_DIR}/turtlebot3.uproject" "-game")

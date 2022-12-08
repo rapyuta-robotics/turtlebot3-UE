@@ -4,14 +4,12 @@ Help()
     # Display Help
     echo "The script must be run from the turtlebot3-UE project dir."
     echo
-    echo "Syntax: ./ExternalTest/$(basename $0) [-h] <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>"
+    echo "Syntax: ./ExternalTest/$(basename $0) [-h] <tb3_model> <tb3_num>"
     echo "options:"
     echo "-h Print this Help."
     echo "arguments:"
     echo "tb3_model: tb3 model to be tested (burger or waffle), which must also have been defined as a key name of [SpawnableEntities] in the provided ue map"
-    echo "tb3_name: tb3 robot unique name"
-    echo "tb3_init_pos: tb3's initial position (x,y,z), eg: 0.0,0.0,0.1"
-    echo "tb3_init_rot: tb3's initial rotation (r,p,y), eg: 0.0,0.0,0.0"
+    echo "tb3_num: num of tb3 robots"
     echo
 }
 
@@ -54,14 +52,6 @@ TB3_TESTS_PKG_DIR="${TB3_UE_DIR}/ExternalTest/${TB3_TESTS_PKG_NAME}"
 TB3_TESTS_SCRIPTS_DIR="${TB3_TESTS_PKG_DIR}/${TB3_TESTS_PKG_NAME}"
 
 cd ${TB3_TESTS_PKG_DIR}
-mkdir -p maps
-if [ ! -f maps/Turtlebot3_benchmark.pgm ]; then
-    ln ../../Content/Turtlebot3_benchmark.pgm maps/Turtlebot3_benchmark.pgm
-fi
-if [ ! -f maps/Turtlebot3_benchmark.yaml ]; then
-    ln ../../Content/Turtlebot3_benchmark.yaml maps/Turtlebot3_benchmark.yaml
-fi
-
 if [ ! -e ${TB3_TESTS_ROS_WS} ]; then
     mkdir -p ${TB3_TESTS_ROS_WS}/src
     cd ${TB3_TESTS_ROS_WS}/src
@@ -72,10 +62,8 @@ colcon build --symlink-install
 source install/setup.bash
 
 # Robot model: burger/waffle
-ROBOT_MODEL=${1:-"burger"}
-ROBOT_NAME=${2:-"burger0"}
-ROBOT_INITIAL_POS=${3:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
-ROBOT_INITIAL_ROT=${4:-"0.0,0.0,0.0"}
+ROBOT_MODEL=${1:-"turtlebot3_burger"}
+ROBOTS_NUM=${2:-4}
 if [[ ${ROBOT_MODEL} == *"burger"* ]]; then
     export TURTLEBOT3_MODEL=burger #
 elif [[ ${ROBOT_MODEL} == *"waffle"* ]]; then
@@ -93,30 +81,35 @@ echo "(2) Test whether clock message is being published"
 launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_clock_published.py
 
 # (3)
-echo "(3) Test robot spawning  with empty robot namespace & its odom publication"
-launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_spawn.py robot_model:=${ROBOT_MODEL} \
-                                                           robot_name:=${ROBOT_NAME} \
-                                                           robot_pos:=${ROBOT_INITIAL_POS} \
-                                                           robot_rot:=${ROBOT_INITIAL_ROT}
-# Skeletal robot building takes time
-sleep 8 
+echo "(3) Test multi-tb3 spawning with valid different namespaces"
+for i in `seq 1 ${ROBOTS_NUM}`
+do
+    x=$(( ($i/${ROBOTS_NUM})*2))
+    y=$(( ($i%${ROBOTS_NUM})*2 - 4))
+    ROBOT_NAME="${ROBOT_MODEL}$i"
 
-# (4)
-echo "(4) Test Laser being scanned"
-launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_laser_scan_published.py scan_topics:="/scan"
+    launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_spawn.py robot_model:=${ROBOT_MODEL} \
+                                                               robot_name:=${ROBOT_NAME} \
+                                                               robot_namespace:=${ROBOT_NAME} \
+                                                               robot_pos:="$x, $y, 0.0" \
+                                                               robot_rot:="0.0, 0.0, 0.0"
+    
+    # Test Laser being scanned
+    if [ $i == 1 ]
+    then
+        echo "${ROBOT_NAME} - Test Laser being scanned"
+        launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_laser_scan_published.py scan_topics:="/${ROBOT_NAME}/scan"
+    fi
 
-# (5)
-echo "(5) Test odom being published"
-launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_odom_published.py is_tf_published:='True' is_tf_static:='False'
+    # (3.1) Test odom being published
+    echo "${ROBOT_NAME} - Test odom being published"
+    launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_odom_published.py robot_namespace:="${ROBOT_NAME}" is_tf_published:='True' is_tf_static:='False'
 
-# (6) 
-echo "(6) Test robot auto-navigation"
-cd ${TB3_TESTS_PKG_DIR} # to read the map
-launch_test ${TB3_TESTS_SCRIPTS_DIR}/test_waypoint_follower.py waypoints:='-0.52, -0.78, 0.7, 0.5, 2.0, -1.5, 1.7, 1.7'\
-                                                               initial_pose:="${ROBOT_INITIAL_POS}, ${ROBOT_INITIAL_ROT}"
-
-# (7)
-echo "(7) Test robot removal"
-launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_remove.py robot_name:=${ROBOT_NAME}
+    # (3.2) Test cmd_vel being subscribed
+    echo "${ROBOT_NAME} - Test cmd_vel being subscribed"
+    launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_cmd_vel_subscribed.py robot_namespace:="${ROBOT_NAME}" robot_name:="${ROBOT_NAME}" \
+                                                                            twist_linear:='0.2, 0.0, 0.0' \
+                                                                            twist_angular:='0.0, 0.0, 1.8'
+done
 
 unset TURTLEBOT3_MODEL
