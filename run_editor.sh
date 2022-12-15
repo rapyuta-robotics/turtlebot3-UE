@@ -15,5 +15,13 @@ TB3_UE_DIR=${1:-"${CURRENT_DIR}"}
 # Configure environment for FastDDS discovery
 source ${TB3_UE_DIR}/fastdds_setup.sh
 
+#change default level, generating DefautlEngine.ini
+DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
+DEFAULT_RATE=${FIXED_FRAME_RATE:-"100.0"}
+DEFAULT_RTF=${TARGET_RTF:-"1.0"}
+sed -e 's/${LEVEL_NAME}/'${DEFAULT_LEVEL}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
+sed -i -e 's/${FIXED_FRAME_RATE}/'${DEFAULT_RATE}'/g' Config/DefaultEngine.ini
+sed -i -e 's/${TARGET_RTF}/'${DEFAULT_RTF}'/g' Config/DefaultEngine.ini
+
 UE_EDITOR="${UE5_DIR}/Engine/Binaries/Linux/UnrealEditor"
 (exec "$UE_EDITOR" "${TB3_UE_DIR}/turtlebot3.uproject")
