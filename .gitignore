@@ -65,6 +65,9 @@ Build/*/**
 # Don't ignore icon files in Build
 !Build/**/*.ico
 
+# Generated from DefaultEngineBase.init
+Config/DefaultEngine.ini
+
 # Whitelist Linux plugin libs
 !Plugins/*/ThirdParty/**/*.a
 
