@@ -1,24 +1,30 @@
 # Turtlebot UE
 
-UE4 Project which includes examples to use rclUE.
+UE Project which includes examples to use rclUE.
+## Branches
+- `devel`: Main branch. Compatible with Unreal Engine 5.1
+- `UE4`: Compatible with Unreal Engine 4.27
 
 ## Maps
-
-- PubSub: BP and C++ ROS2 publisher subscriber example.
-- Turtlebot3 Benchmark: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP
+- `ROS2Examples`: BP and C++ ROS2 example nodes of publisher/subscriber, service server/client and action server/client.
+- `Turtlebot3 Benchmark`: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP
+- `Simple`: Simple robot arm example which can be controlled from [sensor_msgs/JointStates](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/JointState.html)
+- `Entry`: Get map name from command line and transition to that maps. Mainly used to packaged project to change initial map.
+- `LargeGround`: Large enough map for simulating many robots. Mainly used to test [distributed multi-robot simulation](https://rapyutasimulationplugins.readthedocs.io/en/devel/distributed_simulation.html).
+- `Turtlebot3AutoTest`: Maps for Automated test.
 
 ## Setup and run
 
-1.  Setup UE4 in Linux by following [Linux Quick Start](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/)
+1.  Download UE5.1 for Linux by following [Unreal Engine for Linux](https://www.unrealengine.com/en-US/linux)
 2.  Clone this repo : `git clone --recurse-submodules git@github.com:rapyuta-robotics/turtlebot3-UE.git`
 3.  Retrieve the large files : `git-lfs pull && git submodule foreach git-lfs pull`
 4.  Build and run
     ```
     cd turtlebot3-UE
+    export UE5_DIR=<path to UE5>
     ./update_project_files.sh
     ./make_editor.sh
     ./run_editor.sh $(pwd) <ue_exe>
-    # Eg: ./run_editor.sh $(pwd) ~/UE/UnrealEngine/Engine/Binaries/Linux/UE4Editor
     ```
 ## Install pre-commit
 Please install pre-commit before commiting your changes.
@@ -37,6 +43,7 @@ this will setup pre-commit to all submodules as well.
 ### Installation
 
 1. [Install ROS2 foxy](https://docs.ros.org/en/foxy/Installation.html)
+    * you can use ROS2 humble as well by checkout `Plugins/rclUE` to `UE5_devel_humble` branch.
 2. [Install Nav2](https://navigation.ros.org/getting_started/index.html)
 
 ### Run
