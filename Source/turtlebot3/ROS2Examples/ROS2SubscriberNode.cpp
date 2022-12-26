@@ -23,7 +23,7 @@ void AROS2SubscriberNode::BeginPlay()
 
 void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
 {
-    const UROS2StrMsg* stringMsg = Cast<UROS2StrMsg>(InMsg);    
+    const UROS2StrMsg* stringMsg = Cast<UROS2StrMsg>(InMsg);
     if (stringMsg)
     {
         FROSStr msg;
