@@ -7,8 +7,8 @@ UE Project which includes examples to use rclUE.
 
 ## Maps
 - `ROS2Examples`: BP and C++ ROS2 example nodes of publisher/subscriber, service server/client and action server/client.
-- `Turtlebot3 Benchmark`: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP
-- `SimpleArm`: Simple robot arm example which can be controlled from [sensor_msgs/JointStates](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/JointState.html)
+- `Turtlebot3 Benchmark`: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP.
+- `SimpleArm`: Simple robot arm example which can be controlled from [sensor_msgs/JointStates](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/JointState.html).
 - `Entry`: Get map name from command line and transition to that maps. Mainly used to packaged project to change initial map.
 - `LargeGround`: Large enough map for simulating many robots. Mainly used to test [distributed multi-robot simulation](https://rapyutasimulationplugins.readthedocs.io/en/devel/distributed_simulation.html).
 - `Turtlebot3AutoTest`: Maps for Automated test.
