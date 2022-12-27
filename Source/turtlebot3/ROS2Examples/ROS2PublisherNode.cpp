@@ -2,17 +2,31 @@
 
 #include "ROS2PublisherNode.h"
 
-// RapyutaSimulationPlugins
-#include "Tools/RRROS2StringPublisher.h"
+AROS2PublisherNode::AROS2PublisherNode()
+{
+    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
+    Node->RegisterComponent();
+    Node->Name = TEXT("publisher_node");
+    Node->Namespace = TEXT("cpp");
+}
 
 void AROS2PublisherNode::BeginPlay()
 {
     Super::BeginPlay();
-    Init();
 
-    // Create String publisher
-    StringPublisher = NewObject<URRROS2StringPublisher>(this);
-    StringPublisher->Message = Message;
-    StringPublisher->TopicName = TopicName;
-    StringPublisher->InitializeWithROS2(this->ActorComponent);
+    Node->Init();
+    ROS2_CREATE_PUBLISHER(Node,
+                          this,
+                          TopicName,
+                          UROS2Publisher::StaticClass(),
+                          UROS2StrMsg::StaticClass(),
+                          PublicationFrequencyHz,
+                          &AROS2PublisherNode::UpdateMessage);
+}
+
+void AROS2PublisherNode::UpdateMessage(UROS2GenericMsg* InMessage)
+{
+    FROSStr msg;
+    msg.Data = FString::Printf(TEXT("%s %d"), *Message, Count++);
+    CastChecked<UROS2StrMsg>(InMessage)->SetMsg(msg);
 }
