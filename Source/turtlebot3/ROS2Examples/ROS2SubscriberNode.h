@@ -6,25 +6,31 @@
 #include "GameFramework/Actor.h"
 
 // rclUE
+#include "ROS2Subscriber.h"
+
 #include <Msgs/ROS2Str.h>
-#include <ROS2Node.h>
 
 #include "ROS2SubscriberNode.generated.h"
 
 UCLASS()
-class TURTLEBOT3_API AROS2SubscriberNode : public AROS2Node
+class TURTLEBOT3_API AROS2SubscriberNode : public AActor
 {
     GENERATED_BODY()
 
 public:
     AROS2SubscriberNode();
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString TopicName = TEXT("test_topic");
-
-protected:
     virtual void BeginPlay() override;
 
     UFUNCTION()
     void MsgCallback(const UROS2GenericMsg* InMsg);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2NodeComponent* Node = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2Subscriber* Subscriber = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString TopicName = TEXT("test_topic");
 };

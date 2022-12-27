@@ -26,9 +26,6 @@ public:
     UROS2NodeComponent* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UROS2Publisher* Publisher = nullptr;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TopicName = TEXT("test_topic");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
