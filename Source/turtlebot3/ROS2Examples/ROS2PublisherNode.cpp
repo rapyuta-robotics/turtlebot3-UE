@@ -15,13 +15,40 @@ void AROS2PublisherNode::BeginPlay()
     Super::BeginPlay();
 
     Node->Init();
-    ROS2_CREATE_PUBLISHER(Node,
-                          this,
-                          TopicName,
-                          UROS2Publisher::StaticClass(),
-                          UROS2StrMsg::StaticClass(),
-                          PublicationFrequencyHz,
-                          &AROS2PublisherNode::UpdateMessage);
+
+    // Create publisher with 3 different way.
+    // 1. Non Loop Publisher
+    // 2. Loop Publisher
+    // 3. Custom Publisher class
+
+    // 1. Non Loop Publisher
+    // 1.1 Create publisher
+    Publisher = Node->CreatePublisher(TopicName, UROS2Publisher::StaticClass(), UROS2StrMsg::StaticClass(), UROS2QoS::KeepLast);
+
+    // 1.2 Create msg
+    FROSStr msg;
+    msg.Data = FString::Printf(TEXT("%s from non loop publisher"), *Message);
+    CastChecked<UROS2StrMsg>(Publisher->TopicMessage)->SetMsg(msg);
+
+    // 1.3 publish
+    Publisher->Publish();
+
+    // 2. Loop Publisher
+    ROS2_CREATE_LOOP_PUBLISHER(Node,
+                               this,
+                               TopicName,
+                               UROS2Publisher::StaticClass(),
+                               UROS2StrMsg::StaticClass(),
+                               PublicationFrequencyHz,
+                               &AROS2PublisherNode::UpdateMessage,
+                               UROS2QoS::Default,
+                               LoopPublisher);
+
+    // 3. Use Custom Publisher class
+    // UpdateMessage is overriden in child class.
+    StringPublisher = CastChecked<URRROS2StringPublisher>(
+        Node->CreateLoopPublisherWithClass(TopicName, URRROS2StringPublisher::StaticClass(), 1.f));
+    StringPublisher->Message = FString::Printf(TEXT("%s from custom class"), *Message);
 }
 
 void AROS2PublisherNode::UpdateMessage(UROS2GenericMsg* InMessage)

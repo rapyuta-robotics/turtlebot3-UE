@@ -23,18 +23,20 @@
  *
  */
 UCLASS()
-class TURTLEBOT3_API AROS2ServiceServerNode : public AROS2Node
+class TURTLEBOT3_API AROS2ServiceServerNode : public AActor
 {
     GENERATED_BODY()
 
 public:
     AROS2ServiceServerNode();
 
+    virtual void BeginPlay() override;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString ServiceName = TEXT("add_two_ints");
 
-protected:
-    virtual void BeginPlay() override;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2NodeComponent* Node = nullptr;
 
     /**
      * @brief Service callback function

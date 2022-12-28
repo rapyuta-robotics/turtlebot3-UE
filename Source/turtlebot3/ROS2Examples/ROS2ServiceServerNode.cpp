@@ -4,20 +4,18 @@
 
 AROS2ServiceServerNode::AROS2ServiceServerNode()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
+    Node->RegisterComponent();
+    Node->Name = TEXT("service_server_node");
+    Node->Namespace = TEXT("cpp");
 }
 
 void AROS2ServiceServerNode::BeginPlay()
 {
     Super::BeginPlay();
-    Init();
+    Node->Init();
 
-    // bound callback function
-    FServiceCallback AddTwoIntsSrvCallback;
-    AddTwoIntsSrvCallback.BindDynamic(this, &AROS2ServiceServerNode::SrvCallback);
-
-    // Add serivce server to ROS2Node
-    AddServiceServer(ServiceName, UROS2AddTwoIntsSrv::StaticClass(), AddTwoIntsSrvCallback);
+    ROS2_CREATE_SERVICE_SERVER(Node, this, ServiceName, UROS2AddTwoIntsSrv::StaticClass(), &AROS2ServiceServerNode::SrvCallback);
 }
 
 void AROS2ServiceServerNode::SrvCallback(UROS2GenericSrv* InService)

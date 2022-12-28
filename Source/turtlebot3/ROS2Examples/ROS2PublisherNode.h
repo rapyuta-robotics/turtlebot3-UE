@@ -7,6 +7,9 @@
 #include "Msgs/ROS2Str.h"
 #include "ROS2Publisher.h"
 
+// RapyutaSimulationPlugins
+#include "Tools/RRROS2StringPublisher.h"
+
 #include "ROS2PublisherNode.generated.h"
 
 UCLASS()
@@ -24,6 +27,15 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2NodeComponent* Node = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2Publisher* Publisher = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2Publisher* LoopPublisher = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    URRROS2StringPublisher* StringPublisher = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TopicName = TEXT("test_topic");
