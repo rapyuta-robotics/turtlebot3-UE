@@ -7,49 +7,52 @@
 
 AROS2ActionClientNode::AROS2ActionClientNode()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
+    Node->RegisterComponent();
+
+    // these parameters can be change from BP
+    Node->Name = TEXT("action_client_node");
+    Node->Namespace = TEXT("cpp");
 }
 
 void AROS2ActionClientNode::BeginPlay()
 {
     Super::BeginPlay();
-    Init();
+    Node->Init();
 
-    // Create and set parameters
-    FibonacciActionClient = NewObject<UROS2ActionClient>(this);
-    FibonacciActionClient->RegisterComponent();
-    FibonacciActionClient->ActionName = ActionName;
-    FibonacciActionClient->ActionClass = UROS2FibonacciAction::StaticClass();
+    ROS2_CREATE_ACTION_CLIENT(Node,
+                              this,
+                              ActionName,
+                              UROS2FibonacciAction::StaticClass(),
+                              &AROS2ActionClientNode::FeedbackCallback,
+                              &AROS2ActionClientNode::ResultCallback,
+                              &AROS2ActionClientNode::GoalResponseCallback,
+                              &AROS2ActionClientNode::CancelCallback,
+                              FibonacciActionClient);
 
-    // bound callback function
-    FActionCallback SetGoal;
-    FActionCallback Feedback;
-    FActionCallback Result;
-    FActionCallback GoalResponse;
-    FSimpleCallback Cancel;
-
-    SetGoal.BindDynamic(this, &AROS2ActionClientNode::SetGoalCallback);
-    Feedback.BindDynamic(this, &AROS2ActionClientNode::FeedbackCallback);
-    Result.BindDynamic(this, &AROS2ActionClientNode::ResultCallback);
-    GoalResponse.BindDynamic(this, &AROS2ActionClientNode::GoalResponseCallback);
-    Cancel.BindDynamic(this, &AROS2ActionClientNode::CancelCallback);
-    FibonacciActionClient->SetDelegates(SetGoal, Feedback, Result, GoalResponse, Cancel);
-
-    // Add action Client to ROS2Node
-    AddActionClient(FibonacciActionClient);
-
-    GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionClientNode::SendGoal, 1.f, true);
+    SendGoal();
 }
 
-void AROS2ActionClientNode::SetGoalCallback(UROS2GenericAction* InAction)
+void AROS2ActionClientNode::SendGoal()
 {
-    UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
+    // Create goal
+    UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(FibonacciActionClient->Action);
     FROSFibonacciSGReq goalRequest;
     goalRequest.Order = Order;
     FibonacciAction->SetGoalRequest(goalRequest);
 
-    // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][update set goal] order: %i"), *GetName(), *ActionName, Order);
+    // send goal
+    if (!FibonacciActionClient->SendGoal())
+    {
+        // if it failes, retry after 1s
+        UE_LOG(
+            LogTurtlebot3, Warning, TEXT("[%s][%s][C++][send goal] failed to sendo goal. retry in 1s..."), *GetName(), *ActionName);
+        GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionClientNode::SendGoal, 1.f, false);
+    }
+    else
+    {
+        UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send goal] order: %i"), *GetName(), *ActionName, Order);
+    }
 }
 
 void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
@@ -81,8 +84,9 @@ void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
     UE_LOG(
         LogTurtlebot3, Log, TEXT("[%s][%s][C++][received result callback] result is: %s"), *GetName(), *ActionName, *resultString);
 
+    // update order and send next goal
     Order++;
-    GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionClientNode::SendGoal, 1.f, true);
+    SendGoal();
 }
 
 void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
@@ -94,8 +98,8 @@ void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
     if (!goalResponse.bAccepted)
     {
         UE_LOG(LogTurtlebot3,
-               Log,
-               TEXT("[%s][%s][C++][receive goal response callback] goal request is rejected."),
+               Warning,
+               TEXT("[%s][%s][C++][receive goal response callback] goal request is rejected. retry in 1s..."),
                *GetName(),
                *ActionName);
     }
@@ -106,20 +110,27 @@ void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
                TEXT("[%s][%s][C++][receive goal response callback] goal request is accepted."),
                *GetName(),
                *ActionName);
-        FibonacciActionClient->GetResultRequest();
+        FibonacciActionClient->SendResultRequest();
     }
 }
 
 void AROS2ActionClientNode::CancelCallback()
 {
-    // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][received cancel response callback]"), *GetName(), *ActionName);
-}
-
-void AROS2ActionClientNode::SendGoal()
-{
-    if (FibonacciActionClient->UpdateAndSendGoal())
+    int cancelResult = FibonacciActionClient->Action->GetCancelResponseReturnCode();
+    if (cancelResult != FROSCancelGoalRes::ERROR_NONE)
     {
-        GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
+        UE_LOG(LogTurtlebot3,
+               Log,
+               TEXT("[%s][%s][C++][received cancel response callback] failed to cancel action"),
+               *GetName(),
+               *ActionName);
+    }
+    else
+    {
+        UE_LOG(LogTurtlebot3,
+               Log,
+               TEXT("[%s][%s][C++][received cancel response callback] succeeded to cancel action"),
+               *GetName(),
+               *ActionName);
     }
 }

@@ -24,12 +24,17 @@
  *
  */
 UCLASS()
-class TURTLEBOT3_API AROS2ActionServerNode : public AROS2Node
+class TURTLEBOT3_API AROS2ActionServerNode : public AActor
 {
     GENERATED_BODY()
 
 public:
     AROS2ActionServerNode();
+
+    virtual void BeginPlay() override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2NodeComponent* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2ActionServer* FibonacciActionServer = nullptr;
@@ -37,22 +42,18 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString ActionName = TEXT("fibonacci_action");
 
-protected:
-    virtual void BeginPlay() override;
-
     UPROPERTY()
     FTimerHandle ActionTimerHandle;
 
     UFUNCTION()
-    void UpdateFeedbackCallback(UROS2GenericAction* InAction);
+    void Execute();
+
     UFUNCTION()
-    void UpdateResultCallback(UROS2GenericAction* InAction);
+    void GoalCallback(UROS2GenericAction* InAction);
     UFUNCTION()
-    bool HandleGoalCallback(UROS2GenericAction* InAction);
+    void CancelCallback();
     UFUNCTION()
-    void HandleCancelCallback();
-    UFUNCTION()
-    void HandleAcceptedCallback();
+    void ResultCallback();
 
 private:
     FROSFibonacciFB FeedbackMsg;

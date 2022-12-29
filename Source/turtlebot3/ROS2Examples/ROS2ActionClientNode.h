@@ -24,12 +24,17 @@
  *
  */
 UCLASS()
-class TURTLEBOT3_API AROS2ActionClientNode : public AROS2Node
+class TURTLEBOT3_API AROS2ActionClientNode : public AActor
 {
     GENERATED_BODY()
 
 public:
     AROS2ActionClientNode();
+
+    virtual void BeginPlay() override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2NodeComponent* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2ActionClient* FibonacciActionClient = nullptr;
@@ -40,14 +45,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int Order = 3;
 
-protected:
-    virtual void BeginPlay() override;
-
     UPROPERTY()
     FTimerHandle ActionTimerHandle;
 
-    UFUNCTION()
-    void SetGoalCallback(UROS2GenericAction* InAction);
     UFUNCTION()
     void FeedbackCallback(UROS2GenericAction* InAction);
     UFUNCTION()

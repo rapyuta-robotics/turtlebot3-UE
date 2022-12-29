@@ -6,6 +6,8 @@ AROS2PublisherNode::AROS2PublisherNode()
 {
     Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
     Node->RegisterComponent();
+
+    // these parameters can be change from BP
     Node->Name = TEXT("publisher_node");
     Node->Namespace = TEXT("cpp");
 }

@@ -7,135 +7,114 @@
 
 AROS2ActionServerNode::AROS2ActionServerNode()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
+    Node->RegisterComponent();
+
+    // these parameters can be change from BP
+    Node->Name = TEXT("action_server_node");
+    Node->Namespace = TEXT("cpp");
 }
 
 void AROS2ActionServerNode::BeginPlay()
 {
     Super::BeginPlay();
-    Init();
+    Node->Init();
 
-    // Create and set parameters
-    FibonacciActionServer = NewObject<UROS2ActionServer>(this);
-    FibonacciActionServer->RegisterComponent();
-    FibonacciActionServer->ActionName = ActionName;
-    FibonacciActionServer->ActionClass = UROS2FibonacciAction::StaticClass();
-
-    // bound callback function
-    FActionCallback UpdateFeedbackDelegate;
-    FActionCallback UpdateResultDelegate;
-    FActionGoalCallback HandleGoalDelegate;
-    FSimpleCallback HandleCancelDelegate;
-    FSimpleCallback HandleAcceptedDelegate;
-
-    UpdateFeedbackDelegate.BindDynamic(this, &AROS2ActionServerNode::UpdateFeedbackCallback);
-    UpdateResultDelegate.BindDynamic(this, &AROS2ActionServerNode::UpdateResultCallback);
-    HandleGoalDelegate.BindDynamic(this, &AROS2ActionServerNode::HandleGoalCallback);
-    HandleCancelDelegate.BindDynamic(this, &AROS2ActionServerNode::HandleCancelCallback);
-    HandleAcceptedDelegate.BindDynamic(this, &AROS2ActionServerNode::HandleAcceptedCallback);
-    FibonacciActionServer->SetDelegates(
-        UpdateFeedbackDelegate, UpdateResultDelegate, HandleGoalDelegate, HandleCancelDelegate, HandleAcceptedDelegate);
-
-    // Add action server to ROS2Node
-    AddActionServer(FibonacciActionServer);
+    ROS2_CREATE_ACTION_SERVER(Node,
+                              this,
+                              ActionName,
+                              UROS2FibonacciAction::StaticClass(),
+                              &AROS2ActionServerNode::GoalCallback,
+                              &AROS2ActionServerNode::CancelCallback,
+                              &AROS2ActionServerNode::ResultCallback,
+                              FibonacciActionServer);
 }
 
-void AROS2ActionServerNode::UpdateFeedbackCallback(UROS2GenericAction* InAction)
+void AROS2ActionServerNode::Execute()
 {
-    UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
+    UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(FibonacciActionServer->Action);
 
-    // Calculate fibonacci and send feedoback
-
-    // send result when finish by UpdateAndSendResult
-    if (Count++ < GoalRequest.Order)
+    // send feedback
+    if (Count++ <= GoalRequest.Order)
     {
         FeedbackMsg.Sequence.Add(FeedbackMsg.Sequence[Count] + FeedbackMsg.Sequence[Count - 1]);
         FibonacciAction->SetFeedback(FeedbackMsg);
         // Log request and response
         UE_LOG(LogTurtlebot3,
                Log,
-               TEXT("[%s][%s][C++][update feedback callback] added %d"),
+               TEXT("[%s][%s][C++][update feedback] added %d"),
                *GetName(),
                *ActionName,
                FeedbackMsg.Sequence.Last(0));
+        FibonacciActionServer->SendFeedback();
     }
+    // send result when finish by UpdateAndSendResult
     else
     {
-        FibonacciActionServer->UpdateAndSendResult();
+        // for log
+        FString resultString;
+
+        // set result
+        FROSFibonacciGRRes ResultResponse;
+        ResultResponse.GRResStatus = GOAL_STATE_SUCCEEDED;
+        for (auto s : FeedbackMsg.Sequence)
+        {
+            ResultResponse.Sequence.Add(s);
+            resultString += FString::FromInt(s) + ", ";
+        }
+        FibonacciAction->SetResultResponse(ResultResponse);
+        FibonacciActionServer->SendResultResponse();
+
+        // stop timer
+        GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
+
+        // Log request and response
+        UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send result] result is: %s"), *GetName(), *ActionName, *resultString);
+        ;
     }
 }
 
-void AROS2ActionServerNode::UpdateResultCallback(UROS2GenericAction* InAction)
+void AROS2ActionServerNode::GoalCallback(UROS2GenericAction* InAction)
 {
+    // retrieve goal request value
     UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
-
-    // for log
-    FString resultString;
-
-    // set result
-    FROSFibonacciGRRes ResultResponse;
-    ResultResponse.GRResStatus = GOAL_STATE_SUCCEEDED;
-    for (auto s : FeedbackMsg.Sequence)
-    {
-        ResultResponse.Sequence.Add(s);
-        resultString += FString::FromInt(s) + ", ";
-    }
-    FibonacciAction->SetResultResponse(ResultResponse);
-
-    // stop timer
-    GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
-
-    // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][update result callback] result is: %s"), *GetName(), *ActionName, *resultString);
-}
-
-bool AROS2ActionServerNode::HandleGoalCallback(UROS2GenericAction* InAction)
-{
-    UROS2FibonacciAction* FibonacciAction = Cast<UROS2FibonacciAction>(InAction);
+    FibonacciAction->GetGoalRequest(GoalRequest);
 
     // set and send goal response
     FROSFibonacciSGRes goalResponse;
-    goalResponse.bAccepted = true;
+    goalResponse.bAccepted = true;    // always accept goal
     goalResponse.Stamp = UGameplayStatics::GetTimeSeconds(reinterpret_cast<UObject*>(GetWorld()));
-    FibonacciAction->SetGoalResponse(goalResponse);
+    Cast<UROS2FibonacciAction>(FibonacciActionServer->Action)->SetGoalResponse(goalResponse);
     FibonacciActionServer->SendGoalResponse();
 
     // Log request and response
     UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][goal callback]"), *GetName(), *ActionName);
-
-    if (goalResponse.bAccepted)
-    {
-        FibonacciAction->GetGoalRequest(GoalRequest);
-        FibonacciAction->SetGoalIdToFeedback(FeedbackMsg);
-        FeedbackMsg.Sequence.Empty();
-        FeedbackMsg.Sequence.Add(0);
-        FeedbackMsg.Sequence.Add(1);
-        Count = 1;
-    }
-
-    // return value is used by ROS2ActionServer to decide whether it calls accepted callback or not.
-    return goalResponse.bAccepted;
 }
 
-void AROS2ActionServerNode::HandleCancelCallback()
+void AROS2ActionServerNode::CancelCallback()
 {
     // stop execution timer
     GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
 
-    // send cancel response
-    FibonacciActionServer->ProcessAndSendCancelResponse();
+    // send cancel response. always success
+    FibonacciActionServer->ProcessAndSendCancelResponse(FROSCancelGoalRes::ERROR_NONE);
 
     // Log request and response
     UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][cancle callback]"), *GetName(), *ActionName);
 }
 
-void AROS2ActionServerNode::HandleAcceptedCallback()
+void AROS2ActionServerNode::ResultCallback()
 {
+    // initialize feedback msg
+    Cast<UROS2FibonacciAction>(FibonacciActionServer->Action)->SetGoalIdToFeedback(FeedbackMsg);
+    FeedbackMsg.Sequence.Empty();
+    FeedbackMsg.Sequence.Add(0);
+    FeedbackMsg.Sequence.Add(1);
     Count = 0;
-    // set timer to periodically calling service.
-    GetWorld()->GetTimerManager().SetTimer(
-        ActionTimerHandle, this->FibonacciActionServer, &UROS2ActionServer::UpdateAndSendFeedback, 1.f, true);
+
+    // set timer to execute action.
+    GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionServerNode::Execute, 1.f, true);
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][accepted callback] Start fibonacci calculation"), *GetName(), *ActionName);
+    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][result callback] Start fibonacci calculation"), *GetName(), *ActionName);
 }
