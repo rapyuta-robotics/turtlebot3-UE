@@ -24,9 +24,9 @@ void AROS2ActionClientNode::BeginPlay()
                               this,
                               ActionName,
                               UROS2FibonacciAction::StaticClass(),
-                              &AROS2ActionClientNode::FeedbackCallback,
-                              &AROS2ActionClientNode::ResultCallback,
                               &AROS2ActionClientNode::GoalResponseCallback,
+                              &AROS2ActionClientNode::ResultCallback,
+                              &AROS2ActionClientNode::FeedbackCallback,
                               &AROS2ActionClientNode::CancelCallback,
                               FibonacciActionClient);
 

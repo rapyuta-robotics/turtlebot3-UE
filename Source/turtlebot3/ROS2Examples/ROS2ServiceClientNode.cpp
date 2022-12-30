@@ -23,13 +23,13 @@ void AROS2ServiceClientNode::BeginPlay()
     Node->Init();
 
     // Create Service client
-    ROS2_CREATE_SERVICE_CLIENT(Node,
-                               this,
-                               ServiceName,
-                               UROS2AddTwoIntsSrv::StaticClass(),
-                               &AROS2ServiceClientNode::ReceiveResponse,    // Callback for response
-                               UROS2QoS::DynamicBroadcaster,
-                               AddTwoIntsSrvClient)
+    ROS2_CREATE_SERVICE_CLIENT_WITH_QOS(Node,
+                                        this,
+                                        ServiceName,
+                                        UROS2AddTwoIntsSrv::StaticClass(),
+                                        &AROS2ServiceClientNode::ReceiveResponse,    // Callback for response
+                                        UROS2QoS::DynamicBroadcaster,
+                                        AddTwoIntsSrvClient)
 
     // set timer to periodically calling service.
     FTimerDelegate sendRequest = FTimerDelegate::CreateLambda(

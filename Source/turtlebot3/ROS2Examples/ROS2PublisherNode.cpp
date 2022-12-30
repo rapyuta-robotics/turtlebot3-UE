@@ -36,15 +36,15 @@ void AROS2PublisherNode::BeginPlay()
     Publisher->Publish();
 
     // 2. Loop Publisher
-    ROS2_CREATE_LOOP_PUBLISHER(Node,
-                               this,
-                               TopicName,
-                               UROS2Publisher::StaticClass(),
-                               UROS2StrMsg::StaticClass(),
-                               PublicationFrequencyHz,
-                               &AROS2PublisherNode::UpdateMessage,
-                               UROS2QoS::Default,
-                               LoopPublisher);
+    ROS2_CREATE_LOOP_PUBLISHER_WITH_QOS(Node,
+                                        this,
+                                        TopicName,
+                                        UROS2Publisher::StaticClass(),
+                                        UROS2StrMsg::StaticClass(),
+                                        PublicationFrequencyHz,
+                                        &AROS2PublisherNode::UpdateMessage,
+                                        UROS2QoS::Default,
+                                        LoopPublisher);
 
     // 3. Use Custom Publisher class
     // UpdateMessage is overriden in child class.
