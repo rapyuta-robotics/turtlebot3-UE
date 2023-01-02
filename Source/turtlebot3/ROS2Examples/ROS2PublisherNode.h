@@ -22,11 +22,13 @@ public:
 
     virtual void BeginPlay() override;
 
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
     UFUNCTION()
     void UpdateMessage(UROS2GenericMsg* InMessage);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UROS2NodeComponent* Node = nullptr;
+    UROS2Node* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2Publisher* Publisher = nullptr;

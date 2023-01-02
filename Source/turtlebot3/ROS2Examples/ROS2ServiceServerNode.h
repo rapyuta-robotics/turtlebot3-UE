@@ -36,7 +36,7 @@ public:
     FString ServiceName = TEXT("add_two_ints");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UROS2NodeComponent* Node = nullptr;
+    UROS2Node* Node = nullptr;
 
     /**
      * @brief Service callback function

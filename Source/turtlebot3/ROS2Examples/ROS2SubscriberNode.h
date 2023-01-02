@@ -22,11 +22,13 @@ public:
 
     virtual void BeginPlay() override;
 
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
     UFUNCTION()
     void MsgCallback(const UROS2GenericMsg* InMsg);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UROS2NodeComponent* Node = nullptr;
+    UROS2Node* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TopicName = TEXT("test_topic");

@@ -4,8 +4,8 @@
 
 AROS2PublisherNode::AROS2PublisherNode()
 {
-    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
-    Node->RegisterComponent();
+    Node = CreateDefaultSubobject<UROS2Node>(TEXT("ROS2NodeComponent"));
+    // Node->RegisterComponent();
 
     // these parameters can be change from BP
     Node->Name = TEXT("publisher_node");
@@ -51,6 +51,12 @@ void AROS2PublisherNode::BeginPlay()
     StringPublisher = CastChecked<URRROS2StringPublisher>(
         Node->CreateLoopPublisherWithClass(TopicName, URRROS2StringPublisher::StaticClass(), 1.f));
     StringPublisher->Message = FString::Printf(TEXT("%s from custom class"), *Message);
+}
+
+void AROS2PublisherNode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Node->Destroy();
+    Super::EndPlay(EndPlayReason);
 }
 
 void AROS2PublisherNode::UpdateMessage(UROS2GenericMsg* InMessage)

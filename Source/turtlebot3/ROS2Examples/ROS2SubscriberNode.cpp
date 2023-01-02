@@ -7,8 +7,8 @@
 
 AROS2SubscriberNode::AROS2SubscriberNode()
 {
-    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
-    Node->RegisterComponent();
+    Node = CreateDefaultSubobject<UROS2Node>(TEXT("ROS2NodeComponent"));
+    // Node->RegisterComponent();
 
     // these parameters can be change from BP
     Node->Name = TEXT("subscriber_node");
@@ -32,4 +32,10 @@ void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
         stringMsg->GetMsg(msg);
         UE_LOG(LogTurtlebot3, Log, TEXT("[%s] %s"), *GetName(), *msg.Data);
     }
+}
+
+void AROS2SubscriberNode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Node->Destroy();
+    Super::EndPlay(EndPlayReason);
 }

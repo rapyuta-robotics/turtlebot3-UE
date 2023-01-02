@@ -34,7 +34,7 @@ public:
     virtual void BeginPlay() override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UROS2NodeComponent* Node = nullptr;
+    UROS2Node* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2ActionClient* FibonacciActionClient = nullptr;

@@ -4,8 +4,8 @@
 
 AROS2ServiceServerNode::AROS2ServiceServerNode()
 {
-    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
-    Node->RegisterComponent();
+    Node = CreateDefaultSubobject<UROS2Node>(TEXT("ROS2NodeComponent"));
+    // Node->RegisterComponent();
 
     // these parameters can be change from BP
     Node->Name = TEXT("service_server_node");

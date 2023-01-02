@@ -7,8 +7,8 @@
 
 AROS2ActionServerNode::AROS2ActionServerNode()
 {
-    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
-    Node->RegisterComponent();
+    Node = CreateDefaultSubobject<UROS2Node>(TEXT("ROS2NodeComponent"));
+    // Node->RegisterComponent();
 
     // these parameters can be change from BP
     Node->Name = TEXT("action_server_node");
