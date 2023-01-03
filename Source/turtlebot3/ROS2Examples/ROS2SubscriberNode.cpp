@@ -8,7 +8,6 @@
 AROS2SubscriberNode::AROS2SubscriberNode()
 {
     Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
-    Node->RegisterComponent();
 
     // these parameters can be change from BP
     Node->Name = TEXT("subscriber_node");
