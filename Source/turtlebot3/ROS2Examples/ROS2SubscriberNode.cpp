@@ -7,18 +7,19 @@
 
 AROS2SubscriberNode::AROS2SubscriberNode()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
+
+    // these parameters can be change from BP
+    Node->Name = TEXT("subscriber_node");
+    Node->Namespace = TEXT("cpp");
 }
 
 void AROS2SubscriberNode::BeginPlay()
 {
     Super::BeginPlay();
-    Init();
+    Node->Init();
 
-    // bind callback function with topic subscription
-    FSubscriptionCallback cb;
-    cb.BindDynamic(this, &AROS2SubscriberNode::MsgCallback);
-    AddSubscription(TopicName, UROS2StrMsg::StaticClass(), cb);
+    ROS2_CREATE_SUBSCRIBER(Node, this, TopicName, UROS2StrMsg::StaticClass(), &AROS2SubscriberNode::MsgCallback);
 }
 
 void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)

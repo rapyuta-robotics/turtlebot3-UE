@@ -7,44 +7,47 @@
 
 // RapyutaSimulationPlugins
 
+AROS2ServiceClientNode::AROS2ServiceClientNode()
+{
+    Node = CreateDefaultSubobject<UROS2NodeComponent>(TEXT("ROS2NodeComponent"));
+
+    // these parameters can be change from BP
+    Node->Name = TEXT("service_client_node");
+    Node->Namespace = TEXT("cpp");
+}
+
 void AROS2ServiceClientNode::BeginPlay()
 {
     Super::BeginPlay();
-    Init();
+    Node->Init();
 
-    // Create and set parameters
-    AddTwoIntsSrvClient = NewObject<UROS2ServiceClient>(this);
-    AddTwoIntsSrvClient->RegisterComponent();
-    AddTwoIntsSrvClient->ServiceName = ServiceName;
-    AddTwoIntsSrvClient->SrvClass = UROS2AddTwoIntsSrv::StaticClass();
-
-    // Bind functions to delegates
-    // UROS2ServiceClient::UpdateAndSendRequest will call bounded method.
-    AddTwoIntsSrvClient->RequestDelegate.BindDynamic(this, &AROS2ServiceClientNode::SendRequest);
-
-    // Bounded method will be called when receive response
-    AddTwoIntsSrvClient->ResponseDelegate.BindDynamic(this, &AROS2ServiceClientNode::ReceiveResponse);
-
-    // Add service to ROSNode(this_)
-    AddServiceClient(AddTwoIntsSrvClient);
-
-    AddTwoIntsSrvClient->Init(UROS2QoS::DynamicBroadcaster);
+    // Create Service client
+    ROS2_CREATE_SERVICE_CLIENT_WITH_QOS(Node,
+                                        this,
+                                        ServiceName,
+                                        UROS2AddTwoIntsSrv::StaticClass(),
+                                        &AROS2ServiceClientNode::ReceiveResponse,    // Callback for response
+                                        UROS2QoS::DynamicBroadcaster,
+                                        AddTwoIntsSrvClient)
 
     // set timer to periodically calling service.
-    GetWorld()->GetTimerManager().SetTimer(
-        TimerHandle, this->AddTwoIntsSrvClient, &UROS2ServiceClient::UpdateAndSendRequest, 1.f, true);
-}
+    FTimerDelegate sendRequest = FTimerDelegate::CreateLambda(
+        [this]
+        {
+            // Create request
+            FROSAddTwoIntsReq req;
+            req.A = A++;
+            req.B = B++;
+            CastChecked<UROS2AddTwoIntsSrv>(AddTwoIntsSrvClient->Service)->SetRequest(req);
 
-void AROS2ServiceClientNode::SendRequest(UROS2GenericSrv* InService)
-{
-    // Create and update request
-    FROSAddTwoIntsReq req;
-    req.A = A++;
-    req.B = B++;
-    CastChecked<UROS2AddTwoIntsSrv>(InService)->SetRequest(req);
+            // SendRequest
+            AddTwoIntsSrvClient->SendRequest();
 
-    // Log request
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send request] a:%d, b:%d"), *GetName(), *ServiceName, req.A, req.B);
+            // Log request
+            UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send request] a:%d, b:%d"), *GetName(), *ServiceName, req.A, req.B);
+        });
+
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, sendRequest, 1.0f, true);
 }
 
 void AROS2ServiceClientNode::ReceiveResponse(UROS2GenericSrv* InService)

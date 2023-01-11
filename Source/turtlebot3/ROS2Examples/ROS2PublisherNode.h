@@ -4,19 +4,35 @@
 #include "CoreMinimal.h"
 
 // rclUE
-#include "ROS2Node.h"
+#include "Msgs/ROS2Str.h"
+#include "ROS2Publisher.h"
+
+// RapyutaSimulationPlugins
+#include "Tools/RRROS2StringPublisher.h"
 
 #include "ROS2PublisherNode.generated.h"
 
-class URRROS2StringPublisher;
 UCLASS()
-class TURTLEBOT3_API AROS2PublisherNode : public AROS2Node
+class TURTLEBOT3_API AROS2PublisherNode : public AActor
 {
     GENERATED_BODY()
 
-protected:
-    // Called when the game starts or when spawned
+public:
+    AROS2PublisherNode();
+
     virtual void BeginPlay() override;
+
+    UFUNCTION()
+    void UpdateMessage(UROS2GenericMsg* InMessage);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2NodeComponent* Node = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2Publisher* Publisher = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2Publisher* LoopPublisher = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     URRROS2StringPublisher* StringPublisher = nullptr;
@@ -25,5 +41,11 @@ protected:
     FString TopicName = TEXT("test_topic");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float PublicationFrequencyHz = 1.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString Message = TEXT("Hello from C++");
+
+    UPROPERTY()
+    int32 Count = 0;
 };

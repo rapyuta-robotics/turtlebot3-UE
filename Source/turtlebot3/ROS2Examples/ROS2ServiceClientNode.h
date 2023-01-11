@@ -22,13 +22,17 @@
  *
  */
 UCLASS()
-class TURTLEBOT3_API AROS2ServiceClientNode : public AROS2Node
+class TURTLEBOT3_API AROS2ServiceClientNode : public AActor
 {
     GENERATED_BODY()
 
 protected:
-    // Called when the game starts or when spawned
+    AROS2ServiceClientNode();
+
     virtual void BeginPlay() override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UROS2NodeComponent* Node = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UROS2ServiceClient* AddTwoIntsSrvClient = nullptr;
@@ -45,16 +49,6 @@ protected:
     int B = 2;
 
     /**
-     * @brief Set and update service request.
-     * This method is bounded with AddTwoIntsSrvClient::RequestDelegate in #BeginPlay
-     * and called with UROS2ServiceClient::UpdateAndSendRequest
-     *
-     * @param InService
-     */
-    UFUNCTION()
-    void SendRequest(UROS2GenericSrv* InService);
-
-    /**
      * @brief
      * This method is bounded with AddTwoIntsSrvClient::RequestDelegate in #BeginPlay
      * and called when receive response.
@@ -62,4 +56,7 @@ protected:
      */
     UFUNCTION()
     void ReceiveResponse(UROS2GenericSrv* InService);
+
+    UPROPERTY()
+    FTimerHandle TimerHandle;
 };
