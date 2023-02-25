@@ -34,6 +34,6 @@ void AROS2ServiceServerNode::SrvCallback(UROS2GenericSrv* InService)
     AddTwoIntsService->SetResponse(res);
 
     // Log request and response
-    UE_LOG(
-        LogTurtlebot3, Log, TEXT("[%s][%s][C++][receive request] %d + %d = %d"), *GetName(), *ServiceName, req.A, req.B, res.Sum);
+    UE_LOG_WITH_INFO_NAMED(
+        LogTurtlebot3, Log, TEXT("[%s][C++][receive request] %d + %d = %d"), *ServiceName, req.A, req.B, res.Sum);
 }

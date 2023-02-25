@@ -44,7 +44,7 @@ void AROS2ServiceClientNode::BeginPlay()
             AddTwoIntsSrvClient->SendRequest();
 
             // Log request
-            UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send request] a:%d, b:%d"), *GetName(), *ServiceName, req.A, req.B);
+            UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][send request] a:%d, b:%d"), *ServiceName, req.A, req.B);
         });
 
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, sendRequest, 1.0f, true);
@@ -58,5 +58,5 @@ void AROS2ServiceClientNode::ReceiveResponse(UROS2GenericSrv* InService)
     AddTwoIntsService->GetResponse(res);
 
     // Log response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][receive response] sum:%d"), *GetName(), *ServiceName, res.Sum);
+    UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][receive response] sum:%d"), *ServiceName, res.Sum);
 }

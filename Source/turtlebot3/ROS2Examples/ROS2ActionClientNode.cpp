@@ -44,13 +44,13 @@ void AROS2ActionClientNode::SendGoal()
     if (!FibonacciActionClient->SendGoal())
     {
         // if it failes, retry after 1s
-        UE_LOG(
-            LogTurtlebot3, Warning, TEXT("[%s][%s][C++][send goal] failed to sendo goal. retry in 1s..."), *GetName(), *ActionName);
+        UE_LOG_WITH_INFO_NAMED(
+            LogTurtlebot3, Warning, TEXT("[%s][C++][send goal] failed to sendo goal. retry in 1s..."), *ActionName);
         GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionClientNode::SendGoal, 1.f, false);
     }
     else
     {
-        UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send goal] order: %i"), *GetName(), *ActionName, Order);
+        UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][send goal] order: %i"), *ActionName, Order);
     }
 }
 
@@ -60,12 +60,11 @@ void AROS2ActionClientNode::FeedbackCallback(UROS2GenericAction* InAction)
     FROSFibonacciFB feedback;
     FibonacciAction->GetFeedback(feedback);
 
-    UE_LOG(LogTurtlebot3,
-           Log,
-           TEXT("[%s][%s][C++][received feedback callback] last element of feedback sequence: %d"),
-           *GetName(),
-           *ActionName,
-           feedback.Sequence.Last(0));
+    UE_LOG_WITH_INFO_NAMED(LogTurtlebot3,
+                           Log,
+                           TEXT("[%s][C++][received feedback callback] last element of feedback sequence: %d"),
+                           *ActionName,
+                           feedback.Sequence.Last(0));
 }
 
 void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
@@ -80,8 +79,8 @@ void AROS2ActionClientNode::ResultCallback(UROS2GenericAction* InAction)
     {
         resultString += FString::FromInt(s) + ", ";
     }
-    UE_LOG(
-        LogTurtlebot3, Log, TEXT("[%s][%s][C++][received result callback] result is: %s"), *GetName(), *ActionName, *resultString);
+    UE_LOG_WITH_INFO_NAMED(
+        LogTurtlebot3, Log, TEXT("[%s][C++][received result callback] result is: %s"), *ActionName, *resultString);
 
     // update order and send next goal
     Order++;
@@ -96,19 +95,15 @@ void AROS2ActionClientNode::GoalResponseCallback(UROS2GenericAction* InAction)
 
     if (!goalResponse.bAccepted)
     {
-        UE_LOG(LogTurtlebot3,
-               Warning,
-               TEXT("[%s][%s][C++][receive goal response callback] goal request is rejected. retry in 1s..."),
-               *GetName(),
-               *ActionName);
+        UE_LOG_WITH_INFO_NAMED(LogTurtlebot3,
+                               Warning,
+                               TEXT("[%s][C++][receive goal response callback] goal request is rejected. retry in 1s..."),
+                               *ActionName);
     }
     else
     {
-        UE_LOG(LogTurtlebot3,
-               Log,
-               TEXT("[%s][%s][C++][receive goal response callback] goal request is accepted."),
-               *GetName(),
-               *ActionName);
+        UE_LOG_WITH_INFO_NAMED(
+            LogTurtlebot3, Log, TEXT("[%s][C++][receive goal response callback] goal request is accepted."), *ActionName);
         FibonacciActionClient->SendResultRequest();
     }
 }
@@ -118,18 +113,12 @@ void AROS2ActionClientNode::CancelCallback()
     int cancelResult = FibonacciActionClient->Action->GetCancelResponseReturnCode();
     if (cancelResult != FROSCancelGoalRes::ERROR_NONE)
     {
-        UE_LOG(LogTurtlebot3,
-               Log,
-               TEXT("[%s][%s][C++][received cancel response callback] failed to cancel action"),
-               *GetName(),
-               *ActionName);
+        UE_LOG_WITH_INFO_NAMED(
+            LogTurtlebot3, Log, TEXT("[%s][C++][received cancel response callback] failed to cancel action"), *ActionName);
     }
     else
     {
-        UE_LOG(LogTurtlebot3,
-               Log,
-               TEXT("[%s][%s][C++][received cancel response callback] succeeded to cancel action"),
-               *GetName(),
-               *ActionName);
+        UE_LOG_WITH_INFO_NAMED(
+            LogTurtlebot3, Log, TEXT("[%s][C++][received cancel response callback] succeeded to cancel action"), *ActionName);
     }
 }
