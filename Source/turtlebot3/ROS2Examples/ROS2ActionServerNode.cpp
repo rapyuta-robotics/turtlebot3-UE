@@ -39,12 +39,8 @@ void AROS2ActionServerNode::Execute()
         FeedbackMsg.Sequence.Add(FeedbackMsg.Sequence[Count] + FeedbackMsg.Sequence[Count - 1]);
         FibonacciAction->SetFeedback(FeedbackMsg);
         // Log request and response
-        UE_LOG(LogTurtlebot3,
-               Log,
-               TEXT("[%s][%s][C++][update feedback] added %d"),
-               *GetName(),
-               *ActionName,
-               FeedbackMsg.Sequence.Last(0));
+        UE_LOG_WITH_INFO_NAMED(
+            LogTurtlebot3, Log, TEXT("[%s][C++][update feedback] added %d"), *ActionName, FeedbackMsg.Sequence.Last(0));
         FibonacciActionServer->SendFeedback();
     }
     // send result when finish by UpdateAndSendResult
@@ -68,7 +64,7 @@ void AROS2ActionServerNode::Execute()
         GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
 
         // Log request and response
-        UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][send result] result is: %s"), *GetName(), *ActionName, *resultString);
+        UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][send result] result is: %s"), *ActionName, *resultString);
         ;
     }
 }
@@ -87,7 +83,7 @@ void AROS2ActionServerNode::GoalCallback(UROS2GenericAction* InAction)
     FibonacciActionServer->SendGoalResponse();
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][goal callback]"), *GetName(), *ActionName);
+    UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][goal callback]"), *ActionName);
 }
 
 void AROS2ActionServerNode::CancelCallback()
@@ -99,7 +95,7 @@ void AROS2ActionServerNode::CancelCallback()
     FibonacciActionServer->ProcessAndSendCancelResponse(FROSCancelGoalRes::ERROR_NONE);
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][cancle callback]"), *GetName(), *ActionName);
+    UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][cancle callback]"), *ActionName);
 }
 
 void AROS2ActionServerNode::ResultCallback()
@@ -115,5 +111,5 @@ void AROS2ActionServerNode::ResultCallback()
     GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &AROS2ActionServerNode::Execute, 1.f, true);
 
     // Log request and response
-    UE_LOG(LogTurtlebot3, Log, TEXT("[%s][%s][C++][result callback] Start fibonacci calculation"), *GetName(), *ActionName);
+    UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("[%s][C++][result callback] Start fibonacci calculation"), *ActionName);
 }

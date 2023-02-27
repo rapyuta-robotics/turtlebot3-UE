@@ -29,6 +29,6 @@ void AROS2SubscriberNode::MsgCallback(const UROS2GenericMsg* InMsg)
     {
         FROSStr msg;
         stringMsg->GetMsg(msg);
-        UE_LOG(LogTurtlebot3, Log, TEXT("[%s] %s"), *GetName(), *msg.Data);
+        UE_LOG_WITH_INFO_NAMED(LogTurtlebot3, Log, TEXT("%s"), *msg.Data);
     }
 }
