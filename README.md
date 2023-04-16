@@ -2,11 +2,14 @@
 
 UE Project which includes examples to use rclUE.
 ## Branches
-- `devel`: Main branch. Compatible with Unreal Engine 5.1
+- `devel`: Main branch. Compatible with Unreal Engine 5.1 with Ubuntu 20.04
+- `jammy`: Compatible with Unreal Engine 5.1 with Ubuntu 22.04
 - `UE4`: Compatible with Unreal Engine 4.27
 
 ## Maps
-- `ROS2Examples`: BP and C++ ROS2 example nodes of publisher/subscriber, service server/client and action server/client.
+- `ROS2TopicExamples`: BP and C++ ROS2 example nodes of publisher/subscriber.
+- `ROS2ServiceExamples`: BP and C++ ROS2 example nodes of service server/client.
+- `ROS2ActionExamples`: BP and C++ ROS2 example nodes of action server/client
 - `Turtlebot3 Benchmark`: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP.
 - `SimpleArm`: Simple robot arm example which can be controlled from [sensor_msgs/JointStates](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/JointState.html).
 - `Entry`: Get map name from command line and transition to that maps. Mainly used to packaged project to change initial map.
@@ -24,8 +27,13 @@ UE Project which includes examples to use rclUE.
     export UE5_DIR=<path to UE5>
     ./update_project_files.sh
     ./make_editor.sh
-    ./run_editor.sh $(pwd) <ue_exe>
+    ./run_editor.sh <false or true to use dds server or not> $(pwd) <ue_exe>
     ```
+\* Since the prooject is set to use 
+[ROS2 with Discovery Server](https://docs.ros.org/en/foxy/Tutorials/Advanced/Discovery-Server/Discovery-Server.html)
+to communicate with ROS2 Node in UE, you needs to execute `source turtlebot3_UE/fastdds_setup.sh`. You can run without server by `./run_editor.sh false`
+
+
 ## Install pre-commit
 Please install pre-commit before commiting your changes.
 Follow this instruction https://pre-commit.com/
