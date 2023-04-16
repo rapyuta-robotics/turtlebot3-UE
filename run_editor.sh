@@ -6,14 +6,16 @@ if [ -z "${UE5_DIR}" ]; then
         exit 1
 fi
 
+DISCOVERY_SERVER=${1:-true}
 CURRENT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-TB3_UE_DIR=${1:-"${CURRENT_DIR}"}
+TB3_UE_DIR=${2:-"${CURRENT_DIR}"}
+if $DISCOVERY_SERVER; then
+        # Run discovery service for FastDDS
+        (exec "${TB3_UE_DIR}/run_discovery_service.sh")
 
-# Run discovery service for FastDDS
-(exec "${TB3_UE_DIR}/run_discovery_service.sh")
-
-# Configure environment for FastDDS discovery
-source ${TB3_UE_DIR}/fastdds_setup.sh
+        # Configure environment for FastDDS discovery
+        source ${TB3_UE_DIR}/fastdds_setup.sh
+fi
 
 #change default level, generating DefautlEngine.ini
 DEFAULT_LEVEL=${LEVEL_NAME:-"Turtlebot3_benchmark"}
