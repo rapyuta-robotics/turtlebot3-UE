@@ -30,7 +30,7 @@ UE Project which includes examples to use rclUE.
     ./run_editor.sh <false or true to use dds server or not> $(pwd) <ue_exe>
     ```
 \* Since the prooject is set to use 
-[ROS2 with Discovery Server](https://docs.ros.org/en/foxy/Tutorials/Advanced/Discovery-Server/Discovery-Server.html)
+[ROS2 with Discovery Server](https://docs.ros.org/en/humble/Tutorials/Advanced/Discovery-Server/Discovery-Server.html)
 to communicate with ROS2 Node in UE, you needs to execute `source turtlebot3_UE/fastdds_setup.sh`. You can run without server by `./run_editor.sh false`
 
 
@@ -50,7 +50,7 @@ this will setup pre-commit to all submodules as well.
 
 ### Installation
 
-1. [Install ROS2 foxy](https://docs.ros.org/en/foxy/Installation.html)
+1. [Install ROS2 humble](https://docs.ros.org/en/humble/Installation.html)
     * you can use ROS2 humble as well by checkout `Plugins/rclUE` to `UE5_devel_humble` branch.
 2. [Install Nav2](https://navigation.ros.org/getting_started/index.html)
 
