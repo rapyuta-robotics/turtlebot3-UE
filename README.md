@@ -1,6 +1,10 @@
 # Turtlebot UE
 
 UE Project which includes examples to use rclUE.
+
+## Documentation
+- [rclUE](): This repo enables communication between UE and ROS 2.
+- [RapyutaSimulationPlugins](): This repo has classes/tools to create ROS 2 enables robots with rclUE.
 ## Branches
 - `devel`: Main branch. Compatible with Unreal Engine 5.1 with Ubuntu 20.04
 - `jammy`: Compatible with Unreal Engine 5.1 with Ubuntu 22.04
@@ -11,12 +15,13 @@ UE Project which includes examples to use rclUE.
 - `ROS2ServiceExamples`: BP and C++ ROS2 example nodes of service server/client.
 - `ROS2ActionExamples`: BP and C++ ROS2 example nodes of action server/client
 - `Turtlebot3 Benchmark`: BP and C++ ROS2 turtlebot3 navigation. Burger is implemented in C++ and Waffle is implemented in BP.
-- `SimpleArm`: Simple robot arm example which can be controlled from [sensor_msgs/JointStates](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/JointState.html).
+- `RobotArmExample`: Robot arm example which can be controlled from [sensor_msgs/JointStates](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/JointState.html).
 - `Entry`: Get map name from command line and transition to that maps. Mainly used to packaged project to change initial map.
 - `LargeGround`: Large enough map for simulating many robots. Mainly used to test [distributed multi-robot simulation](https://rapyutasimulationplugins.readthedocs.io/en/devel/distributed_simulation.html).
 - `Turtlebot3AutoTest`: Maps for Automated test.
 
 ## Setup and run
+* please check [Getting Started](https://rapyutasimulationplugins.readthedocs.io/en/doc_update/getting_started.html) as well.
 
 1.  Download UE5.1 for Linux by following [Unreal Engine for Linux](https://www.unrealengine.com/en-US/linux)
 2.  Clone this repo : `git clone --recurse-submodules git@github.com:rapyuta-robotics/turtlebot3-UE.git`
@@ -26,7 +31,7 @@ UE Project which includes examples to use rclUE.
     cd turtlebot3-UE
     export UE5_DIR=<path to UE5>
     ./update_project_files.sh
-    ./make_editor.sh
+    make turtlebot3Editor
     ./run_editor.sh <false or true to use dds server or not> $(pwd) <ue_exe>
     ```
 \* Since the prooject is set to use 
@@ -57,7 +62,8 @@ this will setup pre-commit to all submodules as well.
 ### Run
 
 1. Play turtlebot3-UE
-2. `ros2 launch nav2_bringup tb3_simulation_launch.py use_simulator:=False map:=<path to turtlebot3-UE>/Content/Turtlebot3_benchmark.yaml `
+2. `cd turtlebot3-UE && source fastdds_setup.sh` #if you use ROS2 Discovery Server. You don't need this if you start editor with `./run_editor false`.
+3. `ros2 launch nav2_bringup tb3_simulation_launch.py use_simulator:=False map:=<path to turtlebot3-UE>/Content/Turtlebot3_benchmark.yaml `
 
 ### Tests
 !NOTE: The test script is setup to run with fastdds, which requires UE to start before ROS is enabled, thus `/opt/ros/<ros_distro>/setup.bash`, which is already run in the script, needs to be not added to `~/.bashrc`
