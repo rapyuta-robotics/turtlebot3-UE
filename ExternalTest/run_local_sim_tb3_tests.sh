@@ -3,7 +3,7 @@
 Help()
 {
     # Display Help
-    echo "The script must be run from the io_amr_ue project dir."
+    echo "The script must be run from the turtlebot3-UE project dir."
     echo
     echo "Syntax: ./ExternalTest/$(basename $0) [-h] <ue_exe> <ue_map> <tb3_model> <tb3_name> <tb3_init_pos> <tb3_init_rot>"
     echo "options:"
@@ -57,7 +57,11 @@ export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
 export FASTRTPS_DEFAULT_PROFILES_FILE=${TB3_UE_DIR}/fastdds_config.xml
 
 # Change default level, generating DefaultEngine.ini
-sed -e 's/${LEVEL_NAME}/'${UE_MAP}'/g' ${TB3_UE_DIR}/Config/DefaultEngineBase.ini > ${TB3_UE_DIR}/Config/DefaultEngine.ini
+DEFAULT_RATE=${FIXED_FRAME_RATE:-"100.0"}
+DEFAULT_RTF=${TARGET_RTF:-"1.0"}
+sed -e 's/${LEVEL_NAME}/'${UE_MAP}'/g' Config/DefaultEngineBase.ini > Config/DefaultEngine.ini
+sed -i -e 's/${FIXED_FRAME_RATE}/'${DEFAULT_RATE}'/g' Config/DefaultEngine.ini
+sed -i -e 's/${TARGET_RTF}/'${DEFAULT_RTF}'/g' Config/DefaultEngine.ini
 
 # Run turtlebot3-UE
 $UE_EXE ${TB3_UE_DIR}/turtlebot3.uproject /Game/Maps/${UE_MAP} -game &
