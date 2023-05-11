@@ -76,6 +76,11 @@ ROBOT_MODEL=${1:-"burger"}
 ROBOT_NAME=${2:-"burger0"}
 ROBOT_INITIAL_POS=${3:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
 ROBOT_INITIAL_ROT=${4:-"0.0,0.0,0.0"}
+if [[ ${ROBOT_MODEL} == *"burger"* ]]; then
+    export TURTLEBOT3_MODEL=burger
+elif [[ ${ROBOT_MODEL} == *"waffle"* ]]; then
+    export TURTLEBOT3_MODEL=waffle
+fi
 export TURTLEBOT3_MODEL=${ROBOT_MODEL}
 printenv | grep TURTLEBOT3_MODEL
 
