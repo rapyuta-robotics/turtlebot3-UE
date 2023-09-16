@@ -10,7 +10,10 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"AIModule",
-				"Engine"
+				"Engine",
+				"rclUE",
+				"RapyutaSimulationPlugins",
+				"RapyutaSimRobotImporter"
 			]
 		}
 	],
@@ -21,6 +24,10 @@
 		},
 		{
 			"Name": "RapyutaSimulationPlugins",
+			"Enabled": true
+		},
+		{
+			"Name": "RapyutaSimRobotImporter",
 			"Enabled": true
 		},
 		{

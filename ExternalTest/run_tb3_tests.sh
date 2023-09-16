@@ -71,8 +71,8 @@ cd ${TB3_TESTS_ROS_WS}
 colcon build --symlink-install
 source install/setup.bash
 
-# Robot model: burger/waffle
-ROBOT_MODEL=${1:-"burger"}
+# Robot model: turtlebot3_burger/BP_TurtlebotBurger or turtlebot3_waffle/BP_TurtlebotWaffle
+ROBOT_MODEL=${1:-"turtlebot3_burger"}
 ROBOT_NAME=${2:-"burger0"}
 ROBOT_INITIAL_POS=${3:-"0.0,0.0,0.1"} # z should be >= 0.1 is to avoid collision with the floor
 ROBOT_INITIAL_ROT=${4:-"0.0,0.0,0.0"}
@@ -91,10 +91,10 @@ launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_sim_state.py timeout:='200'
 launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_clock_published.py
 
 # Test robot spawning  with empty robot namespace & its odom publication
-launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_spawn.py robot_model:=${ROBOT_MODEL} \
-                                                           robot_name:=${ROBOT_NAME} \
-                                                           robot_pos:=${ROBOT_INITIAL_POS} \
-                                                           robot_rot:=${ROBOT_INITIAL_ROT}
+launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_entity_spawn.py entity_model:=${ROBOT_MODEL} \
+                                                            entity_name:=${ROBOT_NAME} \
+                                                            entity_pos:=${ROBOT_INITIAL_POS} \
+                                                            entity_rot:=${ROBOT_INITIAL_ROT}
 
 # Test Laser being scanned
 launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_laser_scan_published.py scan_topics:="/scan"
@@ -108,6 +108,6 @@ launch_test ${TB3_TESTS_SCRIPTS_DIR}/test_waypoint_follower.py waypoints:='-0.52
                                                                initial_pose:="${ROBOT_INITIAL_POS}, ${ROBOT_INITIAL_ROT}"
 
 # Test robot removal
-launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_robot_remove.py robot_name:=${ROBOT_NAME}
+launch_test ${RRSIM_TESTS_SCRIPTS_DIR}/test_entity_remove.py entity_name:=${ROBOT_NAME}
 
 unset TURTLEBOT3_MODEL

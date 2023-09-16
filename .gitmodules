@@ -4,3 +4,6 @@
 [submodule "Plugins/RapyutaSimulationPlugins"]
 	path = Plugins/RapyutaSimulationPlugins
 	url = https://github.com/rapyuta-robotics/RapyutaSimulationPlugins.git
+[submodule "Plugins/RapyutaRobotImporter"]
+	path = Plugins/RapyutaRobotImporter
+	url = git@github.com:rapyuta-robotics/RapyutaRobotImporter.git
