@@ -6,8 +6,10 @@ UE Project which includes examples to use rclUE.
 - [rclUE](): This repo enables communication between UE and ROS 2.
 - [RapyutaSimulationPlugins](): This repo has classes/tools to create ROS 2 enables robots with rclUE.
 ## Branches
-- `devel`: Main branch. Compatible with Unreal Engine 5.1 with Ubuntu 20.04
-- `jammy`: Compatible with Unreal Engine 5.1 with Ubuntu 22.04
+- `devel`: Main branch. Compatible with Unreal Engine 5.1, Ubuntu 20.04 and ROS 2 foxy
+- `foxy`: Same as above
+- `humble`: Compatible with Unreal Engine 5.1, Ubuntu 22.04, and ROS 2 humble
+- `jazzy`: Compatible with Unreal Engine 5.1, Ubuntu 24.04, and ROS 2 jazzy
 - `UE4`: Compatible with Unreal Engine 4.27
 
 ## Maps
