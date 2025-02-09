@@ -6,9 +6,14 @@ UE Project which includes examples to use rclUE.
 - [rclUE](): This repo enables communication between UE and ROS 2.
 - [RapyutaSimulationPlugins](): This repo has classes/tools to create ROS 2 enables robots with rclUE.
 ## Branches
-- `devel`: Main branch. Compatible with Unreal Engine 5.1 with Ubuntu 20.04
-- `jammy`: Compatible with Unreal Engine 5.1 with Ubuntu 22.04
-- `UE4`: Compatible with Unreal Engine 4.27
+| UE    | Ubuntu | rclUE branch         | RapyutaSimulationPlugin branch | turtlebot3-UE branch | Note         |
+|-------|--------|----------------------|--------------------------------|----------------------|--------------|
+| 5.1.1 | 20.04  | UE5_devel_foxy       | devel                          | devel                |              |
+| 5.1.1 | 22.04  | UE5_devel_humble     | devel                          | jammy_UE5.1         | main branch  |
+| 5.3.2 | 22.04  | UE5_devel_humble     | UE5.3                          | jammy_UE5.3         |              |
+| 5.4.4 | 22.04  | UE5_devel_humble     | UE5.4.4                        | jammy_UE5.4         |              |
+| 5.5.3 | 22.04  | UE5.5_devel_humble   | UE5.5                          | jammy_UE5.5         |              |
+
 
 ## Maps
 - Base ROS2 examples
